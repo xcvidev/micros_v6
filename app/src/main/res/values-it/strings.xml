@@ -1,0 +1,206 @@
+<resources>
+    <string name="app_name">Micros AI</string>
+    <string name="app_language">Italiano</string>
+
+    <!--  Meals  -->
+    <string name="meal1">Colazione</string>
+    <string name="meal2">Spuntino mattutino</string>
+    <string name="meal3">Pranzo</string>
+    <string name="meal4">Spuntino pomeridiano</string>
+    <string name="meal5">Cena</string>
+    <string name="meal6">Pre Workout</string>
+    <string name="meal7">Post Workout</string>
+    <string name="meal8">Spuntino serale</string>
+
+
+    <!--  Core  -->
+    <string name="done">Fatto</string>
+    <string name="cancel">Annulla</string>
+    <string name="ok">OK</string>
+    <string name="confirm">Conferma</string>
+    <string name="save">Salva</string>
+    <string name="today">Oggi</string>
+    <string name="yesterday">Ieri</string>
+    <string name="tomorrow">Domani</string>
+    <string name="delete">Elimina</string>
+    <string name="delete_confirm_text">Sei sicuro? Questa azione non può essere annullata.</string>
+    <string name="paste">Incolla</string>
+    <string name="copy">Copia</string>
+    <string name="move">Sposta</string>
+    <string name="allow">Consenti</string>
+    <string name="edit">Modifica</string>
+    <string name="details">Dettagli</string>
+    <string name="micronutrients">Micronutrienti</string>
+
+    <!--  Errors  -->
+    <string name="error">Errore.</string>
+    <string name="network_error">Errore di rete. Controlla la connessione internet.</string>
+    <string name="empty_result">Nessun risultato trovato per la tua ricerca.</string>
+    <string name="invalid_input">Input non valido.</string>
+    <string name="database_error">Errore nel database. Riprova più tardi.</string>
+    <string name="authentication_error">Autenticazione fallita. Accedi di nuovo.</string>
+    <string name="already_exists">Esiste già un elemento con lo stesso nome.</string>
+    <string name="unknown_error">Si è verificato un errore sconosciuto. Riprova.</string>
+
+    <!--  Weight  -->
+    <string name="weight_manager">Peso</string>
+    <string name="weight_empty_data">Nessun peso registrato questa settimana.</string>
+    <string name="min">Min</string>
+    <string name="max">Max</string>
+    <string name="avg">Media</string>
+
+    <!--  Assistant  -->
+    <string name="assistant_topbar">Nutrizionista</string>
+    <string name="assistant_placeholder_main1">Come posso aiutarti oggi?</string>
+    <string name="assistant_placeholder_main2">Curiosità? Chiedi pure.</string>
+    <string name="assistant_placeholder_main3">Suggerimenti e ricette.</string>
+    <string name="assistant_placeholder_main4">Dubbi? Chiedi pure</string>
+    <string name="assistant_placeholder">Chiedi...</string>
+    <string name="assistant_error_network">Controlla la connessione di rete e riprova.</string>
+    <string name="assistant_error_other">Prova con una domanda o descrizione diversa e riprova.</string>
+    <string name="assistant_show_history">Cronologia</string>
+    <string name="assistant_clear_history_title">Cancella cronologia</string>
+    <string name="assistant_clear_history_text">Eliminare definitivamente tutti i messaggi e la cronologia?</string>
+
+    <!--  Scan  -->
+    <string name="scan_barcode">Scansiona Codice a Barre</string>
+    <string name="permission_required_title">Permesso richiesto</string>
+    <string name="permission_required_text">Questa app richiede l\'autorizzazione alla fotocamera per scansionare i codici a barre.</string>
+    <string name="camera_permission_denied_text">Autorizzazione fotocamera negata. Concedila nelle impostazioni dell\'app.</string>
+    <string name="open_settings">Apri impostazioni</string>
+    <string name="retry_dialog_text">Prova a scansionare di nuovo. Se non riesci, prova a cercare o descrivere il tuo cibo.</string>
+    <string name="retry">Riprova</string>
+
+    <!--  Stats  -->
+    <string name="stats_filter1">Settimane</string>
+    <string name="stats_filter2">Mesi</string>
+    <string name="stats_filter3">Giorni</string>
+    <string name="stats_topbar">Statistiche</string>
+    <string name="stats_no_food_data">Registrare più dati alimentari per osservare l\'andamento.</string>
+    <string name="stats_no_weight_data">Per visualizzare il grafico dei pesi, aggiungere più dati.</string>
+
+
+    <!--  Food  -->
+    <string name="histidine">Istidina</string>
+    <string name="isoleucine">Isoleucina</string>
+    <string name="leucine">Leucina</string>
+    <string name="lysine">Lisina</string>
+    <string name="methionine">Metionina</string>
+    <string name="phenylalanine">Fenilalanina</string>
+    <string name="threonine">Treonina</string>
+    <string name="tryptophan">Triptofano</string>
+    <string name="valine">Valina</string>
+
+    <!--   Macros   -->
+    <string name="calories">Calorie</string>
+    <string name="protein">Proteine</string>
+    <string name="carbs">Carboidrati</string>
+    <string name="fats">Grassi</string>
+    <string name="saturated_fats">Grassi Saturi</string>
+    <string name="fiber">Fibra</string>
+    <string name="sugars">Zuccheri</string>
+
+    <!--   Minerals   -->
+    <string name="calcium">Calcio</string>
+    <string name="iron">Ferro</string>
+    <string name="magnesium">Magnesio</string>
+    <string name="potassium">Potassio</string>
+    <string name="sodium">Sodio</string>
+    <string name="zinc">Zinco</string>
+    <string name="fluoride">Fluoro</string>
+    <string name="iodine">Iodio</string>
+    <string name="phosphorus">Fosforo</string>
+    <string name="manganese">Manganese</string>
+    <string name="selenium">Selenio</string>
+
+    <!--   Vitamins   -->
+    <string name="vitaminA">Vitamina A</string>
+    <string name="vitaminB">Vitamina B</string>
+    <string name="vitaminB1">Tiamina (B1)</string>
+    <string name="vitaminB2">Riboflavina (B2)</string>
+    <string name="vitaminB3">Niacina (B3)</string>
+    <string name="vitaminB4">Colina (B4)</string>
+    <string name="vitaminB5">Acido pantotenico (B5)</string>
+    <string name="vitaminB6">Piridossina (B6)</string>
+    <string name="vitaminB9">Acido folico (B9)</string>
+    <string name="vitaminB12">Cobalamina (B12)</string>
+
+    <string name="vitaminC">Vitamina C</string>
+    <string name="vitaminD">Vitamina D</string>
+    <string name="vitaminE">Vitamina E</string>
+    <string name="vitaminK">Vitamina K</string>
+
+    <!--  Dashboard  -->
+    <string name="food_dashboard_topbar">Dashboard</string>
+    <string name="food_nutrients">Nutrienti</string>
+    <string name="meal">Pasto</string>
+
+    <string name="meal_enter_name">Inserisci il nome del pasto</string>
+
+    <string name="search_results">Risultati della ricerca</string>
+    <string name="searching">Ricerca in corso</string>
+    <string name="generated">Generato</string>
+    <string name="generatig_failed_body">Prova a elencare gli ingredienti del tuo pasto.\nAd esempio: "un piatto di pasta al sugo di pomodoro"\noppure "riso con verdure"</string>
+    <string name="generating_failed_title">Generazione tramite AI fallita</string>
+    <string name="generating_failed_subtitle">Usa una descrizione diversa e riprova.</string>
+    <string name="generating">Generazione in corso</string>
+    <string name="recently_added">Aggiunti di recente</string>
+    <string name="search_placeholder">Cerca per nome, marca o descrizione...</string>
+    <string name="product_not_found">Prodotto non trovato.</string>
+    <string name="provide_food_description">Fornisci una descrizione del cibo. Usa nome, ingredienti o altre informazioni.</string>
+    <string name="description">Descrizione</string>
+    <string name="enhance">Più dettagli con IA</string>
+    <string name="enhance_confirm">Migliora</string>
+    <string name="enhance_nutrients">Migliora i nutrienti mancanti</string>
+    <string name="rename">Rinomina</string>
+    <string name="fetching_product">Recupero del prodotto in corso...</string>
+    <string name="add">Aggiungi</string>
+    <string name="food_no_portions">Non hai aggiunto nulla per questo pasto. Per monitorare calorie e nutrienti, aggiungi un alimento.</string>
+    <string name="food_add">Aggiungi Alimento</string>
+    <string name="food_details">Dettagli Nutrizionali</string>
+    <string name="empty_search_screen_text">Puoi cercare un cibo per nome o marca. Puoi anche descriverlo e l\'assistente AI lo genererà per te. Non trovi il tuo cibo? Prova a scansionare il codice a barre.</string>
+    <string name="remove">Rimuovi</string>
+    <string name="summary">Riepilogo</string>
+    <string name="clear">Cancella</string>
+    <string name="edit_meal">Modifica Pasto</string>
+    <string name="delete_confirm_short_text">Sei sicuro?</string>
+    <string name="ai">IA</string> <string name="add_portion">Aggiungi Porzioni</string>
+    <string name="show_more">Mostra di più</string>
+    <string name="minerals">Minerali</string>
+    <string name="vitamins">Vitamine</string>
+    <string name="aminos">Aminoacidi</string>
+    <string name="bcaa">BCAA</string>
+    <string name="essentials">Essenziali</string>
+    <string name="totals">Totali</string>
+    <string name="hydration">Idratazione</string>
+    <string name="meals">Pasti della giornata</string>
+    <string name="food">Cibo</string>
+    <string name="weight">Peso</string>
+    <string name="goals_title">Obiettivi</string>
+    <string name="goals_info_1">Imposta i tuoi obiettivi giornalieri di macronutrienti e calorie.</string>
+    <string name="goals_info_2a">Puoi chiedere all\'assistente</string>
+    <string name="goals_info_2b">di aiutarti a decidere.</string>
+    <string name="progress">Punteggio</string>
+    <string name="trends">Statistiche</string>
+    <string name="trends_subhead">Osserva andamenti generali e come i macronutrienti influenzano il tuo peso.</string>
+    <string name="analytics_section_title">Analisi - Tendenze</string>
+    <string name="update">Aggiorna</string>
+
+
+    <string name="by_macros_info">Questa funzione ti aiuta a determinare un obiettivo o limite calorico in base ai tuoi bisogni di macronutrienti. Se hai già un numero di calorie che desideri impostare come obiettivo, usa l\'altra scheda per calcolare i tuoi obiettivi.</string>
+    <string name="by_calories_info">Questa funzione ti aiuta a determinare le percentuali dei macronutrienti in base a un limite o obiettivo calorico. Se hai già una quantità di macronutrienti che desideri impostare come obiettivo, usa l\'altra scheda per calcolare i tuoi obiettivi.</string>
+    <string name="use_calories">Usa Calorie</string>
+    <string name="use_macros">Usa Macro</string>
+    <string name="calorie_goal">Obiettivo Calorico</string>
+    <string name="current_goals">Obiettivi Attuali</string>
+    <string name="macros">Macronutrienti</string>
+    <string name="scores">Punteggi</string>
+    <string name="set_goals">Imposta Obiettivi</string>
+    <string name="goals_info_3">Una volta impostati, avrai accesso ad informazioni più dettagliate.</string>
+
+    <string name="rda_info">Questi Valori Nutrizionali Giornalieri Raccomandati (RDA) si basano sui Valori Nutrizionali di Riferimento (NRV) del Codex, stabiliti da FAO/OMS per l\'uso nell\'etichettatura nutrizionale internazionale.</string>
+    <string name="macros_goals">Obiettivi Macronutrienti</string>
+    <string name="not_licensed_text">Questa copia non ha una licenza valida.\nAcquista una versione da Google Play.</string>
+    <string name="play_store">Play Store</string>
+
+</resources>
