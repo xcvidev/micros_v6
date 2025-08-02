@@ -102,7 +102,7 @@ fun Test() {
         Button(
             onClick = {
                 scope.launch {
-                    ProductApi.search(query, "en")
+
                 }
             }
         ) {
@@ -111,7 +111,6 @@ fun Test() {
         Button(
             onClick = {
                 scope.launch {
-                    ProductApi.scan("3046920029759")
                 }
             }
         ) {
