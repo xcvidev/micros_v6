@@ -1,4 +1,4 @@
-package com.xcvi.micros.data
+package com.xcvi.micros.preferences
 
 import android.content.Context
 import android.content.SharedPreferences

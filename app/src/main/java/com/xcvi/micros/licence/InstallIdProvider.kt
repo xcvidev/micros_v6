@@ -1,7 +1,7 @@
 package com.xcvi.micros.licence
 
 import java.util.UUID
-import com.xcvi.micros.data.UserPreferences
+import com.xcvi.micros.preferences.UserPreferences
 
 object InstallIdProvider {
     private const val KEY = "install_id"
