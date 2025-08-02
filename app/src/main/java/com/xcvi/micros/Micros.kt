@@ -13,10 +13,24 @@ import com.xcvi.micros.domain.respostory.FoodRepository
 import com.xcvi.micros.domain.respostory.MessageRepository
 import com.xcvi.micros.domain.respostory.PortionRepository
 import com.xcvi.micros.domain.respostory.WeightRepository
+import com.xcvi.micros.domain.usecases.DashboardUseCase
+import com.xcvi.micros.domain.usecases.DetailsUseCases
+import com.xcvi.micros.domain.usecases.GoalsUseCases
+import com.xcvi.micros.domain.usecases.MealUseCases
 import com.xcvi.micros.domain.usecases.MessageUseCases
+import com.xcvi.micros.domain.usecases.ScanUseCases
+import com.xcvi.micros.domain.usecases.SearchUseCases
+import com.xcvi.micros.domain.usecases.StatsUseCases
 import com.xcvi.micros.domain.usecases.WeightUseCases
 import com.xcvi.micros.preferences.UserPreferences
+import com.xcvi.micros.ui.screens.dashboard.DashboardViewModel
+import com.xcvi.micros.ui.screens.details.DetailsViewModel
+import com.xcvi.micros.ui.screens.goals.GoalsViewModel
+import com.xcvi.micros.ui.screens.meal.MealViewModel
 import com.xcvi.micros.ui.screens.message.MessageViewModel
+import com.xcvi.micros.ui.screens.scan.ScanViewModel
+import com.xcvi.micros.ui.screens.search.SearchViewModel
+import com.xcvi.micros.ui.screens.stats.StatsViewModel
 import com.xcvi.micros.ui.screens.weight.WeightViewModel
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.android.Android
@@ -55,12 +69,26 @@ class Micros: Application() {
 
 
     private val viewModelModule = module {
+        viewModel { DashboardViewModel(get()) }
+        viewModel { StatsViewModel(get()) }
+        viewModel { GoalsViewModel(get()) }
+        viewModel { MealViewModel(get()) }
+        viewModel { SearchViewModel(get()) }
+        viewModel { ScanViewModel(get()) }
+        viewModel { DetailsViewModel(get(), get()) }
         viewModel { MessageViewModel(get()) }
         viewModel { WeightViewModel(get()) }
     }
     private val useCasesModule = module {
         factory { MessageUseCases(get()) }
         factory { WeightUseCases(get()) }
+        factory { DashboardUseCase(get()) }
+        factory { DetailsUseCases(get(), get(), get()) }
+        factory { GoalsUseCases(get()) }
+        factory { MealUseCases(get()) }
+        factory { ScanUseCases(get()) }
+        factory { SearchUseCases(get(), get()) }
+        factory { StatsUseCases(get(), get()) }
     }
     private val repositoryModule = module {
         single<MessageRepository>{ MessageRepositoryImplementation(get(),get(),get()) }

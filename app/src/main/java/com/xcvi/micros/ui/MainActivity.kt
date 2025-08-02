@@ -32,6 +32,7 @@ import com.xcvi.micros.data.source.remote.ProductApi
 import com.xcvi.micros.data.source.remote.dto.SearchProductDTO
 import com.xcvi.micros.licence.*
 import com.xcvi.micros.licence.PlayLicenseVerifier
+import com.xcvi.micros.ui.navigation.AppContent
 import com.xcvi.micros.ui.screens.message.MessageScreen
 import com.xcvi.micros.ui.screens.message.MessageViewModel
 import com.xcvi.micros.ui.screens.weight.WeightScreen
@@ -69,11 +70,7 @@ class MainActivity : ComponentActivity() {
                         AppContent()
                     }
                     */
-                    val viewModel: WeightViewModel = koinViewModel()
-                    WeightScreen(
-                        state = viewModel.state,
-                        onEvent = viewModel::onEvent
-                    )
+                    AppContent()
                 }
             }
         }
