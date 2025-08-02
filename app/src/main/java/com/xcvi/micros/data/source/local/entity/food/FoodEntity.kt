@@ -9,10 +9,10 @@ data class FoodEntity(
     val barcode: String,
 
     val name: String,
-    val ingredients: String,
 
     val isFavorite: Boolean,
     val isRecent: Boolean,
+    val isAI: Boolean,
 
     val tag: String,
     val tagwordcount: Int,

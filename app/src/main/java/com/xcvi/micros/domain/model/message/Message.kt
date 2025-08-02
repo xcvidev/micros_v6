@@ -1,8 +1,8 @@
-package com.xcvi.micros.domain.model
+package com.xcvi.micros.domain.model.message
 
 data class Message(
     val timestamp: Long,
     val text: String?,
     val fromUser: Boolean,
-    val suggestions: List<Suggestion> = emptyList()
+    val foodItems: List<FoodItem> = emptyList()
 )

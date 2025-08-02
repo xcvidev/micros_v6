@@ -2,7 +2,7 @@ package com.xcvi.micros.data.source.local.entity.message.relations
 
 import androidx.room.Embedded
 import androidx.room.Relation
-import com.xcvi.micros.data.source.local.entity.message.FoodSuggestionEntity
+import com.xcvi.micros.data.source.local.entity.message.FoodItemEntity
 import com.xcvi.micros.data.source.local.entity.message.MessageEntity
 
 data class MessageWithFoods(
@@ -11,5 +11,5 @@ data class MessageWithFoods(
         parentColumn = "timestamp",
         entityColumn = "messageTimestamp"
     )
-    val suggestions: List<FoodSuggestionEntity>
+    val suggestions: List<FoodItemEntity>
 )

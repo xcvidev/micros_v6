@@ -1,6 +1,6 @@
 package com.xcvi.micros.data.source.remote
 
-import com.xcvi.micros.domain.model.Message
+import com.xcvi.micros.domain.model.message.Message
 import io.ktor.utils.io.core.Input
 import org.intellij.lang.annotations.Language
 

@@ -2,6 +2,7 @@ package com.xcvi.micros.ui
 
 import android.content.Intent
 import android.os.Bundle
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -31,8 +32,13 @@ import com.xcvi.micros.data.source.remote.ProductApi
 import com.xcvi.micros.data.source.remote.dto.SearchProductDTO
 import com.xcvi.micros.licence.*
 import com.xcvi.micros.licence.PlayLicenseVerifier
+import com.xcvi.micros.ui.screens.message.MessageScreen
+import com.xcvi.micros.ui.screens.message.MessageViewModel
+import com.xcvi.micros.ui.screens.weight.WeightScreen
+import com.xcvi.micros.ui.screens.weight.WeightViewModel
 import com.xcvi.micros.ui.theme.MicrosAITheme
 import kotlinx.coroutines.launch
+import org.koin.androidx.compose.koinViewModel
 
 class MainActivity : ComponentActivity() {
 
@@ -63,7 +69,11 @@ class MainActivity : ComponentActivity() {
                         AppContent()
                     }
                     */
-                    Test()
+                    val viewModel: WeightViewModel = koinViewModel()
+                    WeightScreen(
+                        state = viewModel.state,
+                        onEvent = viewModel::onEvent
+                    )
                 }
             }
         }
@@ -83,40 +93,6 @@ class MainActivity : ComponentActivity() {
     override fun onDestroy() {
         if (::verifier.isInitialized) verifier.destroy()
         super.onDestroy()
-    }
-}
-
-@Composable
-fun Test() {
-    Column(
-        modifier = Modifier.fillMaxSize().padding(24.dp)
-    ) {
-        val scope = rememberCoroutineScope()
-        var query by remember { mutableStateOf("") }
-
-        TextField(
-            value = query,
-            onValueChange = { query = it}
-        )
-
-        Button(
-            onClick = {
-                scope.launch {
-
-                }
-            }
-        ) {
-            Text("Search")
-        }
-        Button(
-            onClick = {
-                scope.launch {
-                }
-            }
-        ) {
-            Text("Scan")
-        }
-
     }
 }
 

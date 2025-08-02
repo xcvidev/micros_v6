@@ -2,10 +2,22 @@ package com.xcvi.micros
 
 import android.app.Application
 import androidx.room.Room
+import com.xcvi.micros.data.repository.FoodRepositoryImplementation
+import com.xcvi.micros.data.repository.MessageRepositoryImplementation
+import com.xcvi.micros.data.repository.PortionRepositoryImplementation
+import com.xcvi.micros.data.repository.WeightRepositoryImplementation
 import com.xcvi.micros.data.source.local.MicrosDatabase
 import com.xcvi.micros.data.source.remote.AiApi
 import com.xcvi.micros.data.source.remote.ProductApi
+import com.xcvi.micros.domain.respostory.FoodRepository
+import com.xcvi.micros.domain.respostory.MessageRepository
+import com.xcvi.micros.domain.respostory.PortionRepository
+import com.xcvi.micros.domain.respostory.WeightRepository
+import com.xcvi.micros.domain.usecases.MessageUseCases
+import com.xcvi.micros.domain.usecases.WeightUseCases
 import com.xcvi.micros.preferences.UserPreferences
+import com.xcvi.micros.ui.screens.message.MessageViewModel
+import com.xcvi.micros.ui.screens.weight.WeightViewModel
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.android.Android
 import io.ktor.client.features.HttpTimeout
@@ -17,6 +29,7 @@ import io.ktor.http.ContentType
 import io.ktor.http.contentType
 import kotlinx.serialization.json.Json
 import org.koin.android.ext.koin.androidContext
+import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.core.context.GlobalContext.startKoin
 import org.koin.core.context.loadKoinModules
 import org.koin.dsl.module
@@ -42,13 +55,18 @@ class Micros: Application() {
 
 
     private val viewModelModule = module {
-
+        viewModel { MessageViewModel(get()) }
+        viewModel { WeightViewModel(get()) }
     }
     private val useCasesModule = module {
-
+        factory { MessageUseCases(get()) }
+        factory { WeightUseCases(get()) }
     }
     private val repositoryModule = module {
-
+        single<MessageRepository>{ MessageRepositoryImplementation(get(),get(),get()) }
+        single<FoodRepository>{ FoodRepositoryImplementation(get(),get(),get()) }
+        single<WeightRepository>{ WeightRepositoryImplementation(get()) }
+        single<PortionRepository>{ PortionRepositoryImplementation(get()) }
     }
     private val dbModule = module {
         single {
@@ -61,7 +79,7 @@ class Micros: Application() {
         single { get<MicrosDatabase>().foodDao() }
         single { get<MicrosDatabase>().portionDao() }
         single { get<MicrosDatabase>().weightDao() }
-        single { get<MicrosDatabase>().aiDao() }
+        single { get<MicrosDatabase>().messageDao() }
     }
 
     private val apiModule = module {

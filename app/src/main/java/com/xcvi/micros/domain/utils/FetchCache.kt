@@ -50,7 +50,6 @@ suspend fun <FallbackRequest, ApiResult, DbResult> fetchAndCache(
             val fallbackResult = try {
                 fallbackDbCall(fallbackRequest)
             } catch (e: Exception) {
-                println("mylog: Fallback DB exception -> ${e.message}")
                 null
             }
 

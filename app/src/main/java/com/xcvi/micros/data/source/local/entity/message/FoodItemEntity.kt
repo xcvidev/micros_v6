@@ -4,15 +4,13 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 
 @Entity
-data class FoodSuggestionEntity(
+data class FoodItemEntity(
     @PrimaryKey
     val id: String,
 
-    val messageTimestamp: Long, //FK
+    val messageTimestamp: Long,
 
     val name: String,
-    val barcode: String,
-
     val amountInGrams: Double,
 
     val calories: Double,
@@ -21,10 +19,10 @@ data class FoodSuggestionEntity(
     val carbohydrates: Double,
     val fats: Double,
 
-    val saturatedFats: Double = 0.0,
-    val fiber: Double = 0.0,
-    val sugars: Double = 0.0,
+    val saturatedFats: Double,
+    val fiber: Double,
+    val sugars: Double,
 
-    val sodium: Double = 0.0,
-    val potassium: Double = 0.0,
+    val sodium: Double,
+    val potassium: Double,
 )
