@@ -22,11 +22,11 @@ fun Nutrients.toLabeledPairs(context: Context): List<Pair<String, String>> {
 fun Minerals.toLabeledPairs(context: Context): List<Pair<String, String>> {
     val minerals = this
     return listOf(
+        context.getString(R.string.sodium) to "${minerals.sodium.roundDecimals()} mg",
         context.getString(R.string.potassium) to "${minerals.potassium.roundDecimals()} mg",
         context.getString(R.string.calcium) to "${minerals.calcium.roundDecimals()} mg",
         context.getString(R.string.magnesium) to "${minerals.magnesium.roundDecimals()} mg",
         context.getString(R.string.iron) to "${minerals.iron.roundDecimals()} mg",
-        context.getString(R.string.sodium) to "${minerals.sodium.roundDecimals()} mg",
         "" to ""
     )
 }

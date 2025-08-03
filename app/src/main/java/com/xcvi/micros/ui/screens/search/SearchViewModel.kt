@@ -17,7 +17,9 @@ data class SearchState(
     val query: String = "",
     val recents: List<Food> = emptyList(),
     val searchResults: List<Food> = emptyList(),
-    val selected: List<Portion> = emptyList()
+    val selected: List<Portion> = emptyList(),
+    val isEnhancing: Boolean = false,
+    val selectedPortion: Portion? = null,
 )
 
 class SearchViewModel(
@@ -26,6 +28,47 @@ class SearchViewModel(
 ) : BaseViewModel<SearchState>(SearchState()) {
 
     val language = context.getString(R.string.app_language)
+
+    fun showDetails(food: Food, date: Int, meal: Int) {
+        val portion = state.selected.find {
+            it.food.barcode == food.barcode
+        } ?: Portion(
+            food = food,
+            amount = 100,
+            date = date,
+            meal = meal
+        )
+        updateData { copy(selectedPortion = portion) }
+    }
+
+    fun enhance(description: String) {
+        viewModelScope.launch {
+            val current = state.selectedPortion ?: return@launch
+            updateData { copy(isEnhancing = true) }
+            val res = useCases.enhance(current.food.barcode, description)
+            when (res) {
+                is Response.Error -> {}
+                is Response.Success -> {
+                    val portion = res.data.scaleToPortion(
+                        current.amount,
+                        date = current.date,
+                        meal = current.meal
+                    )
+                    updateData { copy(selectedPortion = portion) }
+                    replace(portion)
+
+                }
+            }
+            updateData { copy(isEnhancing = false) }
+        }
+    }
+
+    fun scale(newAmount: Int){
+        val current = state.selectedPortion ?: return
+        updateData {
+            copy(selectedPortion = current.scale(newAmount))
+        }
+    }
 
     fun eat(onSuccess: () -> Unit) {
         viewModelScope.launch {
@@ -44,14 +87,20 @@ class SearchViewModel(
         }
     }
 
+    fun replace(portion: Portion) {
+        updateData {
+            val updated = selected.map {
+                if (it.food.barcode == portion.food.barcode) portion else it
+            }
+            val updatedSearch = searchResults.map {
+                if (it.barcode == portion.food.barcode) portion.food else it
+            }
+            copy(selected = updated, searchResults = updatedSearch)
+        }
+    }
 
-    fun select(food: Food, date: Int, mealNumber: Int, amount: Int) {
-        val portion = Portion(
-            amount = amount,
-            date = date,
-            meal = mealNumber,
-            food = food
-        ).scale(amount)
+
+    fun select(portion: Portion) {
         updateData {
             copy(selected = selected + portion)
         }

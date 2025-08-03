@@ -12,7 +12,9 @@ class SearchUseCases(
     private val foodRepository: FoodRepository,
     private val portionRepository: PortionRepository,
 ) {
-
+    suspend fun enhance(barcode: String, description: String): Response<Food> {
+        return foodRepository.enhance(barcode, description)
+    }
 
     suspend fun eat(
         portions: List<Portion>

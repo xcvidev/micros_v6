@@ -30,10 +30,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.xcvi.micros.R
-import com.xcvi.micros.domain.model.food.Food
 import com.xcvi.micros.domain.model.food.Portion
 import com.xcvi.micros.ui.core.comp.AutomaticSearchBar
-import com.xcvi.micros.ui.screens.details.DetailsSheet
+import com.xcvi.micros.ui.core.DetailsSheet
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
 
@@ -54,28 +53,32 @@ fun SearchScreen(
     val sheetState = rememberModalBottomSheetState()
     var showSheet by remember { mutableStateOf(false) }
     val scope = rememberCoroutineScope()
-    var selectedFood: Food? by remember { mutableStateOf(null) }
 
     if (showSheet) {
-        selectedFood?.let {
-            val portion = Portion(amount = 100, date = date, meal = meal, food = it)
+        viewModel.state.selectedPortion?.let { portion ->
             DetailsSheet(
                 sheetState = sheetState,
-                scope = scope,
                 portion = portion,
                 onDismiss = {
-                    showSheet = false
                     scope.launch {
-                        sheetState.hide()
-                    }
-                },
-                onConfirm = { amount ->
-                    scope.launch {
-                        viewModel.select(it, date=date, meal, amount = amount)
                         showSheet = false
                         sheetState.hide()
                     }
-                }
+                },
+                onConfirm = {
+                    scope.launch {
+                        viewModel.select(portion)
+                        showSheet = false
+                        sheetState.hide()
+                    }
+                },
+                onEnhance = {input ->
+                    viewModel.enhance(input)
+                },
+                onScale = { newAmount ->
+                    viewModel.scale(newAmount)
+                },
+                isEnhancing = viewModel.state.isEnhancing
             )
         }
     }
@@ -129,7 +132,7 @@ fun SearchScreen(
                 val selected = viewModel.state.selected.any { s -> s.food.barcode == it.barcode }
                 Card(
                     onClick = {
-                        selectedFood = it
+                        viewModel.showDetails(it, date = date, meal = meal)
                         showSheet = true
                     }
                 ) {
@@ -143,12 +146,13 @@ fun SearchScreen(
                             Button(
                                 enabled = !selected,
                                 onClick = {
-                                    viewModel.select(
-                                        food = it,
+                                    val portion = Portion(
+                                        amount = 100,
                                         date = date,
-                                        mealNumber = meal,
-                                        amount = 100
+                                        meal = meal,
+                                        food = it
                                     )
+                                    viewModel.select(portion)
                                 }
                             ) {
                                 Text(text = stringResource(id = R.string.add))

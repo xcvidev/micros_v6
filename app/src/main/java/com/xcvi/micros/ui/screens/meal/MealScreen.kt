@@ -56,8 +56,6 @@ import com.xcvi.micros.R
 import com.xcvi.micros.domain.model.food.Portion
 import com.xcvi.micros.ui.core.comp.OnNavigation
 import com.xcvi.micros.ui.core.comp.rememberShakeOffset
-import com.xcvi.micros.ui.screens.details.DetailsSheet
-import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -162,6 +160,33 @@ fun MealScreen(
                         modifier = Modifier.padding(start = 12.dp, end = 12.dp, top = 12.dp)
                     )
                 }
+                item{
+                    Column(
+                        modifier = Modifier.padding(horizontal = 16.dp),
+                        verticalArrangement = Arrangement.spacedBy(4.dp)
+                    ) {
+                        Button(
+                            onClick = { onGotoAdd() },
+                            modifier = modifier.fillMaxWidth()
+                        ) {
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.spacedBy(8.dp)
+                            ) {
+                                Text(
+                                    stringResource(R.string.food_add),
+                                    color = MaterialTheme.colorScheme.surface
+                                )
+                                Icon(
+                                    modifier = Modifier.size(20.dp),
+                                    imageVector = Icons.Default.Search,
+                                    contentDescription = "",
+                                    tint = MaterialTheme.colorScheme.surface
+                                )
+                            }
+                        }
+                    }
+                }
                 item {
                     Column(
                         modifier = Modifier.padding(horizontal = 12.dp),
@@ -201,31 +226,7 @@ fun MealScreen(
                 }
                 if (state.portions.isNotEmpty()) {
                     item {
-                        Column(
-                            modifier = Modifier.padding(horizontal = 16.dp),
-                            verticalArrangement = Arrangement.spacedBy(4.dp)
-                        ) {
-                            Button(
-                                onClick = { onGotoAdd() },
-                                modifier = modifier.fillMaxWidth()
-                            ) {
-                                Row(
-                                    verticalAlignment = Alignment.CenterVertically,
-                                    horizontalArrangement = Arrangement.spacedBy(8.dp)
-                                ) {
-                                    Text(
-                                        stringResource(R.string.food_add),
-                                        color = MaterialTheme.colorScheme.surface
-                                    )
-                                    Icon(
-                                        modifier = Modifier.size(20.dp),
-                                        imageVector = Icons.Default.Search,
-                                        contentDescription = "",
-                                        tint = MaterialTheme.colorScheme.surface
-                                    )
-                                }
-                            }
-                        }
+
                     }
                     item { Spacer(modifier = Modifier.height(24.dp)) }
                 }

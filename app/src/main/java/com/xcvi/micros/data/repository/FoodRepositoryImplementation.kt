@@ -51,7 +51,8 @@ class FoodRepositoryImplementation(
         description: String
     ): Response<Food> {
         val food = foodDao.get(foodBarcode) ?: return Response.Error(Failure.EmptyResult)
-        val newBarcode = "AI_${food.barcode}"
+        //val newBarcode = "AI_${food.barcode}"
+        val newBarcode = food.barcode
         return fetchAndCache(
             apiCall = {
                 aiApi.enhance(
