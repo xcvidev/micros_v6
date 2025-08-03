@@ -476,7 +476,7 @@ fun NumberPicker(
                 ),
                 maxLines = 1,
                 keyboardOptions = KeyboardOptions.Default.copy(
-                    keyboardType = KeyboardType.Decimal,
+                    keyboardType = KeyboardType.NumberPassword,
                     imeAction = ImeAction.Done
                 ),
                 keyboardActions = KeyboardActions(

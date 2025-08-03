@@ -76,15 +76,21 @@ data object FoodDestination {
                     state = viewModel.state,
                     onEvent = viewModel::onEvent,
                     onBack = { navController.popBackStack() },
-                    onGotoAdd = {},
-                    onGotoDetails = {}
+                    onGotoAdd = {
+                        navController.navigate(
+                            SearchDestination(
+                                date = args.date,
+                                mealNumber = args.number,
+                                mealLabel = args.label
+                            )
+                        )
+                    },
+                    onGotoDetails = { TODO() }
                 )
-
             }
 
             slidingComposable<SearchDestination> {
                 val args = it.toRoute<SearchDestination>()
-
                 SearchScreen(
                     date = args.date,
                     meal = args.mealNumber,
@@ -96,7 +102,6 @@ data object FoodDestination {
             }
             slidingComposable<ScanDestination> {
                 val args = it.toRoute<ScanDestination>()
-
             }
 
 

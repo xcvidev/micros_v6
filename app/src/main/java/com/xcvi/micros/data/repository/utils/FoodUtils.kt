@@ -18,14 +18,12 @@ fun SearchProductDTO.toEntity(): FoodEntity {
     val brands = this.brands.joinToString(", ")
     val (tag, count) = getTag(this.name, brands)
     val displayName = getDisplayName(this.name, brands)
-    val minerals = Minerals.empty().copy(
-        potassium = this.nutriments.potassium_100g * 1000,
-        sodium = if(this.nutriments.sodium_100g <= 0.0) {
-            this.nutriments.salt_100g * 400
-        } else {
-            this.nutriments.sodium_100g * 1000
-        }
-    )
+    val sodium = if (this.nutriments.sodium_100g <= 0.0) {
+        (this.nutriments.salt_100g * 400)
+    } else {
+        (this.nutriments.sodium_100g * 1000)
+    }
+    val minerals = Minerals.empty().copy(sodium = sodium.takeIf { it > 0.0 } ?: 0.0)
     val vitamins = Vitamins.empty()
     val aminoAcids = AminoAcids.empty()
     return FoodEntity(
@@ -36,18 +34,19 @@ fun SearchProductDTO.toEntity(): FoodEntity {
         isAI = false,
         tag = tag,
         tagwordcount = count,
-        calories = this.nutriments.kcal,
-        protein = this.nutriments.proteins_100g,
-        carbohydrates = this.nutriments.carbohydrates_100g,
-        fats = this.nutriments.fat_100g,
-        saturatedFats = this.nutriments.saturated_fat_100g,
-        fiber = this.nutriments.fiber_100g,
-        sugars = this.nutriments.sugars_100g,
+        calories = this.nutriments.kcal.takeIf { it > 0.0 } ?: 0.0,
+        protein = this.nutriments.proteins_100g.takeIf { it > 0.0 } ?: 0.0,
+        carbohydrates = this.nutriments.carbohydrates_100g.takeIf { it > 0.0 } ?: 0.0,
+        fats = this.nutriments.fat_100g.takeIf { it > 0.0 } ?: 0.0,
+        saturatedFats = this.nutriments.saturated_fat_100g.takeIf { it > 0.0 } ?: 0.0,
+        fiber = this.nutriments.fiber_100g.takeIf { it > 0.0 } ?: 0.0,
+        sugars = this.nutriments.sugars_100g.takeIf { it > 0.0 } ?: 0.0,
+        potassium = minerals.potassium.takeIf { it > 0.0 } ?: 0.0,
+        sodium = minerals.sodium.takeIf { it > 0.0 } ?: 0.0,
+
         calcium = minerals.calcium,
         iron = minerals.iron,
         magnesium = minerals.magnesium,
-        potassium = minerals.potassium,
-        sodium = minerals.sodium,
         zinc = minerals.zinc,
         fluoride = minerals.fluoride,
         iodine = minerals.iodine,
@@ -119,65 +118,6 @@ fun EnhancedDTO.mergeToFood(food: FoodEntity, newBarcode: String): FoodEntity {
         threonine = aminoAcids.threonine * 0.85,
         tryptophan = aminoAcids.tryptophan * 0.85,
         valine = aminoAcids.valine * 0.85
-    )
-}
-
-fun FoodEntity.toPortion(date: Int, mealNumber: Int, amount: Int = 100): Portion {
-    return Portion(
-        barcode = barcode,
-        name = name,
-        date = date,
-        meal = mealNumber,
-        isFavorite = isFavorite,
-        amount = amount,
-        nutrients = Nutrients(
-            calories = calories.roundToInt(),
-            protein = protein,
-            carbohydrates = carbohydrates,
-            fats = fats,
-            saturatedFats = saturatedFats,
-            fiber = fiber,
-            sugars = sugars
-        ),
-        minerals = Minerals(
-            calcium = calcium,
-            iron = iron,
-            magnesium = magnesium,
-            potassium = potassium,
-            sodium = sodium,
-            zinc = zinc,
-            fluoride = fluoride,
-            iodine = iodine,
-            phosphorus = phosphorus,
-            manganese = manganese,
-            selenium = selenium,
-        ),
-        vitamins = Vitamins(
-            vitaminA = vitaminA,
-            vitaminB1 = vitaminB1,
-            vitaminB2 = vitaminB2,
-            vitaminB3 = vitaminB3,
-            vitaminB4 = vitaminB4,
-            vitaminB5 = vitaminB5,
-            vitaminB6 = vitaminB6,
-            vitaminB9 = vitaminB9,
-            vitaminB12 = vitaminB12,
-            vitaminC = vitaminC,
-            vitaminD = vitaminD,
-            vitaminE = vitaminE,
-            vitaminK = vitaminK
-        ),
-        aminoAcids = AminoAcids(
-            histidine = histidine,
-            isoleucine = isoleucine,
-            leucine = leucine,
-            lysine = lysine,
-            methionine = methionine,
-            phenylalanine = phenylalanine,
-            threonine = threonine,
-            tryptophan = tryptophan,
-            valine = valine
-        )
     )
 }
 

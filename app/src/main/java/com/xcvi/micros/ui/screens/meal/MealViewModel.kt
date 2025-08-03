@@ -34,6 +34,11 @@ sealed interface MealEvent {
         val onDelete: () -> Unit
     ) : MealEvent
 
+    data class SavePortion(
+        val portion: Portion,
+        val amount: Int,
+    ) : MealEvent
+
     data object DeletePortion : MealEvent
     data class SelectPortion(val portion: Portion) : MealEvent
 }
@@ -53,6 +58,19 @@ class MealViewModel(
                 event.portion,
                 event.isIncrement,
                 event.onDelete
+            )
+
+            is MealEvent.SavePortion -> savePortion(event.portion, event.amount)
+        }
+    }
+
+    private fun savePortion(portion: Portion, amount: Int) {
+        viewModelScope.launch {
+            useCases.updatePortion(
+                newAmount = amount,
+                date = portion.date,
+                meal = portion.meal,
+                barcode = portion.food.barcode
             )
         }
     }
@@ -96,7 +114,7 @@ class MealViewModel(
                 newAmount = newAmount,
                 date = portion.date,
                 meal = portion.meal,
-                barcode = portion.barcode
+                barcode = portion.food.barcode
             )
         }
     }
@@ -108,7 +126,7 @@ class MealViewModel(
             useCases.deletePortion(
                 date = portion.date,
                 meal = portion.meal,
-                barcode = portion.barcode
+                barcode = portion.food.barcode
             )
             updateData { copy(deletePortion = null) }
         }

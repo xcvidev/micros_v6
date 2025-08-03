@@ -112,7 +112,7 @@ fun MealCardFull(
                 ) {
                     meal.portions.forEach {
                         Text(
-                            text = it.name,
+                            text = it.food.name,
                             style = MaterialTheme.typography.bodyMedium,
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
                             maxLines = 1,

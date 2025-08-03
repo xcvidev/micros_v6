@@ -110,19 +110,15 @@ class PortionRepositoryImplementation(
     /**
      * Save
      */
-    override suspend fun savePortions(
-        date: Int,
-        meal: Int,
-        barcodes: List<String>,
-    ): Response<Unit> {
+    override suspend fun savePortions(portions: List<Portion>, ): Response<Unit> {
         return try {
             withContext(Dispatchers.IO) {
-                val portions = barcodes.map { barcode ->
+                val portions = portions.map { portion ->
                     PortionEntity(
-                        barcode = barcode,
-                        date = date,
-                        meal = meal,
-                        amount = 100.0
+                        barcode = portion.food.barcode,
+                        date = portion.date,
+                        meal = portion.meal,
+                        amount = portion.amount.toDouble()
                     )
                 }
                 portionDao.upsert(portions)

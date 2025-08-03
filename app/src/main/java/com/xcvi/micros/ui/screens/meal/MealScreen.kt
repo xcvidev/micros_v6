@@ -36,10 +36,12 @@ import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -54,6 +56,8 @@ import com.xcvi.micros.R
 import com.xcvi.micros.domain.model.food.Portion
 import com.xcvi.micros.ui.core.comp.OnNavigation
 import com.xcvi.micros.ui.core.comp.rememberShakeOffset
+import com.xcvi.micros.ui.screens.details.DetailsSheet
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -72,15 +76,39 @@ fun MealScreen(
     OnNavigation {
         onEvent(MealEvent.GetMeal(date = date, number = number))
     }
-    val inputDialogTitle: String = stringResource(R.string.save)
-    val inputDialogPlaceholder: String = stringResource(R.string.meal_enter_name)
+
+    val sheetState = rememberModalBottomSheetState()
+    var showSheet by remember { mutableStateOf(false) }
+    val scope = rememberCoroutineScope()
+    var selectedPortion: Portion? by remember { mutableStateOf(null) }
+
+    if (showSheet) {
+        selectedPortion?.let { portion ->
+            /*
+            DetailsSheet(
+                sheetState = sheetState,
+                portion = portion,
+                scope = scope,
+                onDismiss = { showSheet = false },
+                onConfirm = { amount ->
+                    scope.launch {
+                        onEvent(MealEvent.SavePortion(portion, amount))
+                        sheetState.hide()
+                        showSheet = false
+                    }
+                },
+                onEnhance = {}
+            )
+
+             */
+        }
+    }
 
     var shakeTrigger by remember { mutableStateOf(false) }
     val shakeOffset = rememberShakeOffset(shakeTrigger) {
         shakeTrigger = false // reset after animation
     }
     var showDeleteDialog by remember { mutableStateOf(false) }
-    var showInputDialog by remember { mutableStateOf(false) }
     val haptics = LocalHapticFeedback.current
 
 
@@ -157,7 +185,10 @@ fun MealScreen(
                                         ) { showDeleteDialog = true }
                                     )
                                 },
-                                onClick = { onGotoDetails(portion) },
+                                onClick = {
+                                    selectedPortion = portion
+                                    showSheet = true
+                                },
                                 onLongClick = {
                                     haptics.performHapticFeedback(HapticFeedbackType.TextHandleMove)
                                     onEvent(MealEvent.SelectPortion(portion))
@@ -194,7 +225,6 @@ fun MealScreen(
                                     )
                                 }
                             }
-                            //ExpandableMicrosSection(meal = meal)
                         }
                     }
                     item { Spacer(modifier = Modifier.height(24.dp)) }
@@ -203,17 +233,6 @@ fun MealScreen(
 
 
         }
-    }
-    if (showInputDialog) {
-        InputDialog(
-            title = inputDialogTitle,
-            placeholder = inputDialogPlaceholder,
-            onDismiss = { showInputDialog = false },
-            onConfirm = { name ->
-
-            },
-            offset = shakeOffset
-        )
     }
 
     if (showDeleteDialog) {
@@ -256,7 +275,7 @@ fun ItemCard(
                 Spacer(modifier = Modifier.height(16.dp))
                 Text(
                     modifier = Modifier.padding(horizontal = 16.dp),
-                    text = portion.name,
+                    text = portion.food.name,
                     fontSize = MaterialTheme.typography.bodyLarge.fontSize,
                     fontWeight = MaterialTheme.typography.bodyLarge.fontWeight,
                     style = MaterialTheme.typography.bodyLarge,
@@ -264,7 +283,7 @@ fun ItemCard(
                 Spacer(modifier = Modifier.height(4.dp))
                 Text(
                     modifier = Modifier.padding(horizontal = 16.dp),
-                    text = "${portion.nutrients.calories} kcal • ${portion.amount} g",
+                    text = "${portion.food.nutrients.calories} kcal • ${portion.amount} g",
                     fontSize = MaterialTheme.typography.bodyMedium.fontSize,
                     fontWeight = MaterialTheme.typography.bodyMedium.fontWeight,
                     style = MaterialTheme.typography.bodyMedium,

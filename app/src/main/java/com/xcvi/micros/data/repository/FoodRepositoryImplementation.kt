@@ -5,7 +5,6 @@ import androidx.room.Query
 import com.xcvi.micros.data.repository.utils.mergeToFood
 import com.xcvi.micros.data.repository.utils.toEntity
 import com.xcvi.micros.data.repository.utils.toModel
-import com.xcvi.micros.data.repository.utils.toPortion
 import com.xcvi.micros.data.source.local.food.FoodDao
 import com.xcvi.micros.data.source.remote.AiApi
 import com.xcvi.micros.data.source.remote.ProductApi

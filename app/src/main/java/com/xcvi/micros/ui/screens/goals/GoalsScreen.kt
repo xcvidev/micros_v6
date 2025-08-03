@@ -368,13 +368,12 @@ fun GoalsScreen(
                 }
             }
 
-            val goals = when (state) {
-                is GoalsState.Goals -> state.currentGoals.goal
-                else -> Macros()
-            }
             if (showSheet) {
                 EditGoalsSheet(
-                    goals = goals,
+                    goals = when (state) {
+                        is GoalsState.Goals -> state.currentGoals.goal
+                        else -> Macros()
+                    },
                     height = height.times(0.6f),
                     onDismiss = { showSheet = false },
                     sheetState = sheetState,

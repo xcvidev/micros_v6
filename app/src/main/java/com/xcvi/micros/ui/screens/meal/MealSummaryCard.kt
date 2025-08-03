@@ -38,6 +38,7 @@ import com.xcvi.micros.domain.model.food.Meal
 import com.xcvi.micros.domain.model.food.Minerals
 import com.xcvi.micros.domain.model.food.Nutrients
 import com.xcvi.micros.domain.model.food.Vitamins
+import com.xcvi.micros.domain.utils.roundDecimals
 import com.xcvi.micros.ui.core.utils.toLabeledPairs
 import com.xcvi.micros.ui.theme.proteinLight
 import kotlinx.coroutines.flow.Flow
@@ -51,9 +52,9 @@ fun MealSummaryCard(
     modifier: Modifier = Modifier
 ) {
     val headline = "${nutrients.calories} kcal"
-    val protein = "${stringResource(R.string.protein)}: ${nutrients.protein} g"
-    val carbs = "${stringResource(R.string.carbs)}: ${nutrients.carbohydrates} g"
-    val fats = "${stringResource(R.string.fats)}: ${nutrients.fats} g"
+    val protein = "${stringResource(R.string.protein)}: ${nutrients.protein.roundDecimals()} g"
+    val carbs = "${stringResource(R.string.carbs)}: ${nutrients.carbohydrates.roundDecimals()} g"
+    val fats = "${stringResource(R.string.fats)}: ${nutrients.fats.roundDecimals()} g"
     val subhead = "$protein, $carbs, $fats"
 
     var expanded by remember { mutableStateOf(false) }
@@ -116,9 +117,9 @@ fun MealSummaryCard(
                     .padding(start = 14.dp, end = 14.dp, bottom = 16.dp),
             ) {
                 fun alpha(isEmpty: Boolean): Float = if (isEmpty) {
-                    0.3f
+                    0.4f
                 } else {
-                    0.8f
+                    1f
                 }
 
                 labels.forEachIndexed { index: Int, value: Pair<String, String> ->
@@ -128,13 +129,21 @@ fun MealSummaryCard(
                             Text(
                                 text = data.first,
                                 style = MaterialTheme.typography.bodyMedium,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha(data.second.startsWith("0")))
+                                color = MaterialTheme.colorScheme.onSurfaceVariant.copy(
+                                    alpha(
+                                        data.second.startsWith("0.0") || data.second.startsWith("0,0")
+                                    )
+                                )
                             )
                             Spacer(modifier = Modifier.weight(1f))
                             Text(
                                 text = data.second,
                                 style = MaterialTheme.typography.bodyMedium,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha(data.second.startsWith("0")))
+                                color = MaterialTheme.colorScheme.onSurfaceVariant.copy(
+                                    alpha(
+                                        data.second.startsWith("0.0") || data.second.startsWith("0,0")
+                                    )
+                                )
                             )
                         }
                         if (index < labels.size - 1) {

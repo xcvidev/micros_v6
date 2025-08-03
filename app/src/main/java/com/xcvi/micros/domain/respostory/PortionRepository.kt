@@ -24,9 +24,10 @@ interface PortionRepository {
     fun getPortionsOfDate(date: Int): Flow<List<Portion>>
 
     suspend fun saveGoals(protein: Int, carbs: Int, fats: Int): Response<Unit>
+
     suspend fun savePortion(amount: Int, date: Int, meal: Int, barcode: String): Response<Unit>
 
-    suspend fun savePortions(date: Int, meal: Int, barcodes: List<String>): Response<Unit>
+    suspend fun savePortions(portions: List<Portion>): Response<Unit>
 
     suspend fun copyPortions(list: List<Portion>, newDate: Int, newMeal: Int) : Response<Unit>
 
