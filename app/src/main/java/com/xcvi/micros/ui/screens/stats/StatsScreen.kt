@@ -85,14 +85,9 @@ fun StatsScreen(
     val avgLabel: String = stringResource(R.string.avg)
 
     Scaffold(
-        /** For Padding **/
-        bottomBar = {
-            Box(
-                modifier = Modifier
-                    .height(48.dp)
-                    .width(24.dp)
-            )
-        },
+        bottomBar = { Box(Modifier
+            .height(48.dp)
+            .width(24.dp)) },
         topBar = {
             TopAppBar(
                 title = {},
@@ -118,16 +113,15 @@ fun StatsScreen(
                             imageVector = Icons.Default.ArrowDropDown
                         )
                     }
-                    //if(state.foodsByDay.isNotEmpty() || state.weightsByDay.isNotEmpty()){
-                        DropDownChip(
-                            options = listOf(FilterType.DAY, FilterType.WEEK, FilterType.MONTH),
-                            selectedOption = state.filter,
-                            onOptionSelected = {
-                                onEvent(StatsEvent.ChangeFilter(it))
-                            },
-                            toString = { it.displayName(context) },
-                            imageVector = Icons.AutoMirrored.Filled.Sort
-                        )
+                    DropDownChip(
+                        options = listOf(FilterType.DAY, FilterType.WEEK, FilterType.MONTH),
+                        selectedOption = state.filter,
+                        onOptionSelected = {
+                            onEvent(StatsEvent.ChangeFilter(it))
+                        },
+                        toString = { it.displayName(context) },
+                        imageVector = Icons.AutoMirrored.Filled.Sort
+                    )
                 }
             )
         },
@@ -153,7 +147,6 @@ fun StatsScreen(
                 BoxWithConstraints(
                     modifier = Modifier.weight(1f)
                 ) {
-
                     FoodGraph(
                         height = maxHeight,
                         calories = when (state.filter) {
