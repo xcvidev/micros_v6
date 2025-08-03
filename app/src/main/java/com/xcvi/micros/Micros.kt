@@ -73,7 +73,7 @@ class Micros: Application() {
         viewModel { StatsViewModel(get()) }
         viewModel { GoalsViewModel(get()) }
         viewModel { MealViewModel(get()) }
-        viewModel { SearchViewModel(get()) }
+        viewModel { SearchViewModel(get(), get()) }
         viewModel { ScanViewModel(get()) }
         viewModel { DetailsViewModel(get(), get()) }
         viewModel { MessageViewModel(get()) }

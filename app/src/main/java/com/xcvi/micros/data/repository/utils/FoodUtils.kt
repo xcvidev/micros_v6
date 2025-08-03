@@ -8,6 +8,7 @@ import com.xcvi.micros.domain.model.food.AminoAcids
 import com.xcvi.micros.domain.model.food.Food
 import com.xcvi.micros.domain.model.food.Minerals
 import com.xcvi.micros.domain.model.food.Nutrients
+import com.xcvi.micros.domain.model.food.Portion
 import com.xcvi.micros.domain.model.food.Vitamins
 import com.xcvi.micros.domain.utils.roundToInt
 import com.xcvi.micros.domain.utils.toAscii
@@ -118,6 +119,65 @@ fun EnhancedDTO.mergeToFood(food: FoodEntity, newBarcode: String): FoodEntity {
         threonine = aminoAcids.threonine * 0.85,
         tryptophan = aminoAcids.tryptophan * 0.85,
         valine = aminoAcids.valine * 0.85
+    )
+}
+
+fun FoodEntity.toPortion(date: Int, mealNumber: Int, amount: Int = 100): Portion {
+    return Portion(
+        barcode = barcode,
+        name = name,
+        date = date,
+        meal = mealNumber,
+        isFavorite = isFavorite,
+        amount = amount,
+        nutrients = Nutrients(
+            calories = calories.roundToInt(),
+            protein = protein,
+            carbohydrates = carbohydrates,
+            fats = fats,
+            saturatedFats = saturatedFats,
+            fiber = fiber,
+            sugars = sugars
+        ),
+        minerals = Minerals(
+            calcium = calcium,
+            iron = iron,
+            magnesium = magnesium,
+            potassium = potassium,
+            sodium = sodium,
+            zinc = zinc,
+            fluoride = fluoride,
+            iodine = iodine,
+            phosphorus = phosphorus,
+            manganese = manganese,
+            selenium = selenium,
+        ),
+        vitamins = Vitamins(
+            vitaminA = vitaminA,
+            vitaminB1 = vitaminB1,
+            vitaminB2 = vitaminB2,
+            vitaminB3 = vitaminB3,
+            vitaminB4 = vitaminB4,
+            vitaminB5 = vitaminB5,
+            vitaminB6 = vitaminB6,
+            vitaminB9 = vitaminB9,
+            vitaminB12 = vitaminB12,
+            vitaminC = vitaminC,
+            vitaminD = vitaminD,
+            vitaminE = vitaminE,
+            vitaminK = vitaminK
+        ),
+        aminoAcids = AminoAcids(
+            histidine = histidine,
+            isoleucine = isoleucine,
+            leucine = leucine,
+            lysine = lysine,
+            methionine = methionine,
+            phenylalanine = phenylalanine,
+            threonine = threonine,
+            tryptophan = tryptophan,
+            valine = valine
+        )
     )
 }
 

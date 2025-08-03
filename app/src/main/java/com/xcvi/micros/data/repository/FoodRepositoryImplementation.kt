@@ -1,13 +1,16 @@
 package com.xcvi.micros.data.repository
 
 import android.util.Log
+import androidx.room.Query
 import com.xcvi.micros.data.repository.utils.mergeToFood
 import com.xcvi.micros.data.repository.utils.toEntity
 import com.xcvi.micros.data.repository.utils.toModel
+import com.xcvi.micros.data.repository.utils.toPortion
 import com.xcvi.micros.data.source.local.food.FoodDao
 import com.xcvi.micros.data.source.remote.AiApi
 import com.xcvi.micros.data.source.remote.ProductApi
 import com.xcvi.micros.domain.model.food.Food
+import com.xcvi.micros.domain.model.food.Portion
 import com.xcvi.micros.domain.respostory.FoodRepository
 import com.xcvi.micros.domain.utils.Failure
 import com.xcvi.micros.domain.utils.Response
@@ -25,12 +28,11 @@ class FoodRepositoryImplementation(
 ) : FoodRepository {
 
     override suspend fun search(
-        searchTerm: String,
-        language: String
+        query: String, language: String,
     ): Response<List<Food>> {
         return fetchAndCache(
             apiCall = {
-                productApi.search(searchTerm, language)
+                productApi.search(query, language)
             },
             cacheCall = { response ->
                 val entities = response.map { it.toEntity() }

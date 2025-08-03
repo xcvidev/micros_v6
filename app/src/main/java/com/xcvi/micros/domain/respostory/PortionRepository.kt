@@ -15,6 +15,8 @@ interface PortionRepository {
 
     suspend fun getMeals(date: Int, mealNames: Map<Int,String>): Flow<List<Meal>>
 
+    suspend fun getRecents(): Flow<List<Portion>>
+
     suspend fun getPortion(barcode: String, date: Int, meal: Int): Response<Portion>
 
     fun getPortionsOfMeal(date: Int, meal: Int): Flow<List<Portion>>

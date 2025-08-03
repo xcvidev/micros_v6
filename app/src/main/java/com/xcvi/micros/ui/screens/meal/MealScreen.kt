@@ -97,6 +97,7 @@ fun MealScreen(
                         Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
                     }
                 },
+                /*
                 actions = {
                     if (state.portions.isNotEmpty()) {
                         TextButton(onClick = { onBack() }) {
@@ -106,7 +107,7 @@ fun MealScreen(
                             )
                         }
                     }
-                }
+                } */
             )
         }
     ) {

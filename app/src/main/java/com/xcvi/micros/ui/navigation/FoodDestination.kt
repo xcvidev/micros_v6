@@ -10,6 +10,7 @@ import com.xcvi.micros.domain.model.food.MacrosSummary
 import com.xcvi.micros.ui.core.comp.slidingComposable
 import com.xcvi.micros.ui.navigation.destinations.GoalsDestination
 import com.xcvi.micros.ui.navigation.destinations.MealDestination
+import com.xcvi.micros.ui.navigation.destinations.ScanDestination
 import com.xcvi.micros.ui.navigation.destinations.SearchDestination
 import com.xcvi.micros.ui.navigation.destinations.StatsDestination
 import com.xcvi.micros.ui.screens.dashboard.DashboardScreen
@@ -18,6 +19,7 @@ import com.xcvi.micros.ui.screens.goals.GoalsScreen
 import com.xcvi.micros.ui.screens.goals.GoalsViewModel
 import com.xcvi.micros.ui.screens.meal.MealScreen
 import com.xcvi.micros.ui.screens.meal.MealViewModel
+import com.xcvi.micros.ui.screens.search.SearchScreen
 import com.xcvi.micros.ui.screens.search.SearchViewModel
 import com.xcvi.micros.ui.screens.stats.StatsScreen
 import com.xcvi.micros.ui.screens.stats.StatsViewModel
@@ -81,10 +83,25 @@ data object FoodDestination {
             }
 
             slidingComposable<SearchDestination> {
-                val viewModel = koinViewModel<SearchViewModel>()
+                val args = it.toRoute<SearchDestination>()
+
+                SearchScreen(
+                    date = args.date,
+                    meal = args.mealNumber,
+                    onScan = {
+                        navController.navigate(ScanDestination(args.date, args.mealNumber))
+                    },
+                    onBack = { navController.popBackStack() }
+                )
             }
+            slidingComposable<ScanDestination> {
+                val args = it.toRoute<ScanDestination>()
+
+            }
+
+
             slidingComposable<StatsDestination> {
-                StatsScreen{ navController.popBackStack() }
+                StatsScreen { navController.popBackStack() }
             }
             slidingComposable<GoalsDestination> {
                 val viewModel = koinViewModel<GoalsViewModel>()

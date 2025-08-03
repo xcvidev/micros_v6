@@ -32,6 +32,14 @@ class PortionRepositoryImplementation(
     private val portionDao: PortionDao,
 ) : PortionRepository {
 
+    override suspend fun getRecents(): Flow<List<Portion>> {
+        return portionDao.getRecents()
+            .map { listOfEntities ->
+                listOfEntities.distinctBy { it.food.barcode }.map { it.toModel() }
+            }
+            .catch { emit(emptyList()) }
+    }
+
     override suspend fun getMeals(date: Int, mealNames: Map<Int, String>): Flow<List<Meal>> {
         return try {
             withContext(Dispatchers.IO) {

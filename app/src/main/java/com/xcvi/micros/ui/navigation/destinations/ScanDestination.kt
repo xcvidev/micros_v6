@@ -3,6 +3,6 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class ScanDestination(
-    val mealNumber: Int,
     val date: Int,
+    val mealNumber: Int,
 )
