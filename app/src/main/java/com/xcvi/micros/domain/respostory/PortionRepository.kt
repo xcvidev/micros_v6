@@ -8,14 +8,13 @@ import kotlinx.coroutines.flow.Flow
 
 interface PortionRepository {
 
-    suspend fun observeAllSummaries(): Flow<List<MacrosSummary>>
+    fun observeAllSummaries(): Flow<List<MacrosSummary>>
     suspend fun getAllSummaries(): List<MacrosSummary>
 
-    suspend fun getSummaryOfDate(date: Int): Flow<MacrosSummary>
+     fun getSummaryOfDate(date: Int): Flow<MacrosSummary>
 
-    suspend fun getMeals(date: Int, mealNames: Map<Int,String>): Flow<List<Meal>>
-
-    suspend fun getRecents(): Flow<List<Portion>>
+     fun getMeals(date: Int, mealNames: Map<Int,String>): Flow<List<Meal>>
+     fun getRecents(): Flow<List<Portion>>
 
     suspend fun getPortion(barcode: String, date: Int, meal: Int): Response<Portion>
 

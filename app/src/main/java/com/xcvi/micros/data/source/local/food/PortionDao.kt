@@ -82,7 +82,7 @@ interface PortionDao{
         ORDER BY date DESC
         LIMIT 1
     """)
-    suspend fun getGoal(date: Int): MacrosWithDate?
+    fun getGoal(date: Int): Flow<MacrosWithDate?>
 
 
     @Transaction

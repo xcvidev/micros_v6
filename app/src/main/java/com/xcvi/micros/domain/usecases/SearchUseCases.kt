@@ -22,7 +22,7 @@ class SearchUseCases(
         return portionRepository.savePortions(portions)
     }
 
-    suspend fun getRecents(): Flow<List<Food>> {
+    fun getRecents(): Flow<List<Food>> {
         return foodRepository.getRecents()
     }
 

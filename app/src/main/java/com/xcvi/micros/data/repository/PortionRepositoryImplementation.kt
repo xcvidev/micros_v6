@@ -8,6 +8,7 @@ import com.xcvi.micros.data.repository.utils.toModel
 import com.xcvi.micros.data.source.local.entity.food.MacroGoalEntity
 import com.xcvi.micros.data.source.local.entity.food.PortionEntity
 import com.xcvi.micros.data.source.local.food.PortionDao
+import com.xcvi.micros.domain.model.food.Macros
 import com.xcvi.micros.domain.model.food.MacrosSummary
 import com.xcvi.micros.domain.model.food.Meal
 import com.xcvi.micros.domain.model.food.Portion
@@ -25,6 +26,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.emptyFlow
+import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
 
@@ -32,7 +34,7 @@ class PortionRepositoryImplementation(
     private val portionDao: PortionDao,
 ) : PortionRepository {
 
-    override suspend fun getRecents(): Flow<List<Portion>> {
+    override fun getRecents(): Flow<List<Portion>> {
         return portionDao.getRecents()
             .map { listOfEntities ->
                 listOfEntities.distinctBy { it.food.barcode }.map { it.toModel() }
@@ -40,9 +42,8 @@ class PortionRepositoryImplementation(
             .catch { emit(emptyList()) }
     }
 
-    override suspend fun getMeals(date: Int, mealNames: Map<Int, String>): Flow<List<Meal>> {
+    override fun getMeals(date: Int, mealNames: Map<Int, String>): Flow<List<Meal>> {
         return try {
-            withContext(Dispatchers.IO) {
                 combine(
                     getPortionsOfDate(date),            // Flow<List<Portion>>
                     UserPreferences.favoritesFlow()         // Flow<Set<Int>>
@@ -64,7 +65,6 @@ class PortionRepositoryImplementation(
                             aminoAcids = portions.sumAminos()
                         )
                     }
-                }
             }
         } catch (e: Exception) {
             return emptyFlow()
@@ -196,33 +196,31 @@ class PortionRepositoryImplementation(
         }
     }
 
-    override suspend fun observeAllSummaries(): Flow<List<MacrosSummary>> {
+    override fun observeAllSummaries(): Flow<List<MacrosSummary>> {
         try {
-            val actualList = withContext(Dispatchers.IO) { portionDao.observeHistory() }
-            val goalsList = withContext(Dispatchers.IO) { portionDao.observeGoals() }
-            return withContext(Dispatchers.Default) {
-                combine(actualList, goalsList) { actual, goals ->
+            val actualList = portionDao.observeHistory()
+            val goalsList =  portionDao.observeGoals()
+            return combine(actualList, goalsList) { actual, goals ->
                     mergeActualWithGoals(actual, goals)
                 }
-            }
+
         } catch (e: Exception) {
             return emptyFlow()
         }
     }
 
-    override suspend fun getSummaryOfDate(date: Int): Flow<MacrosSummary> {
+    override fun getSummaryOfDate(date: Int): Flow<MacrosSummary> {
         try {
-            val actual = withContext(Dispatchers.IO) { portionDao.observeMacrosForDate(date) }
-            val goal = withContext(Dispatchers.IO) { portionDao.getGoal(date) }
-            return withContext(Dispatchers.Default) {
-                actual.map { actualMacros ->
+            val actual =  portionDao.observeMacrosForDate(date)
+            val goal =  portionDao.getGoal(date)
+            return actual.map { actualMacros ->
                     MacrosSummary(
                         date = date,
                         actual = actualMacros.getMacros(),
-                        goal = goal.getMacros()
+                        goal = goal.firstOrNull()?.getMacros() ?: Macros()
                     )
                 }
-            }
+
         } catch (e: Exception) {
             Log.e("log", "getSummaryOfDate: ", e)
             return emptyFlow()
