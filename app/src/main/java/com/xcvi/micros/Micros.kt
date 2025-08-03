@@ -13,7 +13,7 @@ import com.xcvi.micros.domain.respostory.FoodRepository
 import com.xcvi.micros.domain.respostory.MessageRepository
 import com.xcvi.micros.domain.respostory.PortionRepository
 import com.xcvi.micros.domain.respostory.WeightRepository
-import com.xcvi.micros.domain.usecases.DashboardUseCase
+import com.xcvi.micros.domain.usecases.DashboardUseCases
 import com.xcvi.micros.domain.usecases.DetailsUseCases
 import com.xcvi.micros.domain.usecases.GoalsUseCases
 import com.xcvi.micros.domain.usecases.MealUseCases
@@ -69,7 +69,7 @@ class Micros: Application() {
 
 
     private val viewModelModule = module {
-        viewModel { DashboardViewModel(get()) }
+        viewModel { DashboardViewModel(get(),get()) }
         viewModel { StatsViewModel(get()) }
         viewModel { GoalsViewModel(get()) }
         viewModel { MealViewModel(get()) }
@@ -82,7 +82,7 @@ class Micros: Application() {
     private val useCasesModule = module {
         factory { MessageUseCases(get()) }
         factory { WeightUseCases(get()) }
-        factory { DashboardUseCase(get()) }
+        factory { DashboardUseCases(get()) }
         factory { DetailsUseCases(get(), get(), get()) }
         factory { GoalsUseCases(get()) }
         factory { MealUseCases(get()) }

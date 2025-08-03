@@ -29,10 +29,11 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.xcvi.micros.R
+import com.xcvi.micros.domain.model.food.Macros
 import com.xcvi.micros.domain.model.food.MacrosSummary
 import com.xcvi.micros.domain.model.food.macroScoreAlgorithm
 import com.xcvi.micros.domain.utils.roundToInt
-import com.xcvi.micros.ui.core.M3Card
+import com.xcvi.micros.ui.core.comp.M3Card
 
 @Composable
 fun GoalsCard(
@@ -83,7 +84,7 @@ fun GoalsCard(
                     Text(text = stringResource(R.string.goals_title))
                 },
                 subhead = {
-                    val progress = macrosScoreCalculator(summary)
+                    val progress = macrosScoreCalculator(summary.actual, summary.goal)
                     Column(
                         verticalArrangement = Arrangement.spacedBy(4.dp)
                     ) {
@@ -130,10 +131,10 @@ fun GoalsCard(
 }
 
 
-fun macrosScoreCalculator(summary: MacrosSummary): Int {
-    val proteinProgress = summary.actual.protein / summary.goal.protein * 100
-    val carbProgress = summary.actual.carbohydrates / summary.goal.carbohydrates * 100
-    val fatProgress = summary.actual.fats / summary.goal.fats * 100
+fun macrosScoreCalculator(actual: Macros, goal: Macros): Int {
+    val proteinProgress = actual.protein / goal.protein * 100
+    val carbProgress = actual.carbohydrates / goal.carbohydrates * 100
+    val fatProgress = actual.fats / goal.fats * 100
 
     return macroScoreAlgorithm(proteinProgress, carbProgress, fatProgress)
 }

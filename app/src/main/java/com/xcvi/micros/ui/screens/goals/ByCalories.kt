@@ -39,8 +39,8 @@ import androidx.compose.ui.unit.dp
 import com.xcvi.micros.R
 import com.xcvi.micros.domain.model.food.Macros
 import com.xcvi.micros.domain.utils.roundToInt
-import com.xcvi.micros.ui.core.keyboardOpenState
-import com.xcvi.micros.ui.core.rememberShakeOffset
+import com.xcvi.micros.ui.core.comp.keyboardOpenState
+import com.xcvi.micros.ui.core.comp.rememberShakeOffset
 import com.xcvi.micros.ui.theme.carbsDark
 import com.xcvi.micros.ui.theme.carbsLight
 import com.xcvi.micros.ui.theme.fatsDark
@@ -52,7 +52,7 @@ import com.xcvi.micros.ui.theme.proteinLight
 @Composable
 fun ByCalories(
     goals: Macros,
-    onConfirm: (protein: Int, carbs: Int, fats: Int) -> Unit,
+    onConfirm: (protein: Int, carbs: Int, fats: Int, onError: ()->Unit) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     var calories by remember { mutableStateOf("") }
@@ -104,7 +104,11 @@ fun ByCalories(
         item {
             MacroSliders(
                 calorieInput = calories,
-                onConfirm = onConfirm,
+                onConfirm = {protein, carbs, fats ->
+                    onConfirm(protein, carbs, fats) {
+                        shakeTrigger = true
+                    }
+                },
                 onDrag = { focusManager.clearFocus() },
                 onError = { shakeTrigger = true }
             )

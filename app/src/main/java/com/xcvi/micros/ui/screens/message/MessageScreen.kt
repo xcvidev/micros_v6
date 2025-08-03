@@ -65,10 +65,10 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.xcvi.micros.R
 import com.xcvi.micros.domain.utils.Failure
-import com.xcvi.micros.ui.core.AnimatedDots
-import com.xcvi.micros.ui.core.FadingText
-import com.xcvi.micros.ui.core.StreamingText
-import com.xcvi.micros.ui.core.rememberShakeOffset
+import com.xcvi.micros.ui.core.comp.AnimatedDots
+import com.xcvi.micros.ui.core.comp.FadingText
+import com.xcvi.micros.ui.core.comp.StreamingText
+import com.xcvi.micros.ui.core.comp.rememberShakeOffset
 
 @OptIn(ExperimentalMaterial3Api::class)
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")

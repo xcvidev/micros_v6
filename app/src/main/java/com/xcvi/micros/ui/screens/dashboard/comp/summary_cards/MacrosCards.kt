@@ -29,7 +29,7 @@ import com.xcvi.micros.R
 import com.xcvi.micros.domain.model.food.Macros
 import com.xcvi.micros.domain.model.food.Nutrients
 import com.xcvi.micros.domain.utils.roundDecimals
-import com.xcvi.micros.ui.core.M3Card
+import com.xcvi.micros.ui.core.comp.M3Card
 import com.xcvi.micros.ui.screens.dashboard.comp.MacroBar
 import com.xcvi.micros.ui.screens.dashboard.comp.MacroDetails
 

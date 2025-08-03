@@ -36,12 +36,12 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.xcvi.micros.R
 import com.xcvi.micros.domain.model.food.Macros
-import com.xcvi.micros.ui.core.rememberShakeOffset
+import com.xcvi.micros.ui.core.comp.rememberShakeOffset
 
 @Composable
 fun ByMacros(
     goals: Macros,
-    onConfirm: (protein: Int, carbs: Int, fats: Int) -> Unit,
+    onConfirm: (protein: Int, carbs: Int, fats: Int, onError: ()->Unit) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     var protein by remember { mutableStateOf("") }
@@ -164,7 +164,9 @@ fun ByMacros(
                     val carbsVal = carbs.toIntOrNull()
                     val fatsVal = fats.toIntOrNull()
                     if (proteinVal != null && carbsVal != null && fatsVal != null){
-                        onConfirm(proteinVal, carbsVal, fatsVal)
+                        onConfirm(proteinVal, carbsVal, fatsVal){
+                            shakeTrigger = true
+                        }
                     } else {
                         shakeTrigger = true
                     }

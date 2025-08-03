@@ -6,7 +6,11 @@ import com.xcvi.micros.domain.utils.getToday
 data class MacrosSummary(
     override val date: Int,
     val actual: Macros,
-    val goal: Macros
+    val goal: Macros,
+    val actualMinerals: Minerals = Minerals.empty(),
+    val actualNutrients: Nutrients = Nutrients.empty(),
+    val actualVitamins: Vitamins = Vitamins.empty(),
+    val actualAminoacids: AminoAcids = AminoAcids.empty(),
 ): DailySummary {
     companion object {
         fun empty() = MacrosSummary(getToday(), Macros(), Macros())

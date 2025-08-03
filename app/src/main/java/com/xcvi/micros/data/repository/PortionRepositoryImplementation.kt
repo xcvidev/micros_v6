@@ -5,6 +5,7 @@ import com.xcvi.micros.data.repository.utils.getMacros
 import com.xcvi.micros.data.repository.utils.mergeActualWithGoals
 import com.xcvi.micros.data.repository.utils.toEntity
 import com.xcvi.micros.data.repository.utils.toModel
+import com.xcvi.micros.data.source.local.entity.food.MacroGoalEntity
 import com.xcvi.micros.data.source.local.entity.food.PortionEntity
 import com.xcvi.micros.data.source.local.food.PortionDao
 import com.xcvi.micros.domain.model.food.MacrosSummary
@@ -17,6 +18,7 @@ import com.xcvi.micros.domain.model.food.sumVitamins
 import com.xcvi.micros.domain.respostory.PortionRepository
 import com.xcvi.micros.domain.utils.Failure
 import com.xcvi.micros.domain.utils.Response
+import com.xcvi.micros.domain.utils.getToday
 import com.xcvi.micros.preferences.UserPreferences
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
@@ -190,6 +192,20 @@ class PortionRepositoryImplementation(
         }
     }
 
+    override suspend fun observeAllSummaries(): Flow<List<MacrosSummary>> {
+        try {
+            val actualList = withContext(Dispatchers.IO) { portionDao.observeHistory() }
+            val goalsList = withContext(Dispatchers.IO) { portionDao.observeGoals() }
+            return withContext(Dispatchers.Default) {
+                combine(actualList, goalsList) { actual, goals ->
+                    mergeActualWithGoals(actual, goals)
+                }
+            }
+        } catch (e: Exception) {
+            return emptyFlow()
+        }
+    }
+
     override suspend fun getSummaryOfDate(date: Int): Flow<MacrosSummary> {
         try {
             val actual = withContext(Dispatchers.IO) { portionDao.observeMacrosForDate(date) }
@@ -210,4 +226,24 @@ class PortionRepositoryImplementation(
     }
 
 
+    override suspend fun saveGoals(
+        protein: Int,
+        carbs: Int,
+        fats: Int
+    ): Response<Unit> {
+        try {
+            portionDao.upsert(
+                MacroGoalEntity(
+                    date = getToday(),
+                    calories = protein * 4.0 + carbs * 4 + fats * 9,
+                    protein = protein.toDouble(),
+                    carbohydrates = carbs.toDouble(),
+                    fats = fats.toDouble()
+                )
+            )
+            return Response.Success(Unit)
+        } catch (e: Exception) {
+            return Response.Error(Failure.Database)
+        }
+    }
 }

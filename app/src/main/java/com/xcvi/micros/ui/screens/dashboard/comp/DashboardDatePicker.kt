@@ -36,8 +36,8 @@ import com.xcvi.micros.domain.utils.getLocalDate
 import com.xcvi.micros.domain.utils.getToday
 import com.xcvi.micros.domain.utils.monthFormatted
 import com.xcvi.micros.domain.utils.roundToInt
-import com.xcvi.micros.ui.core.dayOfWeekFormatted
-import com.xcvi.micros.ui.core.rememberShakeOffset
+import com.xcvi.micros.ui.core.comp.dayOfWeekFormatted
+import com.xcvi.micros.ui.core.comp.rememberShakeOffset
 import kotlinx.coroutines.launch
 import kotlin.collections.mutableMapOf
 import kotlin.collections.set

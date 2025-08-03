@@ -35,7 +35,7 @@ fun EditGoalsSheet(
     height: Dp,
     onDismiss: () -> Unit,
     sheetState: SheetState,
-    onConfirm: (Int, Int, Int) -> Unit,
+    onConfirm: (Int, Int, Int, ()-> Unit) -> Unit,
     modifier: Modifier = Modifier,
 ) {
 
@@ -58,7 +58,7 @@ fun EditGoalsSheet(
 fun TabRowExample(
     goals: Macros,
     height: Dp,
-    onConfirm: (Int, Int, Int) -> Unit,
+    onConfirm: (Int, Int, Int, () -> Unit) -> Unit,
 ) {
     val tabTitles = listOf(
         stringResource(R.string.use_calories),

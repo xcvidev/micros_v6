@@ -54,7 +54,7 @@ import com.xcvi.micros.domain.model.food.RdaCalculator
 import com.xcvi.micros.domain.model.food.Vitamins
 import com.xcvi.micros.domain.utils.roundDecimals
 import com.xcvi.micros.domain.utils.roundToInt
-import com.xcvi.micros.ui.core.LoadingIndicator
+import com.xcvi.micros.ui.core.comp.LoadingIndicator
 import com.xcvi.micros.ui.screens.dashboard.comp.ScoreBar
 import com.xcvi.micros.ui.screens.dashboard.comp.macrosScoreCalculator
 import kotlinx.coroutines.launch
@@ -64,7 +64,6 @@ import kotlinx.coroutines.launch
 @Composable
 fun GoalsScreen(
     modifier: Modifier = Modifier,
-    summary: MacrosSummary,
     state: GoalsState,
     onEvent: (GoalsEvent) -> Unit,
     onBack: () -> Unit,
@@ -79,42 +78,32 @@ fun GoalsScreen(
         onBack()
     }
 
-    if(state.isLoading){
-        LoadingIndicator(modifier.fillMaxSize())
-    } else {
-        BoxWithConstraints (
-            modifier = modifier.fillMaxSize()
-        ) {
-            val height = maxHeight
-            Scaffold(
-                topBar = {
-                    TopAppBar(
-                        title = {
-                            if (state.currentGoals == null) {
-                                Text(text = stringResource(R.string.goals_title))
-                            }
-                        },
-                        navigationIcon = {
-                            IconButton(onClick = onBack) {
-                                Icon(
-                                    Icons.AutoMirrored.Default.ArrowBack,
-                                    ""
-                                )
-                            }
+    BoxWithConstraints(
+        modifier = modifier.fillMaxSize()
+    ) {
+        val height = maxHeight
+        Scaffold(
+            topBar = {
+                TopAppBar(
+                    title = {
+                        if (state is GoalsState.Goals) {
+                            Text(text = stringResource(R.string.goals_title))
                         }
-                    )
-                }
-            ) { innerPadding ->
-                val currentGoals = state.currentGoals
-                if (currentGoals == null) {
-                    /** Show info sheet at first use*/
-                    /*
-                    LaunchedEffect(Unit) {
-                        delay(200)
-                        showSheet = true
+                    },
+                    navigationIcon = {
+                        IconButton(onClick = onBack) {
+                            Icon(
+                                Icons.AutoMirrored.Default.ArrowBack,
+                                ""
+                            )
+                        }
                     }
-                     */
-
+                )
+            }
+        ) { padding ->
+            when (state) {
+                GoalsState.Loading -> LoadingIndicator(modifier.fillMaxSize())
+                GoalsState.Empty -> {
                     Column(
                         modifier = Modifier.fillMaxSize(),
                         horizontalAlignment = Alignment.CenterHorizontally,
@@ -158,10 +147,12 @@ fun GoalsScreen(
                             Text(text = stringResource(R.string.set_goals))
                         }
                     }
-                } else {
+                }
+                is GoalsState.Goals -> {
+                    val currentGoals = state.currentGoals
                     LazyColumn(
                         modifier = modifier.padding(horizontal = 24.dp),
-                        contentPadding = innerPadding,
+                        contentPadding = padding,
                     ) {
                         item {
                             Text(
@@ -199,43 +190,43 @@ fun GoalsScreen(
                                         )
                                     }
 
-                                        val pText = buildAnnotatedString {
-                                            withStyle(SpanStyle(fontWeight = FontWeight.Normal)) {
-                                                append(stringResource(R.string.protein))
-                                            }
-                                            withStyle(SpanStyle(fontWeight = FontWeight.Bold)) {
-                                                append(" ${currentGoals.goal.protein} g")
-                                            }
+                                    val pText = buildAnnotatedString {
+                                        withStyle(SpanStyle(fontWeight = FontWeight.Normal)) {
+                                            append(stringResource(R.string.protein))
                                         }
-                                        val cText = buildAnnotatedString {
-                                            withStyle(SpanStyle(fontWeight = FontWeight.Normal)) {
-                                                append(stringResource(R.string.carbs))
-                                            }
-                                            withStyle(SpanStyle(fontWeight = FontWeight.Bold)) {
-                                                append(" ${currentGoals.goal.carbohydrates} g")
-                                            }
+                                        withStyle(SpanStyle(fontWeight = FontWeight.Bold)) {
+                                            append(" ${currentGoals.goal.protein} g")
                                         }
-                                        val fText = buildAnnotatedString {
-                                            withStyle(SpanStyle(fontWeight = FontWeight.Normal)) {
-                                                append(stringResource(R.string.fats))
-                                            }
-                                            withStyle(SpanStyle(fontWeight = FontWeight.Bold)) {
-                                                append(" ${currentGoals.goal.fats} g")
-                                            }
+                                    }
+                                    val cText = buildAnnotatedString {
+                                        withStyle(SpanStyle(fontWeight = FontWeight.Normal)) {
+                                            append(stringResource(R.string.carbs))
                                         }
+                                        withStyle(SpanStyle(fontWeight = FontWeight.Bold)) {
+                                            append(" ${currentGoals.goal.carbohydrates} g")
+                                        }
+                                    }
+                                    val fText = buildAnnotatedString {
+                                        withStyle(SpanStyle(fontWeight = FontWeight.Normal)) {
+                                            append(stringResource(R.string.fats))
+                                        }
+                                        withStyle(SpanStyle(fontWeight = FontWeight.Bold)) {
+                                            append(" ${currentGoals.goal.fats} g")
+                                        }
+                                    }
 
-                                        Text(
-                                            text = pText,
-                                            color = MaterialTheme.colorScheme.onSurfaceVariant
-                                        )
-                                        Text(
-                                            text = cText,
-                                            color = MaterialTheme.colorScheme.onSurfaceVariant
-                                        )
-                                        Text(
-                                            text = fText,
-                                            color = MaterialTheme.colorScheme.onSurfaceVariant
-                                        )
+                                    Text(
+                                        text = pText,
+                                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                                    )
+                                    Text(
+                                        text = cText,
+                                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                                    )
+                                    Text(
+                                        text = fText,
+                                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                                    )
 
 
                                 }
@@ -276,10 +267,12 @@ fun GoalsScreen(
                                     )
                                     Spacer(modifier = Modifier.weight(1f))
                                 }
-                                val macrosScore =
-                                    macrosScoreCalculator(summary = summary)
+                                val macrosScore = macrosScoreCalculator(
+                                    actual = state.currentGoals.actual,
+                                    goal = state.currentGoals.goal
+                                )
                                 ScoreBar(score = macrosScore)
-                                //LabelsList(labels = summary.nutrients.macroGoals(context = context, goals = currentGoals))
+                                // LabelsList(labels = state.nutrients.macroGoals(context = context))
 
                             }
                         }
@@ -306,9 +299,18 @@ fun GoalsScreen(
                                     Spacer(modifier = Modifier.weight(1f))
                                 }
                                 val mineralsRda = RdaCalculator.forMinerals()
-                                // val mineralsScore = mineralsScoreCalculator(summary, mineralsRda)
-                                // ScoreBar(score = mineralsScore)
-                               // LabelsList(labels = summary.minerals.rda(context = context, mineralsRda = mineralsRda))
+                                val mineralsScore =
+                                    mineralsScoreCalculator(
+                                        state.currentGoals.actualMinerals,
+                                        mineralsRda
+                                    )
+                                ScoreBar(score = mineralsScore)
+                                LabelsList(
+                                    labels = state.currentGoals.actualMinerals.rda(
+                                        context = context,
+                                        mineralsRda = mineralsRda
+                                    )
+                                )
 
                             }
                         }
@@ -332,17 +334,21 @@ fun GoalsScreen(
                                     )
                                     Spacer(modifier = Modifier.weight(1f))
                                 }
-                                /*
+
                                 val vitaminsRda = RdaCalculator.forVitamins()
                                 val vitaminsScore =
                                     vitaminsScoreCalculator(
-                                        summary = summary,
+                                        summary = state.currentGoals.actualVitamins,
                                         vitaminsRda = vitaminsRda
                                     )
                                 ScoreBar(score = vitaminsScore)
-                                LabelsList(labels = summary.vitamins.rda(context = context, vitaminsRda = vitaminsRda))
+                                LabelsList(
+                                    labels = state.currentGoals.actualVitamins.rda(
+                                        context = context,
+                                        vitaminsRda = vitaminsRda
+                                    )
+                                )
 
-                                 */
 
                             }
                         }
@@ -359,17 +365,20 @@ fun GoalsScreen(
                             Spacer(modifier = Modifier.height(80.dp))
                         }
                     }
-
                 }
+            }
 
+            val goals = when (state) {
+                is GoalsState.Goals -> state.currentGoals.goal
+                else -> Macros()
             }
             if (showSheet) {
                 EditGoalsSheet(
-                    goals = state.currentGoals?.goal ?: Macros(),
+                    goals = goals,
                     height = height.times(0.6f),
                     onDismiss = { showSheet = false },
                     sheetState = sheetState,
-                    onConfirm = { protein, carbs, fats ->
+                    onConfirm = { protein, carbs, fats, onError ->
                         coroutineScope.launch {
                             sheetState.hide()
                             showSheet = false
@@ -377,21 +386,23 @@ fun GoalsScreen(
                                 GoalsEvent.SetCurrentGoals(
                                     protein = protein,
                                     carbs = carbs,
-                                    fats = fats
+                                    fats = fats,
+                                    onError = onError
                                 )
                             )
                         }
                     }
                 )
             }
+
         }
     }
 
+
 }
 
-
 @Composable
-fun LabelsList(labels:List<Triple<String, String, String>>) {
+fun LabelsList(labels: List<Triple<String, String, String>>) {
     Column {
         labels.forEachIndexed { index, label ->
             if (index > 0 && label.first.isNotBlank()) {
@@ -427,10 +438,13 @@ private fun Label(
         )
         Spacer(modifier = Modifier.weight(1f))
 
-        val (fontWeight,color) =if(amount.isBlank() || amount.startsWith("0 ") || amount.startsWith("0.0 ")){
-            Pair(FontWeight.Normal,MaterialTheme.colorScheme.onSurface.copy(alpha = 0.8f))
+        val (fontWeight, color) = if (amount.isBlank() || amount.startsWith("0 ") || amount.startsWith(
+                "0.0 "
+            )
+        ) {
+            Pair(FontWeight.Normal, MaterialTheme.colorScheme.onSurface.copy(alpha = 0.8f))
         } else {
-            Pair(FontWeight.Medium,MaterialTheme.colorScheme.onSurface)
+            Pair(FontWeight.Medium, MaterialTheme.colorScheme.onSurface)
         }
         Text(
             text = amount,
@@ -450,50 +464,133 @@ private fun Label(
 
 private fun MacrosSummary.macroGoals(context: Context): List<Triple<String, String, String>> {
     return listOf(
-        Triple(context.getString(R.string.protein), "${actual.protein.roundDecimals()}", "${goal.protein} g"),
-        Triple(context.getString(R.string.carbs), "${actual.carbohydrates.roundDecimals()}", "${goal.carbohydrates} g"),
-        Triple(context.getString(R.string.fats), "${actual.fats.roundDecimals()}", "${goal.carbohydrates} g"),
+        Triple(
+            context.getString(R.string.protein),
+            "${actual.protein.roundDecimals()}",
+            "${goal.protein} g"
+        ),
+        Triple(
+            context.getString(R.string.carbs),
+            "${actual.carbohydrates.roundDecimals()}",
+            "${goal.carbohydrates} g"
+        ),
+        Triple(
+            context.getString(R.string.fats),
+            "${actual.fats.roundDecimals()}",
+            "${goal.carbohydrates} g"
+        ),
     )
 }
 
 
-
-
-private fun Minerals.rda(context: Context, mineralsRda: RdaCalculator.MineralsRDA): List<Triple<String, String, String>> {
+private fun Minerals.rda(
+    context: Context,
+    mineralsRda: RdaCalculator.MineralsRDA
+): List<Triple<String, String, String>> {
     val minerals = this
     return listOf(
-        Triple(context.getString(R.string.calcium), "${minerals.calcium.roundToInt()}" ,"${mineralsRda.calcium} mg"),
-        Triple(context.getString(R.string.iron), "${minerals.iron.roundToInt()}" ,"${mineralsRda.iron} mg"),
-        Triple(context.getString(R.string.magnesium), "${minerals.magnesium.roundToInt()}" ,"${mineralsRda.magnesium} mg"),
-        Triple(context.getString(R.string.potassium), "${minerals.potassium.roundToInt()}" ,"${mineralsRda.potassium} mg"),
-        Triple(context.getString(R.string.sodium), "${minerals.sodium.roundToInt()}" ,"${mineralsRda.sodium} mg"),
+        Triple(
+            context.getString(R.string.calcium),
+            "${minerals.calcium.roundToInt()}",
+            "${mineralsRda.calcium} mg"
+        ),
+        Triple(
+            context.getString(R.string.iron),
+            "${minerals.iron.roundToInt()}",
+            "${mineralsRda.iron} mg"
+        ),
+        Triple(
+            context.getString(R.string.magnesium),
+            "${minerals.magnesium.roundToInt()}",
+            "${mineralsRda.magnesium} mg"
+        ),
+        Triple(
+            context.getString(R.string.potassium),
+            "${minerals.potassium.roundToInt()}",
+            "${mineralsRda.potassium} mg"
+        ),
+        Triple(
+            context.getString(R.string.sodium),
+            "${minerals.sodium.roundToInt()}",
+            "${mineralsRda.sodium} mg"
+        ),
     )
 }
 
 
-
-private fun Vitamins.rda(context: Context, vitaminsRda: RdaCalculator.VitaminsRDA): List<Triple<String, String, String>> {
+private fun Vitamins.rda(
+    context: Context,
+    vitaminsRda: RdaCalculator.VitaminsRDA
+): List<Triple<String, String, String>> {
     val vitamins = this
     return listOf(
-        Triple(context.getString(R.string.vitaminA), "${vitamins.vitaminA.roundToInt()}", "${vitaminsRda.vitaminA} μg"),
-        Triple(context.getString(R.string.vitaminB1), "${vitamins.vitaminB1.roundToInt()}", "${vitaminsRda.vitaminB1} mg"),
-        Triple(context.getString(R.string.vitaminB2), "${vitamins.vitaminB2.roundToInt()}", "${vitaminsRda.vitaminB2} mg"),
-        Triple(context.getString(R.string.vitaminB3), "${vitamins.vitaminB3.roundToInt()}", "${vitaminsRda.vitaminB3} mg"),
-        Triple(context.getString(R.string.vitaminB4), "${vitamins.vitaminB4.roundToInt()}", "${vitaminsRda.vitaminB4} mg"),
-        Triple(context.getString(R.string.vitaminB5), "${vitamins.vitaminB5.roundToInt()}", "${vitaminsRda.vitaminB5} mg"),
-        Triple(context.getString(R.string.vitaminB6), "${vitamins.vitaminB6.roundToInt()}", "${vitaminsRda.vitaminB6} mg"),
-        Triple(context.getString(R.string.vitaminB9), "${vitamins.vitaminB9.roundToInt()}", "${vitaminsRda.vitaminB9} μg"),
-        Triple(context.getString(R.string.vitaminB12), "${vitamins.vitaminB12.roundToInt()}", "${vitaminsRda.vitaminB12} μg"),
-        Triple(context.getString(R.string.vitaminC), "${vitamins.vitaminC.roundToInt()}", "${vitaminsRda.vitaminC} mg"),
-        Triple(context.getString(R.string.vitaminD), "${vitamins.vitaminD.roundToInt()}", "${vitaminsRda.vitaminD} μg"),
-        Triple(context.getString(R.string.vitaminE), "${vitamins.vitaminE.roundToInt()}", "${vitaminsRda.vitaminE} mg"),
-        Triple(context.getString(R.string.vitaminK), "${vitamins.vitaminK.roundToInt()}", "${vitaminsRda.vitaminK} μg"),
+        Triple(
+            context.getString(R.string.vitaminA),
+            "${vitamins.vitaminA.roundToInt()}",
+            "${vitaminsRda.vitaminA} μg"
+        ),
+        Triple(
+            context.getString(R.string.vitaminB1),
+            "${vitamins.vitaminB1.roundToInt()}",
+            "${vitaminsRda.vitaminB1} mg"
+        ),
+        Triple(
+            context.getString(R.string.vitaminB2),
+            "${vitamins.vitaminB2.roundToInt()}",
+            "${vitaminsRda.vitaminB2} mg"
+        ),
+        Triple(
+            context.getString(R.string.vitaminB3),
+            "${vitamins.vitaminB3.roundToInt()}",
+            "${vitaminsRda.vitaminB3} mg"
+        ),
+        Triple(
+            context.getString(R.string.vitaminB4),
+            "${vitamins.vitaminB4.roundToInt()}",
+            "${vitaminsRda.vitaminB4} mg"
+        ),
+        Triple(
+            context.getString(R.string.vitaminB5),
+            "${vitamins.vitaminB5.roundToInt()}",
+            "${vitaminsRda.vitaminB5} mg"
+        ),
+        Triple(
+            context.getString(R.string.vitaminB6),
+            "${vitamins.vitaminB6.roundToInt()}",
+            "${vitaminsRda.vitaminB6} mg"
+        ),
+        Triple(
+            context.getString(R.string.vitaminB9),
+            "${vitamins.vitaminB9.roundToInt()}",
+            "${vitaminsRda.vitaminB9} μg"
+        ),
+        Triple(
+            context.getString(R.string.vitaminB12),
+            "${vitamins.vitaminB12.roundToInt()}",
+            "${vitaminsRda.vitaminB12} μg"
+        ),
+        Triple(
+            context.getString(R.string.vitaminC),
+            "${vitamins.vitaminC.roundToInt()}",
+            "${vitaminsRda.vitaminC} mg"
+        ),
+        Triple(
+            context.getString(R.string.vitaminD),
+            "${vitamins.vitaminD.roundToInt()}",
+            "${vitaminsRda.vitaminD} μg"
+        ),
+        Triple(
+            context.getString(R.string.vitaminE),
+            "${vitamins.vitaminE.roundToInt()}",
+            "${vitaminsRda.vitaminE} mg"
+        ),
+        Triple(
+            context.getString(R.string.vitaminK),
+            "${vitamins.vitaminK.roundToInt()}",
+            "${vitaminsRda.vitaminK} μg"
+        ),
     )
 }
-
-
-
-
 
 
 fun mineralsScoreCalculator(

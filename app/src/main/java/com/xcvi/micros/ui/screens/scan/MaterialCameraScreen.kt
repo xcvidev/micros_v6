@@ -37,7 +37,7 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import com.google.mlkit.vision.barcode.BarcodeScanner
-import com.xcvi.micros.ui.core.OpenAndroidSettingsButton
+import com.xcvi.micros.ui.core.comp.OpenAndroidSettingsButton
 
 fun Context.findActivity(): Activity {
     var ctx = this

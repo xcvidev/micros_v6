@@ -18,7 +18,7 @@ data object MessageDestination {
     ) {
         navigation(
             startDestination = ROUTE,
-            route = Graphs.ASSISTANT
+            route = Graphs.MESSAGE
         ) {
             composable(ROUTE) {
                 MessageScreen(

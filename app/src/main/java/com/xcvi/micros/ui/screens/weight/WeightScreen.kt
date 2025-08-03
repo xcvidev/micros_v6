@@ -70,9 +70,9 @@ import com.xcvi.micros.domain.utils.getTime
 import com.xcvi.micros.domain.utils.getToday
 import com.xcvi.micros.domain.utils.roundDecimals
 import com.xcvi.micros.domain.utils.roundToInt
-import com.xcvi.micros.ui.core.DateSelectorDialog
-import com.xcvi.micros.ui.core.DecimalPicker
-import com.xcvi.micros.ui.core.dayOfWeekFormatted
+import com.xcvi.micros.ui.core.comp.DateSelectorDialog
+import com.xcvi.micros.ui.core.comp.DecimalPicker
+import com.xcvi.micros.ui.core.comp.dayOfWeekFormatted
 import kotlinx.coroutines.delay
 
 @OptIn(ExperimentalMaterial3Api::class)

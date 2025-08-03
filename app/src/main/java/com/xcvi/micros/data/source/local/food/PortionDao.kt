@@ -97,7 +97,31 @@ interface PortionDao{
     )
     suspend fun getHistory(): List<MacrosWithDate>
 
+    @Transaction
+    @Query(
+        """
+    SELECT
+        p.date AS date,
+        SUM((f.calories * p.amount) / 100.0) AS calories,
+        SUM((f.protein * p.amount) / 100.0) AS protein,
+        SUM((f.carbohydrates * p.amount) / 100.0) AS carbohydrates,
+        SUM((f.fats * p.amount) / 100.0) AS fats
+    FROM PortionEntity AS p
+    INNER JOIN FoodEntity AS f ON f.barcode = p.barcode
+    WHERE p.date > 0
+    GROUP BY p.date
+    ORDER BY date DESC
+    """
+    )
+    fun observeHistory(): Flow<List<MacrosWithDate>>
+
 
     @Query("SELECT * FROM MacroGoalEntity ORDER BY date DESC")
     suspend fun getGoals(): List<MacroGoalEntity>
+
+    @Query("SELECT * FROM MacroGoalEntity ORDER BY date DESC")
+    fun observeGoals(): Flow<List<MacroGoalEntity>>
+
+    @Upsert
+    suspend fun upsert(goal: MacroGoalEntity)
 }
