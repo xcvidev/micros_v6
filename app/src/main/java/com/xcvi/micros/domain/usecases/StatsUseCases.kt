@@ -82,6 +82,7 @@ class StatsUseCases(
         val start = if (year == null) 0 else LocalDate(year, 1, 1).toEpochDays()
         val end = if (year == null) getToday() else LocalDate(year, 12, 31).toEpochDays()
         return when (filter) {
+
             FilterType.WEEK -> summariesOfDate
                 .filter { it.date in (start..end) }
                 .groupByWeek()
@@ -184,12 +185,13 @@ fun List<MacrosSummary>.average(date: Int): MacrosSummary {
     if (this.isEmpty()) {
         return MacrosSummary.empty().copy(date = date)
     }
+
     val summaries = this
     val latestGoal = summaries.maxByOrNull { it.date }?.goal ?: Macros()
-    val calories = summaries.sumOf { it.actualNutrients.calories } / summaries.size
-    val protein = summaries.sumOf { it.actualNutrients.protein } / summaries.size
-    val carbohydrates = summaries.sumOf { it.actualNutrients.carbohydrates } / summaries.size
-    val fats = summaries.sumOf { it.actualNutrients.fats } / summaries.size
+    val calories = summaries.sumOf { it.actual.calories } / summaries.size
+    val protein = summaries.sumOf { it.actual.protein } / summaries.size
+    val carbohydrates = summaries.sumOf { it.actual.carbohydrates } / summaries.size
+    val fats = summaries.sumOf { it.actual.fats } / summaries.size
 
     return MacrosSummary(
         date = date,

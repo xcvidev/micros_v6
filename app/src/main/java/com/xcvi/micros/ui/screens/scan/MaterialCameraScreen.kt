@@ -19,7 +19,9 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -31,12 +33,15 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import com.google.mlkit.vision.barcode.BarcodeScanner
+import com.xcvi.micros.R
 import com.xcvi.micros.ui.core.comp.OpenAndroidSettingsButton
 
 fun Context.findActivity(): Activity {
@@ -50,17 +55,20 @@ fun Context.findActivity(): Activity {
 
 @Composable
 fun MaterialCameraScreen(
-    openSettingsButtonText: String,
-    scanHintText: String,
-    allowButtonText: String,
-    cancelButtonText: String,
-    permissionDialogTitle: String,
-    permissionDialogText: String,
-    permissionDeniedText: String,
     context: Context,
     onScan: (barcode: String, barcodeScanner: BarcodeScanner?) -> Unit,
-    onGoBack: () -> Unit
+    onGoBack: () -> Unit,
+    width: Dp,
+    height: Dp
 ) {
+    val scanHintText: String = stringResource(R.string.scan_barcode)
+    val allowButtonText: String = stringResource(R.string.allow)
+    val cancelButtonText: String = stringResource(R.string.cancel)
+    val permissionDialogTitle: String = stringResource(R.string.permission_required_title)
+    val permissionDialogText: String = stringResource(R.string.permission_required_text)
+    val permissionDeniedText: String = stringResource(R.string.camera_permission_denied_text)
+    val openSettingsButtonText: String = stringResource(R.string.open_settings)
+
     BackHandler { onGoBack() }
 
     val lifecycleOwner = LocalLifecycleOwner.current
@@ -106,7 +114,7 @@ fun MaterialCameraScreen(
 
     when {
         hasPermission -> {
-            Box(modifier = Modifier.fillMaxSize()) {
+            Box(modifier = Modifier.height(height).width(width)) {
                 AndroidView(
                     modifier = Modifier.fillMaxSize(),
                     factory = { ctx ->

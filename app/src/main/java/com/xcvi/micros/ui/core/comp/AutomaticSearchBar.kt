@@ -6,7 +6,10 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Card
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
@@ -30,6 +33,8 @@ fun AutomaticSearchBar(
     query: String,
     onQueryChange: (String) -> Unit,
     onAutomaticSearch: () -> Unit,
+    leadingIcon: @Composable (() -> Unit)? = null,
+    label: @Composable (() -> Unit)? = null,
     placeholder: @Composable (() -> Unit)? = null,
     trailingIcon: @Composable (() -> Unit)? = null,
     keyboardActions: KeyboardActions = KeyboardActions(),
@@ -59,6 +64,8 @@ fun AutomaticSearchBar(
                             onAutomaticSearch()  // always call, no gating here
                         }
                     },
+                    leadingIcon = leadingIcon,
+                    label = label,
                     placeholder = placeholder,
                     modifier = Modifier.weight(1f),
                     colors = TextFieldDefaults.colors(

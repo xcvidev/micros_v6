@@ -22,7 +22,7 @@ interface FoodDao{
     suspend fun get(barcodes: List<String>): List<FoodEntity>
 
     @Query("SELECT * FROM FoodEntity WHERE isFavorite = 1 OR isRecent = 1 ORDER BY isFavorite, name")
-    fun getRecents(): Flow<List<FoodEntity>>
+    suspend fun getRecents(): List<FoodEntity>
 
     @RawQuery
     suspend fun search(query: SupportSQLiteQuery): List<FoodEntity>

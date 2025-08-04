@@ -137,6 +137,7 @@
 
     <string name="meal_enter_name">Inserisci il nome del pasto</string>
 
+    <string name="empty_recents">Puoi cercare qualsiasi prodotto alimentare per nome o marca. Non trovi il prodotto? Puoi scannerizare il codice a barre oppure descriverlo all\'assistente IA che lo genererà per te.</string>
     <string name="search_results">Risultati della ricerca</string>
     <string name="searching">Ricerca in corso</string>
     <string name="generated">Generato</string>
@@ -144,8 +145,8 @@
     <string name="generating_failed_title">Generazione tramite AI fallita</string>
     <string name="generating_failed_subtitle">Usa una descrizione diversa e riprova.</string>
     <string name="generating">Generazione in corso</string>
-    <string name="recently_added">Aggiunti di recente</string>
-    <string name="search_placeholder">Cerca prodotti per nome o marca...</string>
+    <string name="recently_added">Preferiti e aggiunti di recente</string>
+    <string name="search_placeholder">Cerca</string>
     <string name="product_not_found">Prodotto non trovato.</string>
     <string name="provide_food_description">Fornisci una descrizione del cibo. Usa nome, ingredienti o altre informazioni.</string>
     <string name="description">Descrizione</string>
@@ -202,5 +203,6 @@
     <string name="macros_goals">Obiettivi Macronutrienti</string>
     <string name="not_licensed_text">Questa copia non ha una licenza valida.\nAcquista una versione da Google Play.</string>
     <string name="play_store">Play Store</string>
+    <string name="favorite">Preferito</string>
 
 </resources>

@@ -43,6 +43,7 @@ class SearchViewModel(
             is SearchEvent.OpenDetails -> openDetails(event.portion)
             is SearchEvent.CloseDetails -> closeDetails()
 
+            is SearchEvent.ToggleFavorite -> toggleFavorite()
             is SearchEvent.Enhance -> enhance(event.input)
             is SearchEvent.Scale -> scale(event.amount)
 
@@ -55,18 +56,38 @@ class SearchViewModel(
 
     }
 
+    private fun toggleFavorite() {
+        viewModelScope.launch {
+            val selected = state.selected ?: return@launch
+            when(useCases.toggleFavorite(selected.food.barcode)){
+                is Response.Success -> {
+                    val updatedFood = selected.food.copy(isFavorite = !selected.food.isFavorite)
+                    val updated = selected.copy(food = updatedFood)
+                    updateData { copy(selected = updated) }
+                }
+                is Response.Error -> {}
+            }
+        }
+    }
+
     private fun setQuery(query: String) {
         if (query == "") {
-            updateData { copy(searchResults = recents, query = query, listLabel = recentsLabel) }
+            updateData {
+                copy(
+                    searchResults = recents,
+                    listLabel = if (recents.isEmpty()) "" else recentsLabel,
+                    query = ""
+                )
+            }
             return
         }
-        updateData { copy(query = query, listLabel = "") }
+        updateData { copy(query = query) }
     }
 
     private fun search(date: Int, meal: Int, onError: () -> Unit) {
         viewModelScope.launch {
             if (state.query.isBlank() || state.query.length < 3) return@launch
-            updateData { copy(isSearching = true, listLabel = "") }
+            updateData { copy(isSearching = true) }
             val res = useCases.search(
                 query = state.query,
                 language = language,
@@ -83,7 +104,7 @@ class SearchViewModel(
 
                 is Response.Error -> {
                     onError()
-                    updateData { copy(searchResults = emptyList()) }
+                    updateData { copy(searchResults = emptyList(), listLabel = "") }
                 }
             }
             updateData { copy(isSearching = false) }

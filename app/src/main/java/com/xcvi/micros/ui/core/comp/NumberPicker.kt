@@ -292,7 +292,7 @@ fun NumberPicker(
     numberColor: Color = MaterialTheme.colorScheme.onSurface,
     indicatorTickColor: Color = MaterialTheme.colorScheme.onSurface,
     textFieldContainerColor: Color = MaterialTheme.colorScheme.surfaceContainer,
-    valueRange: IntRange = 1..10000,
+    valueRange: IntRange = 0..10000,
     initialValue: Int = 100,
     tickSpacingDp: Dp = 12.dp,
     clickGranularity: Int = 10,
@@ -302,6 +302,8 @@ fun NumberPicker(
 ) {
     val textSizePx = with(LocalDensity.current) { fontSize.toPx() }
     val tickSpacingPx = with(LocalDensity.current) { tickSpacingDp.toPx() }
+
+
     val maxOffset = (valueRange.last - valueRange.first) * tickSpacingPx
     var isEditing by remember { mutableStateOf(false) }
 
@@ -334,7 +336,7 @@ fun NumberPicker(
     Box(
         modifier = modifier
             .fillMaxWidth()
-            .height(100.dp)
+            .height(150.dp)
             .pointerInput(Unit) {
                 detectTapGestures { offset ->
 
@@ -421,6 +423,8 @@ fun NumberPicker(
         }
 
 
+
+        // TextField
         LaunchedEffect(clampedValue, isEditing) {
             if (!isEditing && textValue.text != clampedValue.toString()) {
                 textValue = TextFieldValue(
@@ -434,7 +438,7 @@ fun NumberPicker(
         Box(
             modifier = Modifier
                 .align(Alignment.Center)
-                .offset(y = (-62).dp)
+                .offset(y = (-50).dp)
                 .background(
                     color = textFieldContainerColor,
                     shape = RoundedCornerShape(8.dp)

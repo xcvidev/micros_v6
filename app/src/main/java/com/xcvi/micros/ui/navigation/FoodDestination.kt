@@ -19,6 +19,8 @@ import com.xcvi.micros.ui.screens.goals.GoalsScreen
 import com.xcvi.micros.ui.screens.goals.GoalsViewModel
 import com.xcvi.micros.ui.screens.meal.MealScreen
 import com.xcvi.micros.ui.screens.meal.MealViewModel
+import com.xcvi.micros.ui.screens.scan.ScanScreen
+import com.xcvi.micros.ui.screens.scan.ScanViewModel
 import com.xcvi.micros.ui.screens.search.SearchScreen
 import com.xcvi.micros.ui.screens.search.SearchViewModel
 import com.xcvi.micros.ui.screens.stats.StatsScreen
@@ -105,6 +107,25 @@ data object FoodDestination {
             }
             slidingComposable<ScanDestination> {
                 val args = it.toRoute<ScanDestination>()
+                val viewModel = koinViewModel<ScanViewModel>()
+                ScanScreen(
+                    state = viewModel.state,
+                    onEvent = viewModel::onEvent,
+                    date = args.date,
+                    meal = args.mealNumber,
+                    onBack = { navController.popBackStack() },
+                    onReset = {
+                        navController.navigate(
+                            ScanDestination(
+                                date = args.date, mealNumber = args.mealNumber
+                            )
+                        ){
+                            popUpTo<SearchDestination>{
+                                inclusive = false
+                            }
+                        }
+                    },
+                )
             }
 
 

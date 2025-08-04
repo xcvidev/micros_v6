@@ -96,13 +96,8 @@ class FoodRepositoryImplementation(
         }
     }
 
-    override fun getRecents(): Flow<List<Food>> {
-        return foodDao.getRecents()
-            .map { list ->
-                Log.d("FoodRepository", "getRecents: ${list.size}")
-                list.map { it.toModel() }
-            }
-            .catch { e -> Log.e("FoodRepository", "getRecents: ", e) }
+    override suspend fun getRecents(): List<Food> {
+        return foodDao.getRecents().map { list -> list.toModel() }
     }
 
     override suspend fun getFood(barcode: String): Response<Food> {

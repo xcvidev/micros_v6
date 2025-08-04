@@ -18,22 +18,37 @@ class SearchUseCases(
         return foodRepository.enhance(barcode, description)
     }
 
+    suspend fun toggleFavorite(barcode: String): Response<Unit> {
+        return foodRepository.toggleFavorite(barcode)
+    }
+
     suspend fun eat(
         date: Int,
         meal: Int,
         portions: Set<Portion>
     ): Response<Unit> {
-        /**
-         * Important for when saving recents
-         */
         val toSave = portions.map {
+            //Important for when saving recents with different dates and meal numbers
             it.copy(date = date, meal = meal)
         }
         return portionRepository.savePortions(toSave)
     }
 
     suspend fun getRecents(): List<Portion> {
-        return portionRepository.getRecents()
+        val portions = portionRepository.getRecents()
+        val foods = foodRepository.getRecents()
+            .filter{ f ->
+                portions.none { p -> p.food.barcode == f.barcode }
+            }
+            .map { food->
+                Portion(
+                    date = 0,
+                    meal = 0,
+                    food = food,
+                    amount = 100
+                )
+        }
+        return (portions + foods).sortedByDescending { it.food.isFavorite }
     }
 
     suspend fun search(

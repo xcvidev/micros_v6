@@ -85,8 +85,8 @@ class Micros: Application() {
         factory { DashboardUseCases(get()) }
         factory { DetailsUseCases(get(), get(), get()) }
         factory { GoalsUseCases(get()) }
-        factory { MealUseCases(get()) }
-        factory { ScanUseCases(get()) }
+        factory { MealUseCases(get(), get()) }
+        factory { ScanUseCases(get(), get()) }
         factory { SearchUseCases(get(), get()) }
         factory { StatsUseCases(get(), get()) }
     }

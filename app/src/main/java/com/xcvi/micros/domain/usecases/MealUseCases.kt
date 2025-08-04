@@ -1,6 +1,8 @@
 package com.xcvi.micros.domain.usecases
 
+import com.xcvi.micros.domain.model.food.Food
 import com.xcvi.micros.domain.model.food.Portion
+import com.xcvi.micros.domain.respostory.FoodRepository
 import com.xcvi.micros.domain.respostory.PortionRepository
 import com.xcvi.micros.domain.utils.Response
 import kotlinx.coroutines.flow.Flow
@@ -8,12 +10,19 @@ import kotlinx.coroutines.flow.Flow
 
 class MealUseCases(
     private val portionRepository: PortionRepository,
+    private val foodRepository: FoodRepository,
 ){
     fun getMealData(date: Int, meal: Int): Flow<List<Portion>> {
         return portionRepository.getPortionsOfMeal(date = date, meal = meal)
-
     }
 
+    suspend fun toggleFavorite(barcode: String): Response<Unit> {
+        return foodRepository.toggleFavorite(barcode)
+    }
+
+    suspend fun enhance(barcode: String, description: String): Response<Food> {
+        return foodRepository.enhance(barcode, description)
+    }
     suspend fun updatePortion(
         newAmount: Int,
         date: Int,

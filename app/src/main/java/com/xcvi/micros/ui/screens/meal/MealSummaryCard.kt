@@ -39,6 +39,7 @@ import com.xcvi.micros.domain.model.food.Minerals
 import com.xcvi.micros.domain.model.food.Nutrients
 import com.xcvi.micros.domain.model.food.Vitamins
 import com.xcvi.micros.domain.utils.roundDecimals
+import com.xcvi.micros.ui.core.SummaryDetails
 import com.xcvi.micros.ui.core.utils.toLabeledPairs
 import com.xcvi.micros.ui.theme.proteinLight
 import kotlinx.coroutines.flow.Flow
@@ -55,17 +56,10 @@ fun MealSummaryCard(
     val protein = "${stringResource(R.string.protein)}: ${nutrients.protein.roundDecimals()} g"
     val carbs = "${stringResource(R.string.carbs)}: ${nutrients.carbohydrates.roundDecimals()} g"
     val fats = "${stringResource(R.string.fats)}: ${nutrients.fats.roundDecimals()} g"
-    val subhead = "$protein, $carbs, $fats"
+    val subhead = "$protein\n$carbs\n$fats"
 
     var expanded by remember { mutableStateOf(false) }
     val context = LocalContext.current
-
-    val nutrientsLabeled = nutrients.toLabeledPairs(context)
-    val mineralsLabeled = minerals.toLabeledPairs(context)
-    val vitaminsLabeled = vitamins.toLabeledPairs(context)
-    val aminoAcidsLabeled = aminoAcids.toLabeledPairs(context)
-
-    val labels = nutrientsLabeled + mineralsLabeled + vitaminsLabeled + aminoAcidsLabeled
 
     val alpha by animateFloatAsState(
         targetValue = if (expanded) 0f else 1f,
@@ -89,7 +83,9 @@ fun MealSummaryCard(
                 horizontalArrangement = Arrangement.SpaceBetween,
                 modifier = Modifier.fillMaxWidth()
             ) {
-                Column {
+                Column(
+                    modifier = Modifier.weight(1f)
+                ) {
                     Text(
                         text = headline,
                         style = MaterialTheme.typography.headlineSmall,
@@ -111,51 +107,13 @@ fun MealSummaryCard(
             }
         }
         AnimatedVisibility(expanded, exit = fadeOut() + shrinkVertically()) {
-            Column(
-                modifier = modifier
-                    .fillMaxWidth()
-                    .padding(start = 14.dp, end = 14.dp, bottom = 16.dp),
-            ) {
-                fun alpha(isEmpty: Boolean): Float = if (isEmpty) {
-                    0.4f
-                } else {
-                    1f
-                }
-
-                labels.forEachIndexed { index: Int, value: Pair<String, String> ->
-                    if (index > 3) {
-                        val data = labels[index]
-                        Row {
-                            Text(
-                                text = data.first,
-                                style = MaterialTheme.typography.bodyMedium,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant.copy(
-                                    alpha(
-                                        data.second.startsWith("0.0") || data.second.startsWith("0,0")
-                                    )
-                                )
-                            )
-                            Spacer(modifier = Modifier.weight(1f))
-                            Text(
-                                text = data.second,
-                                style = MaterialTheme.typography.bodyMedium,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant.copy(
-                                    alpha(
-                                        data.second.startsWith("0.0") || data.second.startsWith("0,0")
-                                    )
-                                )
-                            )
-                        }
-                        if (index < labels.size - 1) {
-                            HorizontalDivider(
-                                thickness = 0.3.dp,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant.copy(0.3f)
-                            )
-                        }
-                    }
-                }
-
-            }
+            SummaryDetails(
+                nutrients = nutrients,
+                minerals = minerals,
+                vitamins = vitamins,
+                aminoAcids = aminoAcids,
+                context = context
+            )
         }
     }
 }

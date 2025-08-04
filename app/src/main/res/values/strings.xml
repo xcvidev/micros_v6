@@ -134,6 +134,7 @@
     <string name="meal_enter_name">Enter meal name</string>
 
 
+    <string name="empty_recents">You can search any food by its name or brand product. Can\'t find your food? Try scanning the product barcode or use the AI assistant to help you.</string>
     <string name="search_results">Search results</string>
     <string name="searching">Searching</string>
     <string name="generated">Generated</string>
@@ -141,8 +142,8 @@
     <string name="generating_failed_title">Generating with AI failed</string>
     <string name="generating_failed_subtitle">Use a different description and try again.</string>
     <string name="generating">Generating</string>
-    <string name="recently_added">Recently added</string>
-    <string name="search_placeholder">Search by products by name or brand...</string>
+    <string name="recently_added">Favorites and recently added</string>
+    <string name="search_placeholder">Search</string>
     <string name="product_not_found">Product Not Found.</string>
     <string name="provide_food_description">Provide food description. Use food name, ingredients or other information.</string>
     <string name="description">Description</string>
@@ -196,8 +197,8 @@
 
     <string name="rda_info">These Recommended Daily Amounts (RDAs) are based on the Codex Nutrient Reference Values (NRVs) established by the FAO/WHO for use in international nutrition labeling.</string>
     <string name="macros_goals">Macronutrient Targets</string>
-    <string name="title_db">Food Products Database</string>
     <string name="not_licensed_text">This copy is not licensed.\nPlease purchase on Google Play.</string>
     <string name="play_store">Play Store</string>
+    <string name="favorite">Favorite</string>
 
 </resources>

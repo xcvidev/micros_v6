@@ -11,6 +11,6 @@ interface FoodRepository {
     suspend fun toggleFavorite(barcode: String): Response<Unit>
     suspend fun setRecent(barcode: String, value: Boolean): Response<Unit>
     suspend fun rename(newName: String, barcode: String): Response<Unit>
-    fun getRecents(): Flow<List<Food>>
+    suspend fun getRecents(): List<Food>
     suspend fun getFood(barcode: String): Response<Food>
 }

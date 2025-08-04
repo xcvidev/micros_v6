@@ -9,6 +9,7 @@ sealed interface SearchEvent {
     data class OpenDetails(val portion: Portion) : SearchEvent
     data object CloseDetails : SearchEvent
 
+    data object ToggleFavorite: SearchEvent
     data class Enhance(val input: String) : SearchEvent
     data class Scale(val amount: Int) : SearchEvent
     data class Select(val portion: Portion) : SearchEvent

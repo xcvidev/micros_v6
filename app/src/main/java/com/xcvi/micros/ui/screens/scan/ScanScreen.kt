@@ -35,41 +35,47 @@ import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.xcvi.micros.R
+import com.xcvi.micros.ui.screens.meal.MealItemDetailsSheet
 import org.koin.androidx.compose.koinViewModel
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun ScanScreen(
+    date: Int,
+    meal: Int,
+    state: ScanState,
+    onEvent: (ScanEvent) -> Unit,
     modifier: Modifier = Modifier,
-    viewModel: ScanViewModel = koinViewModel(),
     onBack: () -> Unit,
     onReset: () -> Unit,
-    onSuccess: (String) -> Unit,
 ) {
-    val state = viewModel.state
     val context = LocalContext.current
-    var showDialog by remember { mutableStateOf(false) }
     val haptics = LocalHapticFeedback.current
 
     val scanFailureMessage: String = stringResource(R.string.product_not_found)
-    val scanHintText : String= stringResource(R.string.scan_barcode)
-    val allowButtonText : String= stringResource(R.string.allow)
-    val cancelButtonText : String= stringResource(R.string.cancel)
-    val permissionDialogTitle: String = stringResource(R.string.permission_required_title)
-    val permissionDialogText: String = stringResource(R.string.permission_required_text)
-    val permissionDeniedText : String= stringResource(R.string.camera_permission_denied_text)
-    val openSettingsButtonText : String= stringResource(R.string.open_settings)
-    val failureDialogText : String= stringResource(R.string.retry_dialog_text)
-    val retryButtonText : String= stringResource(R.string.retry)
+    val cancelButtonText: String = stringResource(R.string.cancel)
+    val failureDialogText: String = stringResource(R.string.retry_dialog_text)
+    val retryButtonText: String = stringResource(R.string.retry)
 
     BackHandler {
         onBack()
     }
 
-    if (showDialog) {
-        AlertDialog(
+    when (state) {
+        is ScanState.Loading -> Box(
+            contentAlignment = Alignment.Center,
+            modifier = Modifier
+                .fillMaxSize()
+        ) {
+            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                CircularProgressIndicator(color = Color.White)
+                Spacer(Modifier.height(8.dp))
+                Text(text = stringResource(R.string.fetching_product), color = Color.White)
+            }
+        }
+
+        is ScanState.Error -> AlertDialog(
             onDismissRequest = {
-                showDialog = false
                 onBack()
             },
             title = {
@@ -79,7 +85,6 @@ fun ScanScreen(
             confirmButton = {
                 Button(
                     onClick = {
-                        showDialog = false
                         onReset()
                     }
                 ) {
@@ -89,7 +94,6 @@ fun ScanScreen(
             dismissButton = {
                 TextButton(
                     onClick = {
-                        showDialog = false
                         onBack()
                     }
                 ) {
@@ -97,63 +101,52 @@ fun ScanScreen(
                 }
             }
         )
-    } else {
-        Box(modifier = modifier.fillMaxSize()) {
-            if (state.isLoading) {
-                Box(
-                    contentAlignment = Alignment.Center,
-                    modifier = Modifier
-                        .fillMaxSize()
-                ) {
-                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                        CircularProgressIndicator(color = Color.White)
-                        Spacer(Modifier.height(8.dp))
-                        Text(text = stringResource(R.string.fetching_product), color = Color.White)
-                    }
-                }
-            } else {
 
-                MaterialCameraScreen(
-                    context = context,
-                    onScan = { barcode, barcodeScanner ->
-                        haptics.performHapticFeedback(HapticFeedbackType.TextHandleMove)
-                        barcodeScanner?.close()
-                        viewModel.cacheScan(
+        else -> Box(modifier = modifier.fillMaxSize()) {
+            MaterialCameraScreen(
+                context = context,
+                onScan = { barcode, barcodeScanner ->
+                    haptics.performHapticFeedback(HapticFeedbackType.TextHandleMove)
+                    barcodeScanner?.close()
+                    onEvent(
+                        ScanEvent.Scan(
                             barcode = barcode,
-                            onSuccess = { onSuccess(barcode) },
-                            onFailure = {
-                                barcodeScanner?.close()
-                                showDialog = true
-                            }
+                            date = date,
+                            meal = meal
                         )
-                    },
-                    onGoBack = { onBack() },
-                    scanHintText = scanHintText,
-                    allowButtonText = allowButtonText,
-                    cancelButtonText = cancelButtonText,
-                    permissionDialogTitle = permissionDialogTitle,
-                    permissionDialogText = permissionDialogText,
-                    permissionDeniedText = permissionDeniedText,
-                    openSettingsButtonText = openSettingsButtonText
-
-                )
-
-                IconButton(
-                    modifier = Modifier
-                        .align(Alignment.TopStart)
-                        .windowInsetsPadding(WindowInsets.statusBars)
-                        .padding(4.dp),
-                    onClick = { onBack() }
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.Close,
-                        contentDescription = "",
-                        tint = Color.White,
                     )
-                }
+                },
+                onGoBack = { onBack() },
+                height = 500.dp,
+                width = 500.dp
+            )
+
+            IconButton(
+                modifier = Modifier
+                    .align(Alignment.TopStart)
+                    .windowInsetsPadding(WindowInsets.statusBars)
+                    .padding(4.dp),
+                onClick = { onBack() }
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Close,
+                    contentDescription = "",
+                    tint = Color.White,
+                )
+            }
+            if (state is ScanState.Success) {
+                ScanDetailsSheet(
+                    isEnhancing = false,
+                    context = context,
+                    item = state.portion,
+                    onConfirm = { onEvent(ScanEvent.Confirm{ onBack() }) },
+                    onFavorite = { onEvent(ScanEvent.ToggleFavorite) },
+                    onDismiss = { onReset() },
+                    onScale = { onEvent(ScanEvent.Scale(it)) },
+                    onEnhance = { onEvent(ScanEvent.Enhance(it)) },
+                )
             }
         }
-
     }
 
 }
