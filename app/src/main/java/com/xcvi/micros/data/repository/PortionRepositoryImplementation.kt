@@ -34,12 +34,15 @@ class PortionRepositoryImplementation(
     private val portionDao: PortionDao,
 ) : PortionRepository {
 
-    override fun getRecents(): Flow<List<Portion>> {
-        return portionDao.getRecents()
-            .map { listOfEntities ->
-                listOfEntities.distinctBy { it.food.barcode }.map { it.toModel() }
-            }
-            .catch { emit(emptyList()) }
+    override suspend fun getRecents(): List<Portion> {
+        return try{
+            portionDao.getRecents(100)
+                .distinctBy { it.food.barcode }
+                .map { it.toModel() }
+        } catch (e: Exception) {
+            Log.e("log", "getRecents: ", e)
+            emptyList()
+        }
     }
 
     override fun getMeals(date: Int, mealNames: Map<Int, String>): Flow<List<Meal>> {
@@ -67,6 +70,7 @@ class PortionRepositoryImplementation(
                     }
             }
         } catch (e: Exception) {
+            Log.e("log", "getMeals: ", e)
             return emptyFlow()
         }
     }
@@ -84,7 +88,10 @@ class PortionRepositoryImplementation(
             .map { listOfEntities ->
                 listOfEntities.map { it.toModel() }
             }
-            .catch { emit(emptyList()) }
+            .catch {
+                Log.e("log", "getPortionsOfMeal: ", it)
+                emit(emptyList())
+            }
     }
 
     override suspend fun getPortion(barcode: String, date: Int, meal: Int): Response<Portion> {
@@ -110,7 +117,7 @@ class PortionRepositoryImplementation(
     /**
      * Save
      */
-    override suspend fun savePortions(portions: List<Portion>, ): Response<Unit> {
+    override suspend fun savePortions(portions: List<Portion>): Response<Unit> {
         return try {
             withContext(Dispatchers.IO) {
                 val portions = portions.map { portion ->
@@ -122,9 +129,11 @@ class PortionRepositoryImplementation(
                     )
                 }
                 portionDao.upsert(portions)
+                Log.d("log", "savePortions: $portions")
+                Response.Success(Unit)
             }
-            Response.Success(Unit)
         } catch (e: Exception) {
+            Log.e("log", "savePortions: ", e)
             Response.Error(Failure.Database)
         }
     }
@@ -148,6 +157,7 @@ class PortionRepositoryImplementation(
             }
             Response.Success(Unit)
         } catch (e: Exception) {
+            Log.e("log", "savePortion: ", e)
             Response.Error(Failure.Database)
         }
     }
@@ -158,6 +168,7 @@ class PortionRepositoryImplementation(
         }
         Response.Success(Unit)
     } catch (e: Exception) {
+        Log.e("log", "copyPortions: ", e)
         Response.Error(Failure.Database)
     }
 
@@ -168,6 +179,7 @@ class PortionRepositoryImplementation(
         }
         Response.Success(Unit)
     } catch (e: Exception) {
+        Log.e("log", "deletePortion: ", e)
         Response.Error(Failure.Database)
     }
 
@@ -177,6 +189,7 @@ class PortionRepositoryImplementation(
         }
         Response.Success(Unit)
     } catch (e: Exception) {
+        Log.e("log", "deletePortions: ", e)
         Response.Error(Failure.Database)
     }
 
@@ -205,6 +218,7 @@ class PortionRepositoryImplementation(
                 }
 
         } catch (e: Exception) {
+            Log.e("log", "observeAllSummaries: ", e)
             return emptyFlow()
         }
     }
@@ -245,6 +259,7 @@ class PortionRepositoryImplementation(
             )
             return Response.Success(Unit)
         } catch (e: Exception) {
+            Log.e("log", "saveGoals: ", e)
             return Response.Error(Failure.Database)
         }
     }

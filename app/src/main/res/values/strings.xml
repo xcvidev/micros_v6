@@ -142,7 +142,7 @@
     <string name="generating_failed_subtitle">Use a different description and try again.</string>
     <string name="generating">Generating</string>
     <string name="recently_added">Recently added</string>
-    <string name="search_placeholder">Search by name, brand or description...</string>
+    <string name="search_placeholder">Search by products by name or brand...</string>
     <string name="product_not_found">Product Not Found.</string>
     <string name="provide_food_description">Provide food description. Use food name, ingredients or other information.</string>
     <string name="description">Description</string>

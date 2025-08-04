@@ -91,9 +91,12 @@ data object FoodDestination {
 
             slidingComposable<SearchDestination> {
                 val args = it.toRoute<SearchDestination>()
+                val viewModel = koinViewModel<SearchViewModel>()
                 SearchScreen(
                     date = args.date,
                     meal = args.mealNumber,
+                    state = viewModel.state,
+                    onEvent = viewModel::onEvent,
                     onScan = {
                         navController.navigate(ScanDestination(args.date, args.mealNumber))
                     },

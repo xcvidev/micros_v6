@@ -11,10 +11,10 @@ interface PortionRepository {
     fun observeAllSummaries(): Flow<List<MacrosSummary>>
     suspend fun getAllSummaries(): List<MacrosSummary>
 
-     fun getSummaryOfDate(date: Int): Flow<MacrosSummary>
+    fun getSummaryOfDate(date: Int): Flow<MacrosSummary>
 
-     fun getMeals(date: Int, mealNames: Map<Int,String>): Flow<List<Meal>>
-     fun getRecents(): Flow<List<Portion>>
+    fun getMeals(date: Int, mealNames: Map<Int, String>): Flow<List<Meal>>
+    suspend fun getRecents(): List<Portion>
 
     suspend fun getPortion(barcode: String, date: Int, meal: Int): Response<Portion>
 
@@ -28,7 +28,7 @@ interface PortionRepository {
 
     suspend fun savePortions(portions: List<Portion>): Response<Unit>
 
-    suspend fun copyPortions(list: List<Portion>, newDate: Int, newMeal: Int) : Response<Unit>
+    suspend fun copyPortions(list: List<Portion>, newDate: Int, newMeal: Int): Response<Unit>
 
     suspend fun deletePortion(barcode: String, date: Int, meal: Int): Response<Unit>
 

@@ -26,11 +26,11 @@ import kotlinx.coroutines.launch
 
 @Composable
 fun AutomaticSearchBar(
+    modifier: Modifier = Modifier,
     query: String,
     onQueryChange: (String) -> Unit,
     onAutomaticSearch: () -> Unit,
-    modifier: Modifier = Modifier,
-    placeHolder: String,
+    placeholder: @Composable (() -> Unit)? = null,
     trailingIcon: @Composable (() -> Unit)? = null,
     keyboardActions: KeyboardActions = KeyboardActions(),
     keyboardOptions: KeyboardOptions = KeyboardOptions(),
@@ -59,7 +59,7 @@ fun AutomaticSearchBar(
                             onAutomaticSearch()  // always call, no gating here
                         }
                     },
-                    placeholder = { Text(placeHolder) },
+                    placeholder = placeholder,
                     modifier = Modifier.weight(1f),
                     colors = TextFieldDefaults.colors(
                         focusedContainerColor = Transparent,

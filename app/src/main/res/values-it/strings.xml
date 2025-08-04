@@ -145,7 +145,7 @@
     <string name="generating_failed_subtitle">Usa una descrizione diversa e riprova.</string>
     <string name="generating">Generazione in corso</string>
     <string name="recently_added">Aggiunti di recente</string>
-    <string name="search_placeholder">Cerca per nome, marca o descrizione...</string>
+    <string name="search_placeholder">Cerca prodotti per nome o marca...</string>
     <string name="product_not_found">Prodotto non trovato.</string>
     <string name="provide_food_description">Fornisci una descrizione del cibo. Usa nome, ingredienti o altre informazioni.</string>
     <string name="description">Descrizione</string>

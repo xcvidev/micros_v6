@@ -3,10 +3,12 @@ package com.xcvi.micros.domain.usecases
 import com.xcvi.micros.domain.model.food.Food
 import com.xcvi.micros.domain.model.food.Portion
 import com.xcvi.micros.domain.model.food.scale
+import com.xcvi.micros.domain.model.food.scaleToPortion
 import com.xcvi.micros.domain.respostory.FoodRepository
 import com.xcvi.micros.domain.respostory.PortionRepository
 import com.xcvi.micros.domain.utils.Response
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.firstOrNull
 
 class SearchUseCases(
     private val foodRepository: FoodRepository,
@@ -17,17 +19,56 @@ class SearchUseCases(
     }
 
     suspend fun eat(
-        portions: List<Portion>
+        date: Int,
+        meal: Int,
+        portions: Set<Portion>
     ): Response<Unit> {
-        return portionRepository.savePortions(portions)
+        /**
+         * Important for when saving recents
+         */
+        val toSave = portions.map {
+            it.copy(date = date, meal = meal)
+        }
+        return portionRepository.savePortions(toSave)
     }
 
-    fun getRecents(): Flow<List<Food>> {
-        return foodRepository.getRecents()
+    suspend fun getRecents(): List<Portion> {
+        return portionRepository.getRecents()
     }
 
-    suspend fun search(query: String, language: String): Response<List<Food>> {
-        return foodRepository.search(query, language)
+    suspend fun search(
+        query: String,
+        date: Int,
+        meal: Int,
+        language: String
+    ): Response<List<Portion>> {
+        val res = foodRepository.search(query, language)
+        return when(res){
+            is Response.Error -> res
+            is Response.Success -> {
+                val portions = res.data.map {
+                    it.scaleToPortion(
+                        date = date,
+                        meal = meal,
+                        portionAmount = 100
+                    )
+                }
+                Response.Success(portions)
+            }
+        }
     }
 
 }
+
+
+
+
+
+
+
+
+
+
+
+
+

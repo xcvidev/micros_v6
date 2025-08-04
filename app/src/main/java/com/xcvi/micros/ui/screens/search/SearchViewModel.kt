@@ -8,18 +8,8 @@ import com.xcvi.micros.domain.model.food.scale
 import com.xcvi.micros.domain.model.food.scaleToPortion
 import com.xcvi.micros.domain.usecases.SearchUseCases
 import com.xcvi.micros.domain.utils.Response
-import com.xcvi.micros.domain.utils.getToday
 import com.xcvi.micros.ui.BaseViewModel
 import kotlinx.coroutines.launch
-
-data class SearchState(
-    val query: String = "",
-    val searchResults: List<Portion> = emptyList(),
-    val recents: List<Portion> = emptyList(),
-    val selected: Portion? = null,
-    val checkedItems: Set<Portion> = emptySet(),
-    val isLoading: Boolean = false,
-)
 
 class SearchViewModel(
     context: Context,
@@ -27,64 +17,102 @@ class SearchViewModel(
 ) : BaseViewModel<SearchState>(SearchState()) {
 
     val language = context.getString(R.string.app_language)
+    val recentsLabel = context.getString(R.string.recently_added)
+    val searchLabel = context.getString(R.string.search_results)
 
-    fun getRecents(date: Int, meal: Int) {
+    init {
         viewModelScope.launch {
-            useCases.getRecents().collect { list->
-                val updatedList = list.map {
-                    it.scaleToPortion(
-                        date = date,
-                        meal = meal,
-                        portionAmount = 100
-                    )
-                }
-                updateData { copy(recents = updatedList) }
+            val recents = useCases.getRecents()
+            updateData {
+                copy(
+                    searchResults = recents,
+                    recents = recents,
+                    listLabel = if (recents.isEmpty()) "" else recentsLabel
+                )
             }
         }
     }
 
-    fun setQuery(query: String) {
+    fun onEvent(event: SearchEvent) {
+        when (event) {
+            is SearchEvent.Input -> setQuery(event.input)
+            is SearchEvent.Search -> search(event.date, event.meal, event.onError)
+
+            is SearchEvent.Select -> selectItem(event.portion)
+
+            is SearchEvent.OpenDetails -> openDetails(event.portion)
+            is SearchEvent.CloseDetails -> closeDetails()
+
+            is SearchEvent.Enhance -> enhance(event.input)
+            is SearchEvent.Scale -> scale(event.amount)
+
+            is SearchEvent.Confirm -> onConfirm(
+                date = event.date,
+                meal = event.meal,
+                onSuccess = event.onSuccess
+            )
+        }
+
+    }
+
+    private fun setQuery(query: String) {
         if (query == "") {
-            updateData { copy(searchResults = emptyList(), query = query) }
+            updateData { copy(searchResults = recents, query = query, listLabel = recentsLabel) }
             return
         }
-        updateData { copy(query = query) }
+        updateData { copy(query = query, listLabel = "") }
     }
 
-    fun search(query: String, date: Int, meal: Int) {
+    private fun search(date: Int, meal: Int, onError: () -> Unit) {
         viewModelScope.launch {
-            if (query.isBlank() || query.length < 3) return@launch
-            val res = useCases.search(query, language)
+            if (state.query.isBlank() || state.query.length < 3) return@launch
+            updateData { copy(isSearching = true, listLabel = "") }
+            val res = useCases.search(
+                query = state.query,
+                language = language,
+                date = date,
+                meal = meal
+            )
             when (res) {
-                is Response.Success -> {
-                    val portions = res.data.map {
-                        it.scaleToPortion(
-                            date = date,
-                            meal = meal,
-                            portionAmount = 100
-                        )
-                    }
-                    updateData { copy(searchResults = portions) }
+                is Response.Success -> updateData {
+                    copy(
+                        searchResults = res.data,
+                        listLabel = searchLabel
+                    )
                 }
 
-                is Response.Error -> updateData { copy(searchResults = emptyList()) }
+                is Response.Error -> {
+                    onError()
+                    updateData { copy(searchResults = emptyList()) }
+                }
             }
+            updateData { copy(isSearching = false) }
         }
     }
 
-    fun onItemClicked(portion: Portion) {
+    private fun selectItem(portion: Portion) {
+        updateData {
+            val newChecked = selectedItems.toMutableSet()
+            if (!newChecked.remove(portion)) {
+                newChecked.add(portion)
+            }
+            copy(selectedItems = newChecked)
+        }
+    }
+
+    private fun openDetails(portion: Portion) {
         updateData { copy(selected = portion) }
     }
 
-    fun onBottomSheetDismiss() {
+    private fun closeDetails() {
         updateData { copy(selected = null) }
     }
 
-    fun enhance(input: String) {
+    private fun enhance(input: String) {
         viewModelScope.launch {
             val current = state.selected ?: return@launch
             if (input.isBlank()) return@launch
-            updateData { copy(isLoading = true) }
+            updateData { copy(isEnhancing = true) }
             val res = useCases.enhance(barcode = current.food.barcode, input)
             when (res) {
                 is Response.Success -> {
@@ -93,46 +121,36 @@ class SearchViewModel(
                         date = current.date,
                         meal = current.meal
                     )
-                    updateItem(updated)
+                    updateHelper(updated)
                 }
 
                 is Response.Error -> {}
             }
-            updateData { copy(isLoading = false) }
+            updateData { copy(isEnhancing = false) }
         }
     }
 
-    fun scale(amount: Int) {
+    private fun scale(amount: Int) {
         val current = state.selected ?: return
         val updated = current.scale(amount)
-        updateItem(updated)
+        updateHelper(updated)
     }
 
-
-    fun toggleChecked(portion: Portion) {
-        updateData {
-            val newChecked = checkedItems.toMutableSet()
-            if (!newChecked.remove(portion)) {
-                newChecked.add(portion)
-            }
-            copy(checkedItems = newChecked)
-        }
-    }
-
-    fun onConfirmChecked(onSuccess: () -> Unit) {
-        viewModelScope.launch{
-            val checkedFoods = state.checkedItems.toList()
-            val res = useCases.eat(checkedFoods)
-            when(res){
+    private fun onConfirm(date: Int, meal: Int,onSuccess: () -> Unit) {
+        viewModelScope.launch {
+            val res = useCases.eat(
+                date = date,
+                meal = meal,
+                state.selectedItems
+            )
+            when (res) {
                 is Response.Success -> onSuccess()
                 is Response.Error -> {}
             }
         }
     }
 
-
-
-    private fun updateItem(updated: Portion) {
+    private fun updateHelper(updated: Portion) {
         updateData {
             val updatedList =
                 searchResults.map { if (it.food.barcode == updated.food.barcode) updated else it }
@@ -140,16 +158,16 @@ class SearchViewModel(
                 if (selected?.food?.barcode == updated.food.barcode) updated else selected
 
             // Also update checkedItems if the item is checked
-            val newChecked = checkedItems.toMutableSet()
+            val newChecked = selectedItems.toMutableSet()
             if (newChecked.removeIf { it.food.barcode == updated.food.barcode }) {
                 newChecked.add(updated)
             }
-
             copy(
                 searchResults = updatedList,
                 selected = updatedSelected,
-                checkedItems = newChecked
+                selectedItems = newChecked
             )
         }
     }
 }
+

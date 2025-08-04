@@ -21,7 +21,7 @@ interface FoodDao{
     @Query("SELECT * FROM FoodEntity WHERE barcode IN (:barcodes)")
     suspend fun get(barcodes: List<String>): List<FoodEntity>
 
-    @Query("SELECT * FROM FoodEntity WHERE isFavorite = 1 || isRecent = 1 ORDER BY isFavorite, name")
+    @Query("SELECT * FROM FoodEntity WHERE isFavorite = 1 OR isRecent = 1 ORDER BY isFavorite, name")
     fun getRecents(): Flow<List<FoodEntity>>
 
     @RawQuery

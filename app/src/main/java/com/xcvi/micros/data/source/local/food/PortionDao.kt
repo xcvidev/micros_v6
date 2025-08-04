@@ -57,6 +57,9 @@ interface PortionDao{
     @Transaction
     @Query("SELECT * FROM PortionEntity ORDER BY date DESC LIMIT 50")
     fun getRecents(): Flow<List<PortionWithFood>>
+    @Transaction
+    @Query("SELECT * FROM PortionEntity ORDER BY date DESC LIMIT :limit")
+    suspend fun getRecents(limit: Int): List<PortionWithFood>
 
 
     @Query(
