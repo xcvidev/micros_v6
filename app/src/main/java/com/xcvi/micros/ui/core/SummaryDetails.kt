@@ -137,8 +137,13 @@ fun SummaryDetails(
                         )
                     )
                     Spacer(modifier = Modifier.weight(1f))
+                    val valueText = if(data.second.startsWith("0.0") || data.second.startsWith("0,0")){
+                        data.second.replace(",0","").replace(".0","")
+                    } else {
+                        data.second
+                    }
                     Text(
-                        text = data.second,
+                        text = valueText,
                         style = MaterialTheme.typography.bodyLarge,
                         color = MaterialTheme.colorScheme.onSurfaceVariant.copy(
                             alpha(

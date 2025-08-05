@@ -54,6 +54,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
@@ -78,6 +80,7 @@ import com.xcvi.micros.ui.core.comp.NumberPicker
 import com.xcvi.micros.ui.core.comp.rememberShakeOffset
 import com.xcvi.micros.ui.core.utils.disableBottomSheetDragWhenInteracting
 import com.xcvi.micros.ui.core.utils.getMealName
+import kotlinx.coroutines.delay
 
 @SuppressLint("UnusedBoxWithConstraintsScope")
 @OptIn(ExperimentalMaterial3Api::class)
@@ -94,6 +97,8 @@ fun SearchScreen(
     val focusManager = LocalFocusManager.current
     val keyboardController = LocalSoftwareKeyboardController.current
     val context = LocalContext.current
+
+    val focusRequester = remember { FocusRequester() }
     val listState = rememberLazyListState()
 
     var shakeTrigger by remember { mutableStateOf(false) }
@@ -107,6 +112,12 @@ fun SearchScreen(
     LaunchedEffect(listState.isScrollInProgress) {
         keyboardController?.hide()
         focusManager.clearFocus()
+    }
+
+    LaunchedEffect(Unit) {
+        delay(150) // wait for composition
+        focusRequester.requestFocus()
+        keyboardController?.show()
     }
 
     BackHandler {
@@ -126,17 +137,26 @@ fun SearchScreen(
             },
             topBar = {
                 Row(
-                    modifier = Modifier.statusBarsPadding().padding(vertical = 16.dp),
+                    modifier = Modifier
+                        .statusBarsPadding()
+                        .padding(vertical = 16.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    BackButton { onBack() }
+                    BackButton(modifier.padding(horizontal = 8.dp)) { onBack() }
+
                     val errorText = stringResource(R.string.network_error)
                     AutomaticSearchBar(
-                        modifier = modifier.weight(1f),
+                        modifier = modifier.weight(1f)
+                            .focusRequester(focusRequester),
                         query = state.query,
                         onQueryChange = { onEvent(SearchEvent.Input(it)) },
-                        leadingIcon = { Icon(Icons.Default.Search, "") },
-                        placeholder = { Text(stringResource(R.string.search_placeholder)) },
+                        placeholder = {
+                            Text(
+                                text = stringResource(R.string.search_placeholder),
+                                //textAlign = TextAlign.Center,
+                                //modifier = modifier.fillMaxWidth()
+                            )
+                        },
                         onAutomaticSearch = {
                             onEvent(
                                 SearchEvent.Search(date = date, meal = meal) {
@@ -150,12 +170,12 @@ fun SearchScreen(
                         keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done)
                     )
                     TextButton(
+                        modifier = modifier.padding(horizontal = 8.dp),
                         onClick = {
                             onEvent(SearchEvent.Confirm(date = date, meal = meal) { onBack() })
                         }
                     ) {
                         Text(
-                            modifier = Modifier.padding(horizontal = 4.dp),
                             text = stringResource(R.string.done),
                             fontSize = MaterialTheme.typography.titleMedium.fontSize,
                             fontWeight = FontWeight.SemiBold

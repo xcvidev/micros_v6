@@ -121,6 +121,11 @@ fun NumberPicker(
         modifier = modifier
             .fillMaxWidth()
             .height(150.dp)
+            .pointerInput(Unit){
+                detectDragGestures(
+                    onDrag = { change, dragAmount -> }
+                )
+            }
             .pointerInput(Unit) {
                 detectTapGestures { offset ->
                     val tapX = offset.x
