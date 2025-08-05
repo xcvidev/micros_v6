@@ -1,12 +1,20 @@
 package com.xcvi.micros.ui.screens.message
 
 import androidx.lifecycle.viewModelScope
+import com.xcvi.micros.domain.model.food.Portion
+import com.xcvi.micros.domain.model.food.scale
+import com.xcvi.micros.domain.model.food.scaleToPortion
 import com.xcvi.micros.domain.usecases.MessageUseCases
 import com.xcvi.micros.domain.utils.Response
 import com.xcvi.micros.domain.utils.getNow
+import com.xcvi.micros.domain.utils.getToday
 import com.xcvi.micros.ui.BaseViewModel
+import com.xcvi.micros.ui.screens.search.ScannerState
+import com.xcvi.micros.ui.screens.search.SearchEvent
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlin.collections.plus
 
 class MessageViewModel(
     private val useCases: MessageUseCases
@@ -29,8 +37,104 @@ class MessageViewModel(
             is MessageEvent.ClearHistory -> clearHistory()
             is MessageEvent.SendMessage -> sendMessage(event.userInput, event.language, event.onError)
             is MessageEvent.LoadMore -> onLoadMore()
+
+            is MessageEvent.OpenDetails -> {
+                openDetails(event.portion)
+                updateData { copy(scannerState = ScannerState.ShowResult) }
+            }
+            is MessageEvent.CloseDetails -> {
+                closeDetails()
+                updateData { copy(scannerState = ScannerState.Scanning) }
+            }
+
+            is MessageEvent.Scan -> scan(barcode = event.barcode){ openDetails(it) }
+            is MessageEvent.ResetScanner -> updateData { copy(scannerState = ScannerState.Scanning) }
+
+            is MessageEvent.ToggleFavorite -> toggleFavorite()
+            is MessageEvent.Enhance -> enhance(event.input)
+            is MessageEvent.Scale -> scale(event.amount)
+
+            is MessageEvent.Confirm -> confirm(event.portion)
         }
     }
+
+    private fun openDetails(portion: Portion) {
+        updateData { copy(selected = portion) }
+    }
+
+    private fun closeDetails() {
+        updateData { copy(selected = null) }
+    }
+
+    private fun scan(barcode: String, onSuccess: (Portion) -> Unit) {
+        viewModelScope.launch {
+            updateData { copy(scannerState = ScannerState.Loading) }
+            delay(500)
+            val res = useCases.scan(barcode = barcode, date = getToday(), meal = 1)
+            when (res) {
+                is Response.Error -> updateData { copy(scannerState = ScannerState.Error) }
+                is Response.Success -> {
+                    updateData { copy(scannerState = ScannerState.ShowResult) }
+                    onSuccess(res.data)
+                }
+            }
+        }
+    }
+
+    private fun toggleFavorite() {
+        viewModelScope.launch {
+            val selected = state.selected ?: return@launch
+            when(useCases.toggleFavorite(selected.food.barcode)){
+                is Response.Success -> {
+                    val updatedFood = selected.food.copy(isFavorite = !selected.food.isFavorite)
+                    val updated = selected.copy(food = updatedFood)
+                    updateData { copy(selected = updated) }
+                }
+                is Response.Error -> {}
+            }
+        }
+    }
+
+    private fun confirm(portion: Portion) {
+        viewModelScope.launch {
+            when (
+                useCases.eat(portion)
+            ) {
+                is Response.Success -> closeDetails()
+                is Response.Error -> {}
+            }
+        }
+    }
+
+    private fun scale(amount: Int) {
+        val current = state.selected ?: return
+        val updated = current.scale(amount)
+        updateData { copy(selected = updated) }
+    }
+
+
+    private fun enhance(input: String) {
+        viewModelScope.launch {
+            val current = state.selected ?: return@launch
+            if (input.isBlank()) return@launch
+            updateData { copy(isEnhancing = true) }
+            val res = useCases.enhance(barcode = current.food.barcode, input)
+            when (res) {
+                is Response.Success -> {
+                    val updated = res.data.scaleToPortion(
+                        current.amount,
+                        date = current.date,
+                        meal = current.meal
+                    )
+                    updateData { copy(selected = updated) }
+                }
+
+                is Response.Error -> {}
+            }
+            updateData { copy(isEnhancing = false) }
+        }
+    }
+
 
 
     private fun onLoadMore(){

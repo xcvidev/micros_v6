@@ -204,5 +204,6 @@
     <string name="not_licensed_text">Questa copia non ha una licenza valida.\nAcquista una versione da Google Play.</string>
     <string name="play_store">Play Store</string>
     <string name="favorite">Preferito</string>
+    <string name="select_meal">Scegli il pasto</string>
 
 </resources>

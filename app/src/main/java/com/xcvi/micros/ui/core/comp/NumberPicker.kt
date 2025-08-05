@@ -70,6 +70,7 @@ import kotlin.math.abs
 fun NumberPicker(
     onValueChange: (Int) -> Unit,
     modifier: Modifier = Modifier,
+    height: Dp = 150.dp,
     tickColor: Color = MaterialTheme.colorScheme.onSurface,
     numberColor: Color = MaterialTheme.colorScheme.onSurface,
     indicatorTickColor: Color = MaterialTheme.colorScheme.onSurface,
@@ -120,7 +121,7 @@ fun NumberPicker(
     Box(
         modifier = modifier
             .fillMaxWidth()
-            .height(150.dp)
+            .height(height)
             .pointerInput(Unit){
                 detectDragGestures(
                     onDrag = { change, dragAmount -> }

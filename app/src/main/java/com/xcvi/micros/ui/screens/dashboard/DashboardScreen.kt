@@ -58,6 +58,7 @@ import com.xcvi.micros.domain.utils.getToday
 import com.xcvi.micros.preferences.UserPreferences
 import com.xcvi.micros.ui.core.comp.DateSelectorDialog
 import com.xcvi.micros.ui.core.comp.HorizontalFadedBox
+import com.xcvi.micros.ui.core.comp.OnNavigation
 import com.xcvi.micros.ui.core.comp.rememberShakeOffset
 import com.xcvi.micros.ui.screens.dashboard.comp.AnimatedMealCard
 import com.xcvi.micros.ui.screens.dashboard.comp.DashboardDatePicker
@@ -77,6 +78,10 @@ fun DashboardScreen(
     onGotoGoals: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
+
+    OnNavigation {
+        onEvent(DashboardEvent.ChangeDate(getToday()))
+    }
 
     val haptics = LocalHapticFeedback.current
 

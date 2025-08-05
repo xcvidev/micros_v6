@@ -1,6 +1,10 @@
 package com.xcvi.micros.ui.screens.message
+
 import android.annotation.SuppressLint
+import android.content.Context
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -10,6 +14,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -21,6 +26,9 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Send
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material.icons.filled.History
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material3.AlertDialog
@@ -28,6 +36,7 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonDefaults
@@ -41,6 +50,7 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -48,11 +58,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Alignment.Companion.BottomCenter
 import androidx.compose.ui.Alignment.Companion.Center
 import androidx.compose.ui.Alignment.Companion.CenterEnd
+import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color.Companion.Transparent
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
@@ -64,11 +76,21 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.xcvi.micros.R
+import com.xcvi.micros.domain.model.food.Portion
 import com.xcvi.micros.domain.utils.Failure
+import com.xcvi.micros.domain.utils.getToday
+import com.xcvi.micros.ui.core.EnhanceDialog
+import com.xcvi.micros.ui.core.SummaryDetails
 import com.xcvi.micros.ui.core.comp.AnimatedDots
 import com.xcvi.micros.ui.core.comp.FadingText
+import com.xcvi.micros.ui.core.comp.HorizontalFadedBox
+import com.xcvi.micros.ui.core.comp.LoadingIndicator
+import com.xcvi.micros.ui.core.comp.NumberPicker
 import com.xcvi.micros.ui.core.comp.StreamingText
 import com.xcvi.micros.ui.core.comp.rememberShakeOffset
+import com.xcvi.micros.ui.core.utils.disableBottomSheetDragWhenInteracting
+import com.xcvi.micros.ui.core.utils.getMealName
+import com.xcvi.micros.ui.screens.search.BarcodeScannerSheet
 
 @OptIn(ExperimentalMaterial3Api::class)
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
@@ -76,8 +98,7 @@ import com.xcvi.micros.ui.core.comp.rememberShakeOffset
 fun MessageScreen(
     state: MessageState,
     onEvent: (MessageEvent) -> Unit,
-    onAdd: (String) -> Unit,
-    onScan: () -> Unit,
+    onBack: () -> Unit,
 ) {
     val placeHolders = listOf(
         stringResource(R.string.assistant_placeholder_main1),
@@ -117,6 +138,17 @@ fun MessageScreen(
         stringResource(R.string.assistant_show_history) to { onEvent(MessageEvent.ShowHistory) }
     )
 
+
+    var showSheet by remember { mutableStateOf(false) }
+    BackHandler {
+        if (showSheet) {
+            showSheet = false
+        } else {
+            onBack()
+        }
+    }
+
+
     Scaffold(
         modifier = Modifier
             .padding(bottom = 110.dp)
@@ -131,7 +163,12 @@ fun MessageScreen(
             },
         topBar = {
             TopAppBar(
-                title = { Text(text =stringResource(R.string.assistant_topbar),fontSize = 24.sp) },
+                title = {
+                    Text(
+                        text = stringResource(R.string.assistant_topbar),
+                        fontSize = 24.sp
+                    )
+                },
                 actions = {
                     MenuButton(menuItems = menuOptions, enabled = state.messageCount > 0)
                 }
@@ -142,7 +179,7 @@ fun MessageScreen(
                 value = userInput,
                 onValueChange = { userInput = it },
                 onClick = { onSend() },
-                onScan = { onScan() },
+                onScan = { showSheet = true },
                 placeholder = {
                     StreamingText(
                         text = stringResource(R.string.assistant_placeholder),
@@ -222,12 +259,15 @@ fun MessageScreen(
                                 .padding(vertical = 8.dp, horizontal = 8.dp)
                         )
                         Spacer(modifier = Modifier.height(12.dp))
-                        message.foodItems.forEach { suggestion ->
+                        message.foodItems.forEach { foodItem ->
                             FoodCard(
-                                name = suggestion.name,
-                                onClick = { onAdd(suggestion.id) },
-                                calories = suggestion.nutrients.calories,
-                                amount = suggestion.amount
+                                name = foodItem.food.name,
+                                onClick = {
+                                    showSheet = true
+                                    onEvent(MessageEvent.OpenDetails(foodItem))
+                                },
+                                calories = foodItem.food.nutrients.calories,
+                                amount = foodItem.amount
                             )
                         }
                     }
@@ -280,6 +320,7 @@ fun MessageScreen(
         }
     }
 
+    val context = LocalContext.current
     if (showDeleteDialog) {
         AlertDialog(
             onDismissRequest = { showDeleteDialog = false },
@@ -299,6 +340,238 @@ fun MessageScreen(
                 }
             }
         )
+    }
+
+    BarcodeScannerSheet(
+        state = state.scannerState,
+        isOpen = showSheet,
+        onDismiss = {
+            showSheet = false
+            onEvent(MessageEvent.CloseDetails)
+        },
+        onBarcodeScanned = { onEvent(MessageEvent.Scan(barcode = it)) },
+        onRetryScan = { onEvent(MessageEvent.ResetScanner) },
+    ) {
+        if (state.selected != null) {
+            FoodDetailsContent(
+                item = state.selected,
+                isEnhancing = state.isEnhancing,
+                onDismiss = {
+                    showSheet = false
+                    onEvent(MessageEvent.CloseDetails)
+                },
+                onScale = { onEvent(MessageEvent.Scale(it)) },
+                onEnhance = { onEvent(MessageEvent.Enhance(it)) },
+                onFavorite = { onEvent(MessageEvent.ToggleFavorite) },
+                onConfirm = { onEvent(MessageEvent.Confirm(it)) },
+                context = context
+            )
+        }
+    }
+}
+
+
+@Composable
+fun FoodDetailsContent(
+    modifier: Modifier = Modifier,
+    context: Context,
+    isEnhancing: Boolean,
+    onDismiss: () -> Unit,
+    onScale: (Int) -> Unit,
+    onEnhance: (String) -> Unit,
+    onFavorite: () -> Unit,
+    onConfirm: (Portion) -> Unit,
+    item: Portion,
+) {
+    var showInputDialog by remember { mutableStateOf(false) }
+    var showMealDialog by remember { mutableStateOf(false) }
+    var amount by remember { mutableIntStateOf(item.amount) }
+    val listState = rememberLazyListState()
+
+    if (showInputDialog) {
+        EnhanceDialog(
+            onDismiss = { showInputDialog = false },
+            onConfirm = { input ->
+                onEnhance(input)
+                showInputDialog = false
+            }
+        )
+    }
+
+    if (showMealDialog) {
+        AlertDialog(
+            onDismissRequest = { showMealDialog = false },
+            title = { Text(stringResource(R.string.select_meal)) },
+            text = {
+                Column {
+                    (1..8).forEach { meal ->
+                        Column(
+                            modifier = modifier
+                                .fillMaxWidth()
+                                .clickable {
+                                    val updated = item.copy(meal = meal, date = getToday())
+                                    onConfirm(updated)
+                                    onDismiss()
+                                }
+                        ) {
+                            if (meal > 1) {
+                                HorizontalDivider(
+                                    thickness = 0.3.dp,
+                                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f)
+                                )
+                            }
+                            val mealLabel = getMealName(context, meal)
+                            Text(
+                                text = mealLabel,
+                                modifier = Modifier.padding(vertical = 16.dp),
+                                fontWeight = FontWeight(450),
+                                fontSize = MaterialTheme.typography.titleMedium.fontSize,
+                                color = MaterialTheme.colorScheme.primary
+                            )
+                        }
+                    }
+                }
+
+            },
+            confirmButton = {}
+        )
+    }
+
+    val focusManager = LocalFocusManager.current
+    val keyboardController = LocalSoftwareKeyboardController.current
+
+    LaunchedEffect(listState.isScrollInProgress) {
+        focusManager.clearFocus()
+        keyboardController?.hide()
+    }
+    LazyColumn(
+        state = listState,
+        modifier = modifier
+            .pointerInput(Unit) {
+                detectTapGestures(onTap = { focusManager.clearFocus() })
+            }
+    ) {
+        item {
+            Column(modifier = Modifier.disableBottomSheetDragWhenInteracting()) {
+
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp),
+                    horizontalArrangement = Arrangement.SpaceAround,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Box(
+                        modifier = Modifier
+                            .size(80.dp)
+                            .clip(RoundedCornerShape(8.dp))
+                            .clickable { onFavorite() },
+                        contentAlignment = Alignment.Center
+                    ) {
+                        val icon =
+                            if (item.food.isFavorite) Icons.Default.Favorite else Icons.Default.FavoriteBorder
+                        Column(
+                            modifier = Modifier.padding(4.dp),
+                            horizontalAlignment = CenterHorizontally,
+                            verticalArrangement = Arrangement.Center
+                        ) {
+                            Icon(imageVector = icon, contentDescription = "")
+                            Spacer(modifier = Modifier.height(4.dp))
+                            Text(text = stringResource(R.string.favorite))
+                        }
+                    }
+
+                    Box(
+                        modifier = Modifier
+                            .size(80.dp)
+                            .clip(RoundedCornerShape(8.dp))
+                            .clickable { showInputDialog = true },
+                        contentAlignment = Center
+                    ) {
+                        val icon = if (item.food.isAI) {
+                            painterResource(R.drawable.ic_ai_filled)
+                        } else {
+                            painterResource(R.drawable.ic_ai)
+                        }
+                        Column(
+                            modifier = Modifier.padding(4.dp),
+                            horizontalAlignment = CenterHorizontally,
+                            verticalArrangement = Arrangement.Center
+                        ) {
+                            Icon(
+                                painter = icon,
+                                contentDescription = ""
+                            )
+                            Spacer(modifier = Modifier.height(4.dp))
+                            Text(text = stringResource(R.string.enhance_confirm))
+                        }
+                    }
+
+                    Box(
+                        modifier = Modifier
+                            .size(80.dp)
+                            .clip(RoundedCornerShape(8.dp))
+                            .clickable {
+                                showMealDialog = true
+                            },
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Column(
+                            modifier = Modifier.padding(4.dp),
+                            horizontalAlignment = CenterHorizontally,
+                            verticalArrangement = Arrangement.Center
+                        ) {
+                            Icon(imageVector = Icons.Default.Add, contentDescription = "")
+                            Spacer(modifier = Modifier.height(4.dp))
+                            Text(text = stringResource(R.string.add))
+                        }
+                    }
+                }
+                Text(
+                    modifier = Modifier.padding(start = 16.dp, end = 16.dp, top = 24.dp),
+                    text = item.food.name,
+                    fontSize = MaterialTheme.typography.headlineSmall.fontSize,
+                    fontWeight = MaterialTheme.typography.headlineSmall.fontWeight
+                )
+                if (isEnhancing) {
+                    Box(
+                        contentAlignment = Alignment.TopCenter,
+                        modifier = Modifier
+                            .padding(vertical = 24.dp)
+                            .heightIn(min = 500.dp)
+                            .fillMaxWidth()
+                    ) {
+                        LoadingIndicator()
+                    }
+                } else {
+                    HorizontalFadedBox(
+                        height = 150.dp,
+                        horizontalFade = 50.dp,
+                        targetColor = MaterialTheme.colorScheme.surfaceContainerHighest,
+                    ){
+                        NumberPicker(
+                            modifier = modifier.disableBottomSheetDragWhenInteracting(),
+                            initialValue = amount,
+                            onValueChange = {
+                                if (it > 0) {
+                                    amount = it
+                                    onScale(it)
+                                }
+                            }
+                        )
+                    }
+                }
+            }
+        }
+        item {
+            SummaryDetails(
+                nutrients = item.food.nutrients,
+                minerals = item.food.minerals,
+                vitamins = item.food.vitamins,
+                aminoAcids = item.food.aminoAcids,
+                context = context
+            )
+        }
     }
 }
 

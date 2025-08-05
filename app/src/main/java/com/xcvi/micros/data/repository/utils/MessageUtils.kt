@@ -8,8 +8,10 @@ import com.xcvi.micros.domain.model.food.AminoAcids
 import com.xcvi.micros.domain.model.food.Food
 import com.xcvi.micros.domain.model.food.Minerals
 import com.xcvi.micros.domain.model.food.Nutrients
+import com.xcvi.micros.domain.model.food.Portion
 import com.xcvi.micros.domain.model.food.Vitamins
 import com.xcvi.micros.domain.model.message.FoodItem
+import com.xcvi.micros.domain.utils.getToday
 import com.xcvi.micros.domain.utils.roundToInt
 
 
@@ -17,7 +19,7 @@ fun MessageWithFoods.toModel(): Message {
     return Message(
         text = message.text,
         fromUser = message.fromUser,
-        foodItems = suggestions.map { it.toModel() },
+        foodItems = suggestions.map { it.toPortion() },
         timestamp = message.timestamp
     )
 }
@@ -41,6 +43,37 @@ fun FoodItemEntity.toModel(): FoodItem {
             potassium = potassium,
             sodium = sodium
         )
+    )
+}
+
+fun FoodItemEntity.toPortion(): Portion {
+    val food = Food(
+        barcode = name,
+        name = name,
+        nutrients = Nutrients(
+            calories = calories.roundToInt(),
+            protein = protein,
+            carbohydrates = carbohydrates,
+            fats = fats,
+            saturatedFats = saturatedFats,
+            fiber = fiber,
+            sugars = sugars
+        ),
+        minerals = Minerals.empty().copy(
+            potassium = potassium,
+            sodium = sodium
+        ),
+        vitamins = Vitamins.empty(),
+        aminoAcids = AminoAcids.empty(),
+        isAI = true,
+        isRecent = true,
+        isFavorite = false
+    )
+    return Portion(
+        food = food,
+        amount = amountInGrams.roundToInt(),
+        date = getToday(),
+        meal = 1
     )
 }
 

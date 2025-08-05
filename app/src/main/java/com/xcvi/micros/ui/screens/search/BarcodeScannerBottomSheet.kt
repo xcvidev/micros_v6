@@ -82,11 +82,6 @@ fun BarcodeScannerSheet(
     }
     val haptics = LocalHapticFeedback.current
 
-    LaunchedEffect(isOpen) {
-        if (isOpen && sheetState.currentValue == SheetValue.Hidden) {
-            sheetState.show()
-        }
-    }
     LaunchedEffect(state) {
         if (state == ScannerState.ShowResult) {
             delay(150)
@@ -94,8 +89,9 @@ fun BarcodeScannerSheet(
         }
     }
 
-    if (isOpen || sheetState.currentValue != SheetValue.Hidden) {
+    if (isOpen) {
         ModalBottomSheet(
+            containerColor = MaterialTheme.colorScheme.surfaceContainerHighest,
             modifier = modifier
                 .padding(top = 120.dp)
                 .padding(horizontal = 8.dp),

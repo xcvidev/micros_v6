@@ -75,6 +75,7 @@ import com.xcvi.micros.ui.core.comp.ActionTextButton
 import com.xcvi.micros.ui.core.comp.AutomaticSearchBar
 import com.xcvi.micros.ui.core.comp.BackButton
 import com.xcvi.micros.ui.core.comp.CheckIconButton
+import com.xcvi.micros.ui.core.comp.HorizontalFadedBox
 import com.xcvi.micros.ui.core.comp.LoadingIndicator
 import com.xcvi.micros.ui.core.comp.NumberPicker
 import com.xcvi.micros.ui.core.comp.rememberShakeOffset
@@ -425,16 +426,22 @@ fun SheetContent(
                         LoadingIndicator()
                     }
                 } else {
-                    NumberPicker(
-                        modifier = modifier.disableBottomSheetDragWhenInteracting(),
-                        initialValue = amount,
-                        onValueChange = {
-                            if (it > 0) {
-                                amount = it
-                                onScale(it)
+                    HorizontalFadedBox(
+                        height = 150.dp,
+                        horizontalFade = 50.dp,
+                        targetColor = MaterialTheme.colorScheme.surfaceContainerHighest,
+                    ){
+                        NumberPicker(
+                            modifier = modifier.disableBottomSheetDragWhenInteracting(),
+                            initialValue = amount,
+                            onValueChange = {
+                                if (it > 0) {
+                                    amount = it
+                                    onScale(it)
+                                }
                             }
-                        }
-                    )
+                        )
+                    }
                 }
             }
         }

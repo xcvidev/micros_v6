@@ -15,10 +15,10 @@ interface FoodDao{
     /**
      * Get
      */
-    @Query("SELECT * FROM FoodEntity WHERE barcode = :barcode LIMIT 1")
+    @Query("SELECT * FROM FoodEntity WHERE barcode = :barcode OR name = :barcode LIMIT 1")
     suspend fun get(barcode: String): FoodEntity?
 
-    @Query("SELECT * FROM FoodEntity WHERE barcode IN (:barcodes)")
+    @Query("SELECT * FROM FoodEntity WHERE barcode IN (:barcodes) OR name IN (:barcodes)")
     suspend fun get(barcodes: List<String>): List<FoodEntity>
 
     @Query("SELECT * FROM FoodEntity WHERE isFavorite = 1 OR isRecent = 1 ORDER BY isFavorite, name")

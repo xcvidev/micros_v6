@@ -140,7 +140,7 @@ class MessageRepositoryImplementation(
             contextBuilder.append("$speaker ${message.text}\n")
             if (!message.fromUser && message.foodItems.isNotEmpty()) {
                 contextBuilder.append("<Foods: ")
-                contextBuilder.append(message.foodItems.joinToString(", ") { it.name })
+                contextBuilder.append(message.foodItems.joinToString(", ") { it.food.name })
                 contextBuilder.append(">\n")
             }
         }

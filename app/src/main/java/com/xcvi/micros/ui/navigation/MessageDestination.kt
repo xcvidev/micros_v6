@@ -24,13 +24,9 @@ data object MessageDestination {
                 MessageScreen(
                     state = assistantViewModel.state,
                     onEvent = assistantViewModel::onEvent,
-                    onScan = {
-
-                    },
-                    onAdd = { barcode ->
-
-                    }
-                )
+                ){
+                    navController.popBackStack()
+                }
             }
 
         }

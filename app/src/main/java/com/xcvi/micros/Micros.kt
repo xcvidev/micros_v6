@@ -80,7 +80,7 @@ class Micros: Application() {
         viewModel { WeightViewModel(get()) }
     }
     private val useCasesModule = module {
-        factory { MessageUseCases(get()) }
+        factory { MessageUseCases(get(), get(), get()) }
         factory { WeightUseCases(get()) }
         factory { DashboardUseCases(get()) }
         factory { DetailsUseCases(get(), get(), get()) }

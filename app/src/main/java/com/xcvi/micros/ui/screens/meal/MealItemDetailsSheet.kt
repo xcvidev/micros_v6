@@ -53,6 +53,7 @@ import com.xcvi.micros.domain.model.food.Portion
 import com.xcvi.micros.ui.core.DeleteDialog
 import com.xcvi.micros.ui.core.EnhanceDialog
 import com.xcvi.micros.ui.core.SummaryDetails
+import com.xcvi.micros.ui.core.comp.HorizontalFadedBox
 import com.xcvi.micros.ui.core.comp.LoadingIndicator
 import com.xcvi.micros.ui.core.comp.NumberPicker
 import com.xcvi.micros.ui.core.utils.disableBottomSheetDragWhenInteracting
@@ -107,6 +108,7 @@ fun MealItemDetailsSheet(
 
     val listState = rememberLazyListState()
     ModalBottomSheet(
+        containerColor = MaterialTheme.colorScheme.surfaceContainerHighest,
         modifier = Modifier
             .padding(horizontal = 4.dp)
             .statusBarsPadding(),
@@ -235,16 +237,22 @@ fun MealItemDetailsSheet(
                 }
             } else {
                 item {
-                    NumberPicker(
-                        modifier = Modifier.disableBottomSheetDragWhenInteracting(),
-                        initialValue = amount,
-                        onValueChange = {
-                            if (it > 0) {
-                                amount = it
-                                onScale(it)
+                    HorizontalFadedBox(
+                        height = 150.dp,
+                        horizontalFade = 50.dp,
+                        targetColor = MaterialTheme.colorScheme.surfaceContainerHighest,
+                    ) {
+                        NumberPicker(
+                            modifier = Modifier.disableBottomSheetDragWhenInteracting(),
+                            initialValue = amount,
+                            onValueChange = {
+                                if (it > 0) {
+                                    amount = it
+                                    onScale(it)
+                                }
                             }
-                        }
-                    )
+                        )
+                    }
                 }
                 item {
                     SummaryDetails(

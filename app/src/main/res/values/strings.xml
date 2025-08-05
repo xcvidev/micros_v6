@@ -200,5 +200,6 @@
     <string name="not_licensed_text">This copy is not licensed.\nPlease purchase on Google Play.</string>
     <string name="play_store">Play Store</string>
     <string name="favorite">Favorite</string>
+    <string name="select_meal">Choose a meal</string>
 
 </resources>
