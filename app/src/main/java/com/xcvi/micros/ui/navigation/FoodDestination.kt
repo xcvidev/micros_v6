@@ -86,8 +86,7 @@ data object FoodDestination {
                                 mealLabel = args.label
                             )
                         )
-                    },
-                    onGotoDetails = { TODO() }
+                    }
                 )
             }
 

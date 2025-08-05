@@ -38,10 +38,10 @@ class GoalsViewModel(
         summaryJob?.cancel()
         summaryJob = viewModelScope.launch {
             useCases.getSummary(date).collect{ data ->
-                if(data.isEmpty()){
-                    state = GoalsState.Empty
-                } else {
+                if(data.hasGoals()){
                     state = GoalsState.Goals(currentGoals = data)
+                } else {
+                    state = GoalsState.Empty
                 }
             }
         }

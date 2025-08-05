@@ -54,7 +54,6 @@ fun MealScreen(
     onEvent: (MealEvent) -> Unit,
     onBack: () -> Unit,
     onGotoAdd: () -> Unit,
-    onGotoDetails: (Portion) -> Unit,
     modifier: Modifier = Modifier,
 ) {
 
