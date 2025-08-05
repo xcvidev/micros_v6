@@ -6,6 +6,14 @@ sealed interface SearchEvent {
     data class Input(val input: String) : SearchEvent
     data class Search(val date: Int, val meal: Int, val onError: () -> Unit) : SearchEvent
 
+    data class Scan(
+        val date: Int,
+        val meal: Int,
+        val barcode: String
+    ) : SearchEvent
+
+    data object ResetScanner : SearchEvent
+
     data class OpenDetails(val portion: Portion) : SearchEvent
     data object CloseDetails : SearchEvent
 

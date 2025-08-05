@@ -69,7 +69,7 @@
     <string name="permission_required_text">This app requires camera permission to scan barcodes.</string>
     <string name="camera_permission_denied_text">Camera permission denied. Please grant the permission in app settings.</string>
     <string name="open_settings">Open settings</string>
-    <string name="retry_dialog_text">Try scanning again. If you can\'t scan the barcode. Try searching or describing your food.</string>
+    <string name="retry_dialog_text">Something went wrong. Check your connection and try again. If you can\'t scan the barcode, try searching by name and brand or use the AI Assistant.</string>
     <string name="retry">Retry</string>
 
     <!--  Stats  -->

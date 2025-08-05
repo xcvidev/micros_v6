@@ -22,6 +22,20 @@ class SearchUseCases(
         return foodRepository.toggleFavorite(barcode)
     }
 
+    suspend fun scan(barcode: String, date: Int, meal: Int):  Response<Portion> {
+        return when(val res = foodRepository.scan(barcode)){
+            is Response.Error -> Response.Error(res.error)
+            is Response.Success -> {
+                val portion = res.data.scaleToPortion(
+                    date = date,
+                    meal = meal,
+                    portionAmount = 100
+                )
+                Response.Success(portion)
+            }
+        }
+    }
+
     suspend fun eat(
         date: Int,
         meal: Int,

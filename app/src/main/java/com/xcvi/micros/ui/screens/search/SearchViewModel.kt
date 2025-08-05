@@ -9,7 +9,9 @@ import com.xcvi.micros.domain.model.food.scaleToPortion
 import com.xcvi.micros.domain.usecases.SearchUseCases
 import com.xcvi.micros.domain.utils.Response
 import com.xcvi.micros.ui.BaseViewModel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+
 
 class SearchViewModel(
     context: Context,
@@ -40,8 +42,20 @@ class SearchViewModel(
 
             is SearchEvent.Select -> selectItem(event.portion)
 
+            is SearchEvent.Scan -> scan(
+                barcode = event.barcode,
+                date = event.date,
+                meal = event.meal
+            ){
+                openDetails(it)
+            }
+            is SearchEvent.ResetScanner -> resetScanner()
+
             is SearchEvent.OpenDetails -> openDetails(event.portion)
-            is SearchEvent.CloseDetails -> closeDetails()
+            is SearchEvent.CloseDetails -> {
+                closeDetails()
+                resetScanner()
+            }
 
             is SearchEvent.ToggleFavorite -> toggleFavorite()
             is SearchEvent.Enhance -> enhance(event.input)
@@ -53,7 +67,40 @@ class SearchViewModel(
                 onSuccess = event.onSuccess
             )
         }
+    }
 
+    private fun resetScanner() {
+        updateData { copy(scannerState = ScannerState.Scanning) }
+    }
+
+    private fun openDetails(portion: Portion) {
+        updateData { copy(selected = portion) }
+    }
+
+    private fun closeDetails() {
+        updateData { copy(selected = null) }
+    }
+
+
+    private fun scan(date: Int, meal: Int, barcode: String, onSuccess: (Portion) -> Unit) {
+        viewModelScope.launch {
+            updateData { copy(scannerState = ScannerState.Loading) }
+            delay(500)
+            val res = useCases.scan(barcode = barcode, date = date, meal = meal)
+            when (res) {
+                is Response.Error -> updateData { copy(scannerState = ScannerState.Error) }
+                is Response.Success -> {
+                    addScannedToResults(res.data)
+                    updateData { copy(scannerState = ScannerState.ShowResult) }
+                    onSuccess(res.data)
+                }
+            }
+        }
+    }
+    private fun addScannedToResults(portion: Portion) {
+        if(state.searchResults.none{it.food.barcode == portion.food.barcode}){
+            updateData { copy(searchResults = searchResults + portion, listLabel = searchLabel) }
+        }
     }
 
     private fun toggleFavorite() {
@@ -121,13 +168,6 @@ class SearchViewModel(
         }
     }
 
-    private fun openDetails(portion: Portion) {
-        updateData { copy(selected = portion) }
-    }
-
-    private fun closeDetails() {
-        updateData { copy(selected = null) }
-    }
 
     private fun enhance(input: String) {
         viewModelScope.launch {

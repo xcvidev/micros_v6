@@ -68,7 +68,7 @@
     <string name="permission_required_text">Questa app richiede l\'autorizzazione alla fotocamera per scansionare i codici a barre.</string>
     <string name="camera_permission_denied_text">Autorizzazione fotocamera negata. Concedila nelle impostazioni dell\'app.</string>
     <string name="open_settings">Apri impostazioni</string>
-    <string name="retry_dialog_text">Prova a scansionare di nuovo. Se non riesci, prova a cercare o descrivere il tuo cibo.</string>
+    <string name="retry_dialog_text">Errore di scansione. Controlla la tua connessione di rete e riprova. Se non riesci, prova a cercare per nome e marca, altrimenti usa l\'assistente IA.</string>
     <string name="retry">Riprova</string>
 
     <!--  Stats  -->

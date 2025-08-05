@@ -110,8 +110,6 @@ fun MaterialCameraScreen(
         }
     }
 
-
-
     when {
         hasPermission -> {
             Box(modifier = Modifier.height(height).width(width)) {

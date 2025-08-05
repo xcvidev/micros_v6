@@ -3,6 +3,7 @@ package com.xcvi.micros.ui.screens.search
 import com.xcvi.micros.domain.model.food.Portion
 
 data class SearchState(
+    val scannerState: ScannerState = ScannerState.Scanning,
     val listLabel: String = "",
     val query: String = "",
     val searchResults: List<Portion> = emptyList(),

@@ -17,7 +17,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -27,12 +26,10 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material.icons.filled.Search
-import androidx.compose.material3.BottomSheetDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
@@ -40,7 +37,6 @@ import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -59,13 +55,12 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.xcvi.micros.R
 import com.xcvi.micros.domain.model.food.Portion
-import com.xcvi.micros.ui.core.EnhanceDialog
 import com.xcvi.micros.ui.core.comp.ActionTextButton
 import com.xcvi.micros.ui.core.comp.AutomaticSearchBar
 import com.xcvi.micros.ui.core.comp.BackButton
 import com.xcvi.micros.ui.core.comp.CheckIconButton
 import com.xcvi.micros.ui.core.comp.rememberShakeOffset
-import com.xcvi.micros.ui.screens.scan.MaterialCameraScreen
+import com.xcvi.micros.ui.core.utils.getMealName
 import kotlinx.coroutines.launch
 
 @SuppressLint("UnusedBoxWithConstraintsScope")
@@ -77,7 +72,6 @@ fun SearchScreen(
     meal: Int,
     state: SearchState,
     onEvent: (SearchEvent) -> Unit,
-    onScan: () -> Unit,
     onBack: () -> Unit
 ) {
 
@@ -101,12 +95,12 @@ fun SearchScreen(
     }
 
     BackHandler {
-        if (showScanner){
+        if (showScanner) {
             scope.launch {
                 sheetState.hide()
                 showScanner = false
             }
-        }else{
+        } else {
             onBack()
         }
     }
@@ -120,7 +114,7 @@ fun SearchScreen(
             },
             topBar = {
                 TopAppBar(
-                    title = { },
+                    title = { Text(getMealName(context, meal)) },
                     navigationIcon = { BackButton { onBack() } },
                     actions = {
                         if (state.selectedItems.isNotEmpty()) {
@@ -137,7 +131,6 @@ fun SearchScreen(
                     icon = { Icon(painterResource(R.drawable.ic_scan), contentDescription = null) },
                     onClick = {
                         showScanner = true
-                        //onScan()
                     },
                     containerColor = MaterialTheme.colorScheme.primary,
                     contentColor = MaterialTheme.colorScheme.background
@@ -155,7 +148,7 @@ fun SearchScreen(
                         modifier = modifier.padding(16.dp),
                         query = state.query,
                         onQueryChange = { onEvent(SearchEvent.Input(it)) },
-                        leadingIcon = { Icon(Icons.Default.Search,"") },
+                        leadingIcon = { Icon(Icons.Default.Search, "") },
                         placeholder = { Text(stringResource(R.string.search_placeholder)) },
                         onAutomaticSearch = {
                             onEvent(
@@ -166,7 +159,7 @@ fun SearchScreen(
                                 }
                             )
                         },
-                        keyboardActions = KeyboardActions(onDone = {focusManager.clearFocus()}),
+                        keyboardActions = KeyboardActions(onDone = { focusManager.clearFocus() }),
                         keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done)
                     )
                 }
@@ -194,60 +187,62 @@ fun SearchScreen(
                 }
             }
         }
-        if(showScanner){
-            ModalBottomSheet(
-                modifier = Modifier
-                    .padding(horizontal = 4.dp)
-                    .statusBarsPadding(),
-                onDismissRequest = {
-                    scope.launch {
-                        sheetState.hide()
-                        showScanner = false
-                    }
-                },
-                sheetState = sheetState,
-                dragHandle = { BottomSheetDefaults.DragHandle() }
-            ){
-                MaterialCameraScreen(
-                    context = context,
-                    onScan = { barcode, barcodeScanner ->
-                        barcodeScanner?.close()
-                        scope.launch {
-                            sheetState.hide()
-                            showScanner = false
-                        }
 
-                    },
-                    onGoBack = { onBack() },
-                    height = maxHeight*0.67f,
-                    width = maxWidth
+        BarcodeScannerSheet(
+            state = state.scannerState,
+            isOpen = showScanner,
+            onDismiss = {
+                scope.launch {
+                    sheetState.hide()
+                    showScanner = false
+                    onEvent(SearchEvent.CloseDetails)
+                }
+            },
+            onBarcodeScanned = { barcode ->
+                onEvent(
+                    SearchEvent.Scan(
+                        barcode = barcode,
+                        date = date,
+                        meal = meal
+                    )
                 )
-            }
+            },
+            onRetryScan = {
+                onEvent(SearchEvent.ResetScanner)
+            },
+        ){
+            Text(state.selected.toString())
         }
+
+        if (state.recents.isEmpty() && state.searchResults.isEmpty()) {
+            EmptyRecentsContent(
+                modifier
+                    .fillMaxSize()
+                    .padding(16.dp)
+            )
+        }
+        /*
+        if (state.selected != null) {
+            val isSelected =
+                state.selectedItems.any { it.food.barcode == state.selected.food.barcode }
+            SearchItemDetailsSheet(
+                item = state.selected,
+                isSelected = isSelected,
+                onDismiss = { onEvent(SearchEvent.CloseDetails) },
+                onScale = { onEvent(SearchEvent.Scale(it)) },
+                onEnhance = { onEvent(SearchEvent.Enhance(it)) },
+                onFavorite = { onEvent(SearchEvent.ToggleFavorite) },
+                isEnhancing = state.isEnhancing,
+                context = context,
+                onSelect = { onEvent(SearchEvent.Select(state.selected)) },
+            )
+        }
+         */
     }
 
 
-    if(state.recents.isEmpty() && state.searchResults.isEmpty()){
-        EmptyRecentsContent(modifier
-            .fillMaxSize()
-            .padding(16.dp))
-    }
-
-    if (state.selected != null) {
-        val isSelected = state.selectedItems.any { it.food.barcode == state.selected.food.barcode }
-        SearchItemDetailsSheet(
-            item = state.selected,
-            isSelected = isSelected,
-            onDismiss = { onEvent(SearchEvent.CloseDetails) },
-            onScale = { onEvent(SearchEvent.Scale(it)) },
-            onEnhance = { onEvent(SearchEvent.Enhance(it)) },
-            onFavorite = { onEvent(SearchEvent.ToggleFavorite) },
-            isEnhancing = state.isEnhancing,
-            context = context,
-            onSelect = { onEvent(SearchEvent.Select(state.selected)) },
-        )
-    }
 }
+
 @Composable
 fun FoodItem(
     modifier: Modifier = Modifier,
@@ -272,7 +267,10 @@ fun FoodItem(
                 horizontalArrangement = Arrangement.Start,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                FoodItemIcon(modifier = Modifier.padding(start = 8.dp, end = 6.dp), portion = portion)
+                FoodItemIcon(
+                    modifier = Modifier.padding(start = 8.dp, end = 6.dp),
+                    portion = portion
+                )
                 Text(
                     text = portion.food.name,
                     fontSize = MaterialTheme.typography.bodyLarge.fontSize,

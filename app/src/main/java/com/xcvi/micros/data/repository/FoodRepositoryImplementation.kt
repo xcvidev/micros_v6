@@ -74,25 +74,27 @@ class FoodRepositoryImplementation(
     }
 
     override suspend fun scan(barcode: String): Response<Food> {
-        val res = fetchAndCache(
-            apiCall = { productApi.scan(barcode) },
-            cacheCall = { response ->
-                val entity = response.toEntity()
-                if (entity != null) {
-                    foodDao.insert(entity)
-                }
-            },
-            dbCall = { foodDao.get(barcode) },
-            fallbackRequest = null,
-            fallbackDbCall = { null }
-        )
-
-        return when (res) {
-            is Response.Success -> Response.Success(res.data.toModel())
-            is Response.Error -> {
-                Log.e("FoodRepository", "scan: ", res.error)
-                Response.Error(res.error)
+        return try {
+            val local = foodDao.get(barcode)
+            if (local != null) {
+                Response.Success(local.toModel())
+            } else {
+                fetchAndCache(
+                    apiCall = { productApi.scan(barcode) },
+                    cacheCall = { response ->
+                        val entity = response.toEntity()
+                        if (entity != null) {
+                            foodDao.insert(entity)
+                        }
+                    },
+                    dbCall = { foodDao.get(barcode)?.toModel() },
+                    fallbackRequest = null,
+                    fallbackDbCall = { null }
+                )
             }
+        } catch (e: Exception) {
+            Log.e("FoodRepository", "scan: ", e)
+            Response.Error(Failure.Network)
         }
     }
 
