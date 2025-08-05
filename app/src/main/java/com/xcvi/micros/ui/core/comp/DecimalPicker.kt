@@ -1,5 +1,6 @@
 package com.xcvi.micros.ui.core.comp
 
+
 import android.annotation.SuppressLint
 import android.graphics.Paint
 import androidx.compose.animation.core.Animatable
@@ -17,7 +18,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
@@ -63,31 +63,28 @@ import com.xcvi.micros.domain.utils.roundToInt
 import kotlinx.coroutines.launch
 import kotlin.math.abs
 
-
-
-
+@SuppressLint("DefaultLocale")
 @Composable
-fun NumberPicker(
-    onValueChange: (Int) -> Unit,
+fun DecimalPicker(
+    onImeAction: () -> Unit,
+    onValueChange: (Double) -> Unit,
     modifier: Modifier = Modifier,
     tickColor: Color = MaterialTheme.colorScheme.onSurface,
     numberColor: Color = MaterialTheme.colorScheme.onSurface,
     indicatorTickColor: Color = MaterialTheme.colorScheme.onSurface,
     textFieldContainerColor: Color = MaterialTheme.colorScheme.surfaceContainer,
-    valueRange: IntRange = 0..10000,
-    initialValue: Int = 100,
+    valueRange: IntRange = 0..1000, // Represents 0.0 to 100.0
+    initialValue: Int = 100,        // Represents 10.0
     tickSpacingDp: Dp = 12.dp,
     clickGranularity: Int = 10,
     horizontalClickTolerancePx: Float = 150f,
     verticalClickTolerancePx: Float = 100f,
-    fontSize: TextUnit = MaterialTheme.typography.bodyLarge.fontSize,
-    enableTextField: Boolean = false,
-    onImeDone: () -> Unit = {}
-) {
+    fontSize: TextUnit = MaterialTheme.typography.bodyMedium.fontSize,
+    weightUnitContent: @Composable () -> Unit,
+
+    ) {
     val textSizePx = with(LocalDensity.current) { fontSize.toPx() }
     val tickSpacingPx = with(LocalDensity.current) { tickSpacingDp.toPx() }
-
-
     val maxOffset = (valueRange.last - valueRange.first) * tickSpacingPx
     var isEditing by remember { mutableStateOf(false) }
 
@@ -104,12 +101,11 @@ fun NumberPicker(
 
     val centerValue = (scrollOffsetAnim.value / tickSpacingPx).roundToInt() + valueRange.first
     val clampedValue = centerValue.coerceIn(valueRange)
-    onValueChange(clampedValue)
+    val floatValue = clampedValue / 10f
+    onValueChange(floatValue.toDouble())
 
-
-    // Snap to nearest tick after scroll ends
     LaunchedEffect(scrollState.isScrollInProgress) {
-        onImeDone()
+        onImeAction()
         if (!scrollState.isScrollInProgress) {
             val nearestTick = (scrollOffsetAnim.value / tickSpacingPx).roundToInt()
             val targetOffset = nearestTick * tickSpacingPx
@@ -120,14 +116,13 @@ fun NumberPicker(
     Box(
         modifier = modifier
             .fillMaxWidth()
-            .height(150.dp)
+            .height(100.dp)
             .pointerInput(Unit) {
                 detectTapGestures { offset ->
                     val tapX = offset.x
                     val centerX = size.width / 2f
                     val relativeX = scrollOffsetAnim.value + (tapX - centerX)
                     val tappedIndexFloat = relativeX / tickSpacingPx
-
                     val closestMultipleOf10Index =
                         ((tappedIndexFloat.roundToInt() / clickGranularity.toDouble()).roundToInt()) * clickGranularity
                     val tappedValue = valueRange.first + closestMultipleOf10Index
@@ -136,7 +131,6 @@ fun NumberPicker(
                         val tickX =
                             centerX - scrollOffsetAnim.value + (tappedValue - valueRange.first) * tickSpacingPx
                         val tapY = offset.y
-
                         if (
                             abs(tapX - tickX) <= horizontalClickTolerancePx &&
                             tapY in (size.height / 2 - verticalClickTolerancePx)..(size.height / 2 + verticalClickTolerancePx)
@@ -164,7 +158,8 @@ fun NumberPicker(
                 val x = startX + i * tickSpacingPx
                 if (x < 0 || x > size.width) continue
 
-                val height = if ((valueRange.first + i) % 5 == 0) 30f else 15f
+                val value = valueRange.first + i
+                val height = if (value % 5 == 0) 50f else 20f
                 drawLine(
                     color = tickColor,
                     start = Offset(x, size.height / 2),
@@ -172,11 +167,11 @@ fun NumberPicker(
                     strokeWidth = 2f
                 )
 
-                if ((valueRange.first + i) % 10 == 0) {
+                if (value % 10 == 0) {
                     drawContext.canvas.nativeCanvas.drawText(
-                        "${valueRange.first + i}",
+                        String.format("%.1f", value / 10f),
                         x,
-                        size.height / 2 + 60,
+                        size.height / 2 + 80,
                         Paint().apply {
                             color = numberColor.toArgb()
                             textAlign = Paint.Align.CENTER
@@ -187,71 +182,73 @@ fun NumberPicker(
             }
         }
 
-        // Center indicator
         Box(
             modifier = Modifier
                 .align(Alignment.Center)
-                .width(2.dp)
-                .height(60.dp)
+                .width(2.5.dp)
+                .height(800.dp)
                 .background(MaterialTheme.colorScheme.primary)
         )
-
 
         var textValue by remember {
             mutableStateOf(
                 TextFieldValue(
-                    text = clampedValue.toString()
+                    text = floatValue.toString()
                 )
             )
         }
 
-
-
-        // TextField
         LaunchedEffect(clampedValue, isEditing) {
-            if (!isEditing && textValue.text != clampedValue.toString()) {
-                textValue = TextFieldValue(
-                    text = clampedValue.toString()
-                )
+            if (!isEditing && textValue.text != floatValue.toString()) {
+                textValue = TextFieldValue(text = floatValue.toString())
             }
         }
 
         val focusRequester = remember { FocusRequester() }
 
-        Box(
+        Row(
             modifier = Modifier
-                .align(Alignment.Center)
-                .offset(y = (-50).dp)
-                .background(
-                    color = textFieldContainerColor,
-                    shape = RoundedCornerShape(8.dp)
-                )
+                .fillMaxWidth()
+                .offset(y = (-90).dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.Center
         ) {
-            if(enableTextField){
+            Box(modifier = Modifier.weight(1f)) {
+                Text("")
+            }
+            Box(
+                modifier = Modifier
+                    .width(120.dp)
+                    .background(
+                        color = textFieldContainerColor,
+                        shape = RoundedCornerShape(8.dp)
+                    )
+            ) {
                 TextField(
-                    enabled = enableTextField,
                     value = textValue,
                     onValueChange = { newValue ->
-                        textValue = newValue
-                        newValue.text.toIntOrNull()?.let { entered ->
-                            if (entered in valueRange) {
-                                val targetOffset = (entered - valueRange.first) * tickSpacingPx
-                                scope.launch {
-                                    scrollOffsetAnim.animateTo(targetOffset)
+                        val number = newValue.text.toDoubleOrNull()?.roundToInt()
+                        if (newValue.text.isBlank() || (newValue.text.length <= 5 && number != null && number <= 999)) {
+                            textValue = newValue
+                            newValue.text.toFloatOrNull()?.let { entered ->
+                                val intValue = (entered * 10).toInt()
+                                if (intValue in valueRange) {
+                                    val targetOffset = (intValue - valueRange.first) * tickSpacingPx
+                                    scope.launch {
+                                        scrollOffsetAnim.animateTo(targetOffset)
+                                    }
                                 }
                             }
                         }
+
                     },
                     modifier = Modifier
-                        .align(Alignment.Center)
-                        .width(80.dp)
                         .focusRequester(focusRequester)
                         .onFocusChanged { focusState ->
-                            //isEditing = focusState.isFocused
                             if (focusState.isFocused && !isEditing) {
                                 isEditing = true
                                 textValue = textValue.copy(
-                                    selection = TextRange(0, textValue.text.length) // Select all
+                                    selection = TextRange(0, textValue.text.length)
                                 )
                             } else if (!focusState.isFocused) {
                                 isEditing = false
@@ -260,17 +257,18 @@ fun NumberPicker(
                     singleLine = true,
                     textStyle = LocalTextStyle.current.copy(
                         color = numberColor,
-                        fontSize = 18.sp,
-                        textAlign = TextAlign.Center
+                        fontSize = 24.sp,
+                        textAlign = TextAlign.Center,
+                        fontWeight = FontWeight.SemiBold
                     ),
                     maxLines = 1,
                     keyboardOptions = KeyboardOptions.Default.copy(
-                        keyboardType = KeyboardType.NumberPassword,
+                        keyboardType = KeyboardType.Decimal,
                         imeAction = ImeAction.Done
                     ),
                     keyboardActions = KeyboardActions(
                         onDone = {
-                            onImeDone()
+                            onImeAction()
                         }
                     ),
                     colors = TextFieldDefaults.colors(
@@ -281,18 +279,11 @@ fun NumberPicker(
                     )
                 )
 
-            } else {
-                Text(
-                    text = textValue.text,
-                    modifier = Modifier.align(Alignment.Center).padding(horizontal = 16.dp, vertical = 8.dp),
-                    fontSize = fontSize * 1.2f,
-                    fontWeight = FontWeight(450),
-                    textAlign = TextAlign.Center
-                )
+            }
+            Box(modifier = Modifier.weight(1f), contentAlignment = Alignment.CenterStart) {
+                weightUnitContent()
             }
         }
-
     }
+
 }
-
-

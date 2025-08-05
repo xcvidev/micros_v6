@@ -2,6 +2,7 @@ package com.xcvi.micros.ui.screens.meal
 
 import android.content.Context
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -9,12 +10,15 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.DeleteOutline
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.FavoriteBorder
@@ -23,9 +27,11 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.SheetValue
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -36,6 +42,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -46,6 +55,7 @@ import com.xcvi.micros.ui.core.EnhanceDialog
 import com.xcvi.micros.ui.core.SummaryDetails
 import com.xcvi.micros.ui.core.comp.LoadingIndicator
 import com.xcvi.micros.ui.core.comp.NumberPicker
+import com.xcvi.micros.ui.core.utils.disableBottomSheetDragWhenInteracting
 import kotlinx.coroutines.launch
 
 
@@ -61,11 +71,14 @@ fun MealItemDetailsSheet(
     onDismiss: () -> Unit,
     onScale: (Int) -> Unit,
     onEnhance: (String) -> Unit,
-    skipToFullyExpanded: Boolean = false
 ) {
-    val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = skipToFullyExpanded)
-    val scope = rememberCoroutineScope()
+    val sheetState = rememberModalBottomSheetState(
+        skipPartiallyExpanded = false, // Or true if you don’t want mid state
 
+    )
+    val scope = rememberCoroutineScope()
+    val focusManager = LocalFocusManager.current
+    val keyboardController = LocalSoftwareKeyboardController.current
 
     var showDeleteDialog by remember { mutableStateOf(false) }
     var showInputDialog by remember { mutableStateOf(false) }
@@ -92,6 +105,7 @@ fun MealItemDetailsSheet(
         )
     }
 
+    val listState = rememberLazyListState()
     ModalBottomSheet(
         modifier = Modifier
             .padding(horizontal = 4.dp)
@@ -105,7 +119,16 @@ fun MealItemDetailsSheet(
         sheetState = sheetState,
         dragHandle = { BottomSheetDefaults.DragHandle() }
     ) {
-        LazyColumn {
+        LaunchedEffect(listState.isScrollInProgress) {
+            focusManager.clearFocus()
+            keyboardController?.hide()
+        }
+        LazyColumn(
+            state = listState,
+            modifier = Modifier.pointerInput(Unit) {
+                detectTapGestures(onTap = { focusManager.clearFocus() })
+            }
+        ) {
             item {
                 Row(
                     modifier = Modifier
@@ -124,9 +147,9 @@ fun MealItemDetailsSheet(
                             horizontalAlignment = CenterHorizontally,
                             verticalArrangement = Arrangement.Center
                         ) {
-                            Icon(imageVector = Icons.Default.DeleteOutline, contentDescription = "")
+                            Icon(imageVector = Icons.Default.Clear, contentDescription = "")
                             Spacer(modifier = Modifier.height(4.dp))
-                            Text(text = stringResource(R.string.delete))
+                            Text(text = stringResource(R.string.remove))
                         }
                     }
                     Box(
@@ -196,24 +219,34 @@ fun MealItemDetailsSheet(
                 )
             }
 
-            item {
-                NumberPicker(
-                    initialValue = amount,
-                    onValueChange = {
-                        if (it > 0) {
-                            amount = it
-                            onScale(it)
+            if (isEnhancing) {
+                item {
+                    Box(
+                        contentAlignment = Alignment.TopCenter,
+                        modifier = Modifier
+                            .padding(vertical = 24.dp)
+                            .heightIn(min = 500.dp)
+                            .fillMaxWidth()
+                    ) {
+                        if (isEnhancing) {
+                            LoadingIndicator()
                         }
-                    },
-                    onImeAction = {}
-                )
-            }
-
-            item {
-                Box(
-                    contentAlignment = Alignment.Center
-                ) {
-
+                    }
+                }
+            } else {
+                item {
+                    NumberPicker(
+                        modifier = Modifier.disableBottomSheetDragWhenInteracting(),
+                        initialValue = amount,
+                        onValueChange = {
+                            if (it > 0) {
+                                amount = it
+                                onScale(it)
+                            }
+                        }
+                    )
+                }
+                item {
                     SummaryDetails(
                         nutrients = item.food.nutrients,
                         minerals = item.food.minerals,
@@ -221,9 +254,6 @@ fun MealItemDetailsSheet(
                         aminoAcids = item.food.aminoAcids,
                         context = context
                     )
-                    if (isEnhancing) {
-                        LoadingIndicator()
-                    }
                 }
             }
         }

@@ -49,12 +49,15 @@ class SearchViewModel(
             ){
                 openDetails(it)
             }
-            is SearchEvent.ResetScanner -> resetScanner()
+            is SearchEvent.ResetScanner -> updateData { copy(scannerState = ScannerState.Scanning) }
 
-            is SearchEvent.OpenDetails -> openDetails(event.portion)
+            is SearchEvent.OpenDetails -> {
+                openDetails(event.portion)
+                updateData { copy(scannerState = ScannerState.ShowResult) }
+            }
             is SearchEvent.CloseDetails -> {
                 closeDetails()
-                resetScanner()
+                updateData { copy(scannerState = ScannerState.Scanning) }
             }
 
             is SearchEvent.ToggleFavorite -> toggleFavorite()
@@ -69,9 +72,7 @@ class SearchViewModel(
         }
     }
 
-    private fun resetScanner() {
-        updateData { copy(scannerState = ScannerState.Scanning) }
-    }
+
 
     private fun openDetails(portion: Portion) {
         updateData { copy(selected = portion) }

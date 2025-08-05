@@ -46,9 +46,8 @@ fun AutomaticSearchBar(
         modifier = modifier,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Card {
+        Card{
             Row(
-                modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
@@ -67,7 +66,7 @@ fun AutomaticSearchBar(
                     leadingIcon = leadingIcon,
                     label = label,
                     placeholder = placeholder,
-                    modifier = Modifier.weight(1f),
+                    modifier = Modifier.fillMaxWidth(),
                     colors = TextFieldDefaults.colors(
                         focusedContainerColor = Transparent,
                         unfocusedContainerColor = Transparent,

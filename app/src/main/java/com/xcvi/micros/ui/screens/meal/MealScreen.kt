@@ -141,7 +141,7 @@ fun MealScreen(
                             if (index > 0) {
                                 HorizontalDivider(
                                     thickness = 0.3.dp,
-                                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.3f)
+                                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f)
                                 )
                             }
                             ItemCard(

@@ -25,13 +25,16 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.SheetValue
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clipToBounds
@@ -51,6 +54,10 @@ import com.google.mlkit.vision.common.InputImage
 import com.xcvi.micros.R
 import com.xcvi.micros.ui.core.PermissionGate
 import com.xcvi.micros.ui.screens.scan.CameraOverlay
+import com.xcvi.micros.ui.screens.scan.ScanState
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 @kotlin.OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -63,12 +70,35 @@ fun BarcodeScannerSheet(
     onRetryScan: () -> Unit,
     detailsContent: @Composable () -> Unit
 ) {
-    val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+
+    val sheetState = if(state == ScannerState.ShowResult){
+        rememberModalBottomSheetState(
+            skipPartiallyExpanded = false,
+        )
+    } else {
+        rememberModalBottomSheetState(
+            skipPartiallyExpanded = true
+        )
+    }
     val haptics = LocalHapticFeedback.current
 
-    if (isOpen) {
+    LaunchedEffect(isOpen) {
+        if (isOpen && sheetState.currentValue == SheetValue.Hidden) {
+            sheetState.show()
+        }
+    }
+    LaunchedEffect(state) {
+        if (state == ScannerState.ShowResult) {
+            delay(150)
+            sheetState.expand()
+        }
+    }
+
+    if (isOpen || sheetState.currentValue != SheetValue.Hidden) {
         ModalBottomSheet(
-            modifier = modifier.padding(top = 120.dp),
+            modifier = modifier
+                .padding(top = 120.dp)
+                .padding(horizontal = 8.dp),
             sheetState = sheetState,
             onDismissRequest = onDismiss,
             dragHandle = { BottomSheetDefaults.DragHandle() }
@@ -116,24 +146,40 @@ fun BarcodeScannerSheet(
                                 modifier = Modifier.padding(horizontal = 16.dp, vertical = 48.dp)
                             )
                             Row(
-                                modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(horizontal = 16.dp),
                                 horizontalArrangement = Arrangement.SpaceEvenly
-                            ){
+                            ) {
                                 TextButton(
                                     onClick = onDismiss,
                                 ) {
-                                    Text(text = stringResource(R.string.cancel), modifier = modifier.padding(horizontal = 16.dp, vertical = 8.dp))
+                                    Text(
+                                        text = stringResource(R.string.cancel),
+                                        modifier = modifier.padding(
+                                            horizontal = 16.dp,
+                                            vertical = 8.dp
+                                        )
+                                    )
                                 }
                                 Button(
                                     onClick = onRetryScan
                                 ) {
-                                    Text(text = stringResource(R.string.retry), modifier = modifier.padding(horizontal = 16.dp, vertical = 8.dp))
+                                    Text(
+                                        text = stringResource(R.string.retry),
+                                        modifier = modifier.padding(
+                                            horizontal = 16.dp,
+                                            vertical = 8.dp
+                                        )
+                                    )
                                 }
                             }
                         }
                     }
 
-                    ScannerState.ShowResult -> detailsContent()
+                    ScannerState.ShowResult -> {
+                        detailsContent()
+                    }
                 }
             }
         }

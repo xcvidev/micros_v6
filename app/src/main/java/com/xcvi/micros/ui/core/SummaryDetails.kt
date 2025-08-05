@@ -124,10 +124,12 @@ fun SummaryDetails(
                         color = MaterialTheme.colorScheme.onSurfaceVariant.copy(0.3f)
                     )
                 }
-                Row {
+                Row(
+                    modifier = Modifier.fillMaxWidth().padding(vertical = 2.dp),
+                ) {
                     Text(
                         text = data.first,
-                        style = MaterialTheme.typography.bodyMedium,
+                        style = MaterialTheme.typography.bodyLarge,
                         color = MaterialTheme.colorScheme.onSurfaceVariant.copy(
                             alpha(
                                 data.second.startsWith("0.0") || data.second.startsWith("0,0")
@@ -137,7 +139,7 @@ fun SummaryDetails(
                     Spacer(modifier = Modifier.weight(1f))
                     Text(
                         text = data.second,
-                        style = MaterialTheme.typography.bodyMedium,
+                        style = MaterialTheme.typography.bodyLarge,
                         color = MaterialTheme.colorScheme.onSurfaceVariant.copy(
                             alpha(
                                 data.second.startsWith("0.0") || data.second.startsWith("0,0")
