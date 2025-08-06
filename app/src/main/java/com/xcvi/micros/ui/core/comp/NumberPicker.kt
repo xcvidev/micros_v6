@@ -78,7 +78,7 @@ fun NumberPicker(
     valueRange: IntRange = 0..10000,
     initialValue: Int = 100,
     tickSpacingDp: Dp = 12.dp,
-    clickGranularity: Int = 10,
+    clickGranularity: Int = 1,
     horizontalClickTolerancePx: Float = 150f,
     verticalClickTolerancePx: Float = 100f,
     fontSize: TextUnit = MaterialTheme.typography.bodyLarge.fontSize,

@@ -21,9 +21,14 @@ class AiApi(
 ){
     suspend fun askAi(
         query: String,
+        type: MessageType
     ): MessageDTO? {
+        val systemPrompt = when (type) {
+            MessageType.MESSAGE_QUERY -> MESSAGE_SYSTEM_PROMPT
+            MessageType.SMART_SEARCH_QUERY -> SMART_SEARCH_SYSTEM_PROMPT
+        }
         val responseJson = queryOpenAi(
-            systemPrompt = MESSAGE_SYSTEM_PROMPT,
+            systemPrompt = systemPrompt,
             userPrompt = query
         )
         if (responseJson.isNullOrBlank()) return null

@@ -2,17 +2,17 @@ package com.xcvi.micros.domain.usecases
 
 import com.xcvi.micros.domain.model.food.Food
 import com.xcvi.micros.domain.model.food.Portion
-import com.xcvi.micros.domain.model.food.scale
 import com.xcvi.micros.domain.model.food.scaleToPortion
+import com.xcvi.micros.domain.model.message.Message
 import com.xcvi.micros.domain.respostory.FoodRepository
+import com.xcvi.micros.domain.respostory.MessageRepository
 import com.xcvi.micros.domain.respostory.PortionRepository
 import com.xcvi.micros.domain.utils.Response
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.firstOrNull
 
 class SearchUseCases(
     private val foodRepository: FoodRepository,
     private val portionRepository: PortionRepository,
+    private val messageRepository: MessageRepository
 ) {
     suspend fun enhance(barcode: String, description: String): Response<Food> {
         return foodRepository.enhance(barcode, description)
@@ -20,6 +20,10 @@ class SearchUseCases(
 
     suspend fun toggleFavorite(barcode: String): Response<Unit> {
         return foodRepository.toggleFavorite(barcode)
+    }
+
+    suspend fun smartSearch(query: String, language: String): Response<Message> {
+        return messageRepository.smartSearch(userInput = query, language = language)
     }
 
     suspend fun scan(barcode: String, date: Int, meal: Int):  Response<Portion> {
@@ -42,7 +46,7 @@ class SearchUseCases(
         portions: Set<Portion>
     ): Response<Unit> {
         val toSave = portions.map {
-            //Important for when saving recents with different dates and meal numbers
+            //Important for when saving recents/ai results with different dates and meal numbers
             it.copy(date = date, meal = meal)
         }
         return portionRepository.savePortions(toSave)

@@ -8,6 +8,7 @@ import com.xcvi.micros.data.source.local.entity.message.MessageEntity
 import com.xcvi.micros.data.source.local.message.MessageDao
 import com.xcvi.micros.data.source.local.food.FoodDao
 import com.xcvi.micros.data.source.remote.AiApi
+import com.xcvi.micros.data.source.remote.MessageType
 import com.xcvi.micros.domain.model.message.FoodItem
 import com.xcvi.micros.domain.model.message.Message
 import com.xcvi.micros.domain.respostory.MessageRepository
@@ -24,6 +25,63 @@ class MessageRepositoryImplementation(
     private val messageDao: MessageDao,
     private val foodDao: FoodDao
 ): MessageRepository {
+
+    override suspend fun smartSearch(
+        userInput: String,
+        language: String
+    ): Response<Message> {
+        val query = getMessagePrompt(
+            recentMessages = emptyList(),
+            language = language,
+            userInput = userInput
+        )
+        val userMessageTimestamp = getNow()
+        val aiMessageTimestamp = userMessageTimestamp + 1
+
+        return fetchAndCache(
+            apiCall = { api.askAi(query, MessageType.SMART_SEARCH_QUERY) },
+            cacheCall = { response ->
+                val userMessage = MessageEntity(
+                    timestamp = userMessageTimestamp,
+                    text = userInput,
+                    fromUser = true
+                )
+                messageDao.insert(message = userMessage, suggestions = emptyList())
+
+                val aiMessage = MessageEntity(
+                    timestamp = aiMessageTimestamp,
+                    text = response.message,
+                    fromUser = false
+                )
+                val foodItems = response.foods.map {
+                    FoodItemEntity(
+                        id = "${aiMessageTimestamp}_${it.name}",
+                        messageTimestamp = aiMessageTimestamp,
+                        name = it.name,
+                        amountInGrams = it.weightInGrams,
+                        calories = it.protein*4 + it.carbohydrates*4 + it.fats*9,
+                        protein = it.protein,
+                        carbohydrates = it.carbohydrates,
+                        fats = it.fats,
+                        saturatedFats = it.saturatedFats,
+                        sodium = it.sodium,
+                        potassium = it.potassium,
+                        sugars = it.sugars,
+                        fiber = it.fiber,
+                    )
+                }
+                messageDao.insert(aiMessage, foodItems)
+
+                val foods = foodItems.map { it.toFoodEntity() }
+                foodDao.upsert(foods)
+            },
+            dbCall = {
+                messageDao.getMessageWithFoods(aiMessageTimestamp)?.toModel()
+            },
+            fallbackRequest = null,
+            fallbackDbCall = {null}
+        )
+    }
 
     override suspend fun messageCount(): Int {
         return try{
@@ -63,7 +121,7 @@ class MessageRepositoryImplementation(
         val aiMessageTimestamp = userMessageTimestamp + 1
 
         val res = fetchAndCache(
-            apiCall = { api.askAi(query) },
+            apiCall = { api.askAi(query, MessageType.MESSAGE_QUERY) },
             cacheCall = { response ->
                 val userMessage = MessageEntity(
                     timestamp = userMessageTimestamp,

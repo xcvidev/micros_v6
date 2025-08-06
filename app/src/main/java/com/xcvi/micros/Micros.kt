@@ -87,7 +87,7 @@ class Micros: Application() {
         factory { GoalsUseCases(get()) }
         factory { MealUseCases(get(), get()) }
         factory { ScanUseCases(get(), get()) }
-        factory { SearchUseCases(get(), get()) }
+        factory { SearchUseCases(get(), get(),get()) }
         factory { StatsUseCases(get(), get()) }
     }
     private val repositoryModule = module {

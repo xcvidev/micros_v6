@@ -86,6 +86,7 @@ import com.xcvi.micros.ui.core.comp.FadingText
 import com.xcvi.micros.ui.core.comp.HorizontalFadedBox
 import com.xcvi.micros.ui.core.comp.LoadingIndicator
 import com.xcvi.micros.ui.core.comp.NumberPicker
+import com.xcvi.micros.ui.core.comp.OnNavigation
 import com.xcvi.micros.ui.core.comp.StreamingText
 import com.xcvi.micros.ui.core.comp.rememberShakeOffset
 import com.xcvi.micros.ui.core.utils.disableBottomSheetDragWhenInteracting
@@ -125,6 +126,11 @@ fun MessageScreen(
         focusManager.clearFocus()
         keyboardController?.hide()
     }
+
+    OnNavigation {
+        onEvent(MessageEvent.GetData)
+    }
+
     val lang = stringResource(R.string.app_language)
     val onSend = {
         onEvent(MessageEvent.SendMessage(userInput, lang) { shakeTrigger = true })

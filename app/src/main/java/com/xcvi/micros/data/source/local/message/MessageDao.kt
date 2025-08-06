@@ -25,6 +25,10 @@ interface MessageDao{
     @Query("SELECT * FROM MessageEntity WHERE timestamp = :timestamp AND fromUser = 0")
     suspend fun getMessage(timestamp: Long): MessageEntity?
 
+    @Transaction
+    @Query("SELECT * FROM MessageEntity WHERE timestamp = :timestamp")
+    suspend fun getMessageWithFoods(timestamp: Long): MessageWithFoods?
+
     @Upsert
     suspend fun insertPartial(response: MessageEntity)
 

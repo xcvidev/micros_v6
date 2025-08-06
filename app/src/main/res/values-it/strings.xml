@@ -34,7 +34,7 @@
 
     <!--  Errors  -->
     <string name="error">Errore.</string>
-    <string name="network_error">Errore di rete. Controlla la connessione internet.</string>
+    <string name="network_error">Controlla la connessione internet e riprova.</string>
     <string name="empty_result">Nessun risultato trovato per la tua ricerca.</string>
     <string name="invalid_input">Input non valido.</string>
     <string name="database_error">Errore nel database. Riprova più tardi.</string>
@@ -139,6 +139,7 @@
 
     <string name="empty_recents">Puoi cercare qualsiasi prodotto alimentare per nome o marca. Non trovi il prodotto? Puoi scannerizare il codice a barre oppure descriverlo all\'assistente IA che lo genererà per te.</string>
     <string name="search_results">Risultati della ricerca</string>
+    <string name="ai_results">Risultati IA</string>
     <string name="searching">Ricerca in corso</string>
     <string name="generated">Generato</string>
     <string name="generatig_failed_body">Prova a elencare gli ingredienti del tuo pasto.\nAd esempio: "un piatto di pasta al sugo di pomodoro"\noppure "riso con verdure"</string>
@@ -147,6 +148,7 @@
     <string name="generating">Generazione in corso</string>
     <string name="recently_added">Preferiti e aggiunti di recente</string>
     <string name="search_placeholder">Cerca</string>
+    <string name="smart_search">Ricerca IA</string>
     <string name="product_not_found">Prodotto non trovato.</string>
     <string name="provide_food_description">Fornisci una descrizione del cibo. Usa nome, ingredienti o altre informazioni.</string>
     <string name="description">Descrizione</string>

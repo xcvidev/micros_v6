@@ -4,11 +4,13 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
@@ -42,44 +44,36 @@ fun AutomaticSearchBar(
 ) {
     val coroutineScope = rememberCoroutineScope()
     var debounceJob by remember { mutableStateOf<Job?>(null) }
-    Column(
+    Card(
         modifier = modifier,
-        horizontalAlignment = Alignment.CenterHorizontally
+        shape = RoundedCornerShape(36.dp),
     ) {
-        Card{
-            Row(
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                TextField(
-                    maxLines = 1,
-                    singleLine = true,
-                    value = query,
-                    onValueChange = { newQuery ->
-                        onQueryChange(newQuery)
-                        debounceJob?.cancel()  // cancel previous job if any
-                        debounceJob = coroutineScope.launch {
-                            delay(500)
-                            onAutomaticSearch()  // always call, no gating here
-                        }
-                    },
-                    leadingIcon = leadingIcon,
-                    label = label,
-                    placeholder = placeholder,
-                    modifier = Modifier.fillMaxWidth(),
-                    colors = TextFieldDefaults.colors(
-                        focusedContainerColor = Transparent,
-                        unfocusedContainerColor = Transparent,
-                        disabledContainerColor = Transparent,
-                        focusedIndicatorColor = Transparent,
-                        unfocusedIndicatorColor = Transparent,
-                    ),
-                    trailingIcon = trailingIcon,
-                    keyboardOptions = keyboardOptions,
-                    keyboardActions = keyboardActions
-                )
-            }
-        }
-
+        TextField(
+            maxLines = 1,
+            singleLine = true,
+            value = query,
+            onValueChange = { newQuery ->
+                onQueryChange(newQuery)
+                debounceJob?.cancel()  // cancel previous job if any
+                debounceJob = coroutineScope.launch {
+                    delay(500)
+                    onAutomaticSearch()  // always call, no gating here
+                }
+            },
+            leadingIcon = leadingIcon,
+            label = label,
+            placeholder = placeholder,
+            modifier = Modifier.fillMaxWidth(),
+            colors = TextFieldDefaults.colors(
+                focusedContainerColor = Transparent,
+                unfocusedContainerColor = Transparent,
+                disabledContainerColor = Transparent,
+                focusedIndicatorColor = Transparent,
+                unfocusedIndicatorColor = Transparent,
+            ),
+            trailingIcon = trailingIcon,
+            keyboardOptions = keyboardOptions,
+            keyboardActions = keyboardActions
+        )
     }
 }

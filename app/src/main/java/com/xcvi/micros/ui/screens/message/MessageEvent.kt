@@ -3,6 +3,7 @@ package com.xcvi.micros.ui.screens.message
 import com.xcvi.micros.domain.model.food.Portion
 
 sealed interface MessageEvent{
+    data object GetData : MessageEvent
     data object ShowHistory : MessageEvent
     data object ClearHistory : MessageEvent
     data class SendMessage(val userInput: String, val language: String, val onError: () -> Unit) :

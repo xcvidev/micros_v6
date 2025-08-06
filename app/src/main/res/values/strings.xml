@@ -35,7 +35,7 @@
 
     <!--  Errors  -->
     <string name="error">Error.</string>
-    <string name="network_error">Network error. Please check your internet connection.</string>
+    <string name="network_error">Check your internet connection and try again.</string>
     <string name="empty_result">No results found for your search.</string>
     <string name="invalid_input">Invalid input provided.</string>
     <string name="database_error">A database error occurred. Please try again later.</string>
@@ -135,15 +135,17 @@
 
 
     <string name="empty_recents">You can search any food by its name or brand product. Can\'t find your food? Try scanning the product barcode or use the AI assistant to help you.</string>
-    <string name="search_results">Search results</string>
+    <string name="search_results">Search Results</string>
+    <string name="ai_results">AI Results</string>
     <string name="searching">Searching</string>
     <string name="generated">Generated</string>
     <string name="generatig_failed_body">Try listing ingredients of your meal.\nTry \"a plate of pasta with tomato sauce\"\nTry a plate of \"rice with vegetables\"</string>
     <string name="generating_failed_title">Generating with AI failed</string>
     <string name="generating_failed_subtitle">Use a different description and try again.</string>
     <string name="generating">Generating</string>
-    <string name="recently_added">Favorites and recently added</string>
+    <string name="recently_added">Favorites and Recently Added</string>
     <string name="search_placeholder">Search</string>
+    <string name="smart_search">AI Search</string>
     <string name="product_not_found">Product Not Found.</string>
     <string name="provide_food_description">Provide food description. Use food name, ingredients or other information.</string>
     <string name="description">Description</string>

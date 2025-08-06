@@ -7,6 +7,7 @@ import com.xcvi.micros.domain.model.food.Portion
 import com.xcvi.micros.domain.model.food.scale
 import com.xcvi.micros.domain.model.food.scaleToPortion
 import com.xcvi.micros.domain.usecases.SearchUseCases
+import com.xcvi.micros.domain.utils.Failure
 import com.xcvi.micros.domain.utils.Response
 import com.xcvi.micros.ui.BaseViewModel
 import kotlinx.coroutines.delay
@@ -21,6 +22,7 @@ class SearchViewModel(
     val language = context.getString(R.string.app_language)
     val recentsLabel = context.getString(R.string.recently_added)
     val searchLabel = context.getString(R.string.search_results)
+    val aiLabel = context.getString(R.string.ai_results)
 
     init {
         viewModelScope.launch {
@@ -39,6 +41,7 @@ class SearchViewModel(
         when (event) {
             is SearchEvent.Input -> setQuery(event.input)
             is SearchEvent.Search -> search(event.date, event.meal, event.onError)
+            is SearchEvent.SmartSearch -> smartSearch(event.onError)
 
             is SearchEvent.Select -> selectItem(event.portion)
 
@@ -46,15 +49,17 @@ class SearchViewModel(
                 barcode = event.barcode,
                 date = event.date,
                 meal = event.meal
-            ){
+            ) {
                 openDetails(it)
             }
+
             is SearchEvent.ResetScanner -> updateData { copy(scannerState = ScannerState.Scanning) }
 
             is SearchEvent.OpenDetails -> {
                 openDetails(event.portion)
                 updateData { copy(scannerState = ScannerState.ShowResult) }
             }
+
             is SearchEvent.CloseDetails -> {
                 closeDetails()
                 updateData { copy(scannerState = ScannerState.Scanning) }
@@ -72,69 +77,9 @@ class SearchViewModel(
         }
     }
 
-
-
-    private fun openDetails(portion: Portion) {
-        updateData { copy(selected = portion) }
-    }
-
-    private fun closeDetails() {
-        updateData { copy(selected = null) }
-    }
-
-
-    private fun scan(date: Int, meal: Int, barcode: String, onSuccess: (Portion) -> Unit) {
-        viewModelScope.launch {
-            updateData { copy(scannerState = ScannerState.Loading) }
-            delay(500)
-            val res = useCases.scan(barcode = barcode, date = date, meal = meal)
-            when (res) {
-                is Response.Error -> updateData { copy(scannerState = ScannerState.Error) }
-                is Response.Success -> {
-                    addScannedToResults(res.data)
-                    updateData { copy(scannerState = ScannerState.ShowResult) }
-                    onSuccess(res.data)
-                }
-            }
-        }
-    }
-    private fun addScannedToResults(portion: Portion) {
-        if(state.searchResults.none{it.food.barcode == portion.food.barcode}){
-            updateData { copy(searchResults = searchResults + portion, listLabel = searchLabel) }
-        }
-    }
-
-    private fun toggleFavorite() {
-        viewModelScope.launch {
-            val selected = state.selected ?: return@launch
-            when(useCases.toggleFavorite(selected.food.barcode)){
-                is Response.Success -> {
-                    val updatedFood = selected.food.copy(isFavorite = !selected.food.isFavorite)
-                    val updated = selected.copy(food = updatedFood)
-                    updateData { copy(selected = updated) }
-                }
-                is Response.Error -> {}
-            }
-        }
-    }
-
-    private fun setQuery(query: String) {
-        if (query == "") {
-            updateData {
-                copy(
-                    searchResults = recents,
-                    listLabel = if (recents.isEmpty()) "" else recentsLabel,
-                    query = ""
-                )
-            }
-            return
-        }
-        updateData { copy(query = query) }
-    }
-
     private fun search(date: Int, meal: Int, onError: () -> Unit) {
+        if (state.query.isBlank() || state.query.length < 3 || state.isAsking) return
         viewModelScope.launch {
-            if (state.query.isBlank() || state.query.length < 3) return@launch
             updateData { copy(isSearching = true) }
             val res = useCases.search(
                 query = state.query,
@@ -158,6 +103,97 @@ class SearchViewModel(
             updateData { copy(isSearching = false) }
         }
     }
+
+    private fun smartSearch(onError: (Failure) -> Unit) {
+        if (state.isLoadingSmartSearch) {
+            return
+        }
+        if (state.query.isBlank() || state.isLoadingSmartSearch) {
+            onError(Failure.InvalidInput)
+            return
+        }
+        viewModelScope.launch {
+            updateData { copy(isAsking = true, isLoadingSmartSearch = true) }
+            val res = useCases.smartSearch(
+                query = state.query,
+                language = language
+            )
+            when (res) {
+                is Response.Error -> onError(res.error)
+                is Response.Success -> updateData {
+                    copy(
+                        smartResult = res.data,
+                        searchResults = res.data.foodItems,
+                        listLabel = aiLabel
+                    )
+                }
+            }
+            updateData { copy(isLoadingSmartSearch = false) }
+        }
+    }
+
+    private fun setQuery(query: String) {
+        if (query == "") {
+            updateData {
+                copy(
+                    searchResults = recents,
+                    listLabel = if (recents.isEmpty()) "" else recentsLabel,
+                    query = "",
+                    isAsking = false,
+                    smartResult = null
+                )
+            }
+            return
+        }
+        updateData { copy(query = query) }
+    }
+
+
+    private fun scan(date: Int, meal: Int, barcode: String, onSuccess: (Portion) -> Unit) {
+        viewModelScope.launch {
+            updateData { copy(scannerState = ScannerState.Loading) }
+            delay(500)
+            val res = useCases.scan(barcode = barcode, date = date, meal = meal)
+            when (res) {
+                is Response.Error -> updateData { copy(scannerState = ScannerState.Error) }
+                is Response.Success -> {
+                    addScannedToResults(res.data)
+                    updateData { copy(scannerState = ScannerState.ShowResult) }
+                    onSuccess(res.data)
+                }
+            }
+        }
+    }
+
+    private fun addScannedToResults(portion: Portion) {
+        if (state.searchResults.none { it.food.barcode == portion.food.barcode }) {
+            updateData { copy(searchResults = searchResults + portion, listLabel = searchLabel) }
+        }
+    }
+
+    private fun openDetails(portion: Portion) {
+        updateData { copy(selected = portion) }
+    }
+
+    private fun closeDetails() {
+        updateData { copy(selected = null) }
+    }
+
+    private fun toggleFavorite() {
+        viewModelScope.launch {
+            val selected = state.selected ?: return@launch
+            when (useCases.toggleFavorite(selected.food.barcode)) {
+                is Response.Success -> {
+                    val updatedFood = selected.food.copy(isFavorite = !selected.food.isFavorite)
+                    val updated = selected.copy(food = updatedFood)
+                    updateData { copy(selected = updated) }
+                }
+
+                is Response.Error -> {}
+            }
+        }
+    }
+
 
     private fun selectItem(portion: Portion) {
         updateData {
@@ -198,7 +234,7 @@ class SearchViewModel(
         updateHelper(updated)
     }
 
-    private fun onConfirm(date: Int, meal: Int,onSuccess: () -> Unit) {
+    private fun onConfirm(date: Int, meal: Int, onSuccess: () -> Unit) {
         viewModelScope.launch {
             val res = useCases.eat(
                 date = date,

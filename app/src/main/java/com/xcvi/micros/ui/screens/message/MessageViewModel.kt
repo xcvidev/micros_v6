@@ -14,6 +14,7 @@ import com.xcvi.micros.ui.screens.search.SearchEvent
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import java.sql.Timestamp
 import kotlin.collections.plus
 
 class MessageViewModel(
@@ -28,11 +29,12 @@ class MessageViewModel(
 
     init {
         getCount()
-        observeMessages(isPaginating = false)
+        //observeMessages(isPaginating = false)
     }
 
     fun onEvent(event: MessageEvent){
         when(event){
+
             is MessageEvent.ShowHistory -> showHistory()
             is MessageEvent.ClearHistory -> clearHistory()
             is MessageEvent.SendMessage -> sendMessage(event.userInput, event.language, event.onError)
@@ -55,6 +57,10 @@ class MessageViewModel(
             is MessageEvent.Scale -> scale(event.amount)
 
             is MessageEvent.Confirm -> confirm(event.portion)
+            is MessageEvent.GetData -> {
+                val timestamp =  getNow()
+                observeMessages(isPaginating = false, timestamp =timestamp)
+            }
         }
     }
 
@@ -201,11 +207,11 @@ class MessageViewModel(
         }
     }
 
-    private fun observeMessages(isPaginating: Boolean){
+    private fun observeMessages(isPaginating: Boolean, timestamp: Long = startingTimestamp){
         messagesJob?.cancel()
         messagesJob = viewModelScope.launch {
             updateData { copy(isLoadingPage = true) }
-            useCases.observeMessages(limit = limit, offset = offset, fromTimestamp = startingTimestamp)
+            useCases.observeMessages(limit = limit, offset = offset, fromTimestamp = timestamp)
                 .collect { newMessages ->
                     updateData {
                         val updatedMessages = if (isPaginating) messages + newMessages else newMessages
