@@ -91,7 +91,7 @@ fun SearchScreen(
     }
 
     LaunchedEffect(Unit) {
-        delay(150) // wait for composition
+        delay(150)
         focusRequester.requestFocus()
         keyboardController?.show()
     }

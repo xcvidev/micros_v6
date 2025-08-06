@@ -1,0 +1,19 @@
+<lint-module
+    format="1"
+    dir="C:\Users\Administrator\AndroidStudioProjects\micros_v6\lvl"
+    name=":lvl"
+    type="LIBRARY"
+    maven="Micros AI:lvl:unspecified"
+    agpVersion="8.10.1"
+    buildFolder="build"
+    bootClassPath="C:\sdk\platforms\android-34\android.jar;C:\sdk\build-tools\35.0.0\core-lambda-stubs.jar"
+    javaSourceLevel="1.8"
+    compileTarget="android-34"
+    neverShrinking="true">
+  <lintOptions
+      abortOnError="true"
+      absolutePaths="true"
+      checkReleaseBuilds="true"
+      explainIssues="true"/>
+  <variant name="release"/>
+</lint-module>
