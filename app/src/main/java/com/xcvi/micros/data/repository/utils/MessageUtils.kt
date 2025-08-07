@@ -2,7 +2,10 @@ package com.xcvi.micros.data.repository.utils
 
 import com.xcvi.micros.data.source.local.entity.food.FoodEntity
 import com.xcvi.micros.data.source.local.entity.message.FoodItemEntity
+import com.xcvi.micros.data.source.local.entity.message.MessageEntity
 import com.xcvi.micros.data.source.local.entity.message.relations.MessageWithFoods
+import com.xcvi.micros.data.source.remote.dto.FoodDTO
+import com.xcvi.micros.data.source.remote.dto.MessageDTO
 import com.xcvi.micros.domain.model.message.Message
 import com.xcvi.micros.domain.model.food.AminoAcids
 import com.xcvi.micros.domain.model.food.Food
@@ -24,6 +27,25 @@ fun MessageWithFoods.toModel(): Message {
     )
 }
 
+fun List<FoodDTO>.toEntity(aiMessageTimestamp: Long): List<FoodItemEntity> {
+    return this.map{
+        FoodItemEntity(
+            id = "${aiMessageTimestamp}_${it.name}",
+            messageTimestamp = aiMessageTimestamp,
+            name = it.name,
+            amountInGrams = it.weightInGrams,
+            calories = it.protein*4 + it.carbohydrates*4 + it.fats*9,
+            protein = it.protein,
+            carbohydrates = it.carbohydrates,
+            fats = it.fats,
+            saturatedFats = it.saturatedFats,
+            sodium = it.sodium,
+            potassium = it.potassium,
+            sugars = it.sugars,
+            fiber = it.fiber,
+        )
+    }
+}
 
 fun FoodItemEntity.toModel(): FoodItem {
     return FoodItem(

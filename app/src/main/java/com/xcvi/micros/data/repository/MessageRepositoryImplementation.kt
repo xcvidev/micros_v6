@@ -1,6 +1,7 @@
 package com.xcvi.micros.data.repository
 
 import android.util.Log
+import com.xcvi.micros.data.repository.utils.toEntity
 import com.xcvi.micros.data.repository.utils.toFoodEntity
 import com.xcvi.micros.data.repository.utils.toModel
 import com.xcvi.micros.data.source.local.entity.message.FoodItemEntity
@@ -19,6 +20,7 @@ import com.xcvi.micros.domain.utils.getNow
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.map
+import java.io.IOException
 
 class MessageRepositoryImplementation(
     private val api: AiApi,
@@ -39,7 +41,14 @@ class MessageRepositoryImplementation(
         val aiMessageTimestamp = userMessageTimestamp + 1
 
         return fetchAndCache(
-            apiCall = { api.askAi(query, MessageType.SMART_SEARCH_QUERY) },
+            apiCall = {
+                try {
+                    api.askAi(query, MessageType.SMART_SEARCH_QUERY)
+                } catch (e: Exception) {
+                    Log.e("log", "smartSearch: ${e.message}")
+                    null
+                }
+            },
             cacheCall = { response ->
                 val userMessage = MessageEntity(
                     timestamp = userMessageTimestamp,
@@ -120,6 +129,79 @@ class MessageRepositoryImplementation(
         val userMessageTimestamp = getNow()
         val aiMessageTimestamp = userMessageTimestamp + 1
 
+        try {
+            val response = api.askAi(query, MessageType.MESSAGE_QUERY) ?: return Response.Error(Failure.Network)
+            val userMessage = MessageEntity(
+                timestamp = userMessageTimestamp,
+                text = userInput,
+                fromUser = true
+            )
+            messageDao.insert(message = userMessage, suggestions = emptyList())
+
+            val aiMessage = MessageEntity(
+                timestamp = aiMessageTimestamp,
+                text = response.message,
+                fromUser = false
+            )
+            val foodItems = response.foods.toEntity(aiMessageTimestamp)
+            messageDao.insert(aiMessage, foodItems)
+
+            val foods = foodItems.map { it.toFoodEntity() }
+            foodDao.upsert(foods)
+
+            return Response.Success(Unit)
+        } catch (e: Exception) {
+            Log.e("log", "ask: ${e.message}")
+            /** Clean up user + assistant messages since we know the request failed **/
+            messageDao.delete(aiMessageTimestamp)
+            messageDao.delete(userMessageTimestamp)
+
+            return when(e){
+                is IOException -> Response.Error(Failure.Network)
+                else -> Response.Error(Failure.Unknown)
+            }
+        }
+    }
+
+    override suspend fun clearHistory(): Response<Unit> {
+        try {
+            messageDao.clear()
+            return Response.Success(Unit)
+        } catch (e: Exception) {
+            Log.e("log", "clearHistory: ${e.message}")
+            return Response.Error(Failure.Database)
+        }
+    }
+
+
+    private fun getMessagePrompt(
+        recentMessages: List<Message>,
+        language: String,
+        userInput: String
+    ): String {
+        val contextBuilder = StringBuilder()
+        recentMessages.forEach { message ->
+            val speaker = if (message.fromUser) "<User>" else "<Assistant>"
+            contextBuilder.append("$speaker ${message.text}\n")
+            if (!message.fromUser && message.foodItems.isNotEmpty()) {
+                contextBuilder.append("<Foods: ")
+                contextBuilder.append(message.foodItems.joinToString(", ") { it.food.name })
+                contextBuilder.append(">\n")
+            }
+        }
+        contextBuilder.append("<User> $userInput")
+
+        return """
+            <User language: $language>
+            Use the recent conversation context **only if it helps answer the current question**. Otherwise, ignore it.
+            Here is the recent conversation context:
+            $contextBuilder
+            Now answer the last user query.
+        """.trimIndent()
+    }
+}
+
+/*
         val res = fetchAndCache(
             apiCall = { api.askAi(query, MessageType.MESSAGE_QUERY) },
             cacheCall = { response ->
@@ -172,44 +254,4 @@ class MessageRepositoryImplementation(
                 Log.e("log", "ask: ${res.error}")
                 Response.Error(res.error)
             }
-        }
-
-    }
-
-    override suspend fun clearHistory(): Response<Unit> {
-        try {
-            messageDao.clear()
-            return Response.Success(Unit)
-        } catch (e: Exception) {
-            Log.e("log", "clearHistory: ${e.message}")
-            return Response.Error(Failure.Database)
-        }
-    }
-
-
-    private fun getMessagePrompt(
-        recentMessages: List<Message>,
-        language: String,
-        userInput: String
-    ): String {
-        val contextBuilder = StringBuilder()
-        recentMessages.forEach { message ->
-            val speaker = if (message.fromUser) "<User>" else "<Assistant>"
-            contextBuilder.append("$speaker ${message.text}\n")
-            if (!message.fromUser && message.foodItems.isNotEmpty()) {
-                contextBuilder.append("<Foods: ")
-                contextBuilder.append(message.foodItems.joinToString(", ") { it.food.name })
-                contextBuilder.append(">\n")
-            }
-        }
-        contextBuilder.append("<User> $userInput")
-
-        return """
-            <User language: $language>
-            Use the recent conversation context **only if it helps answer the current question**. Otherwise, ignore it.
-            Here is the recent conversation context:
-            $contextBuilder
-            Now answer the last user query.
-        """.trimIndent()
-    }
-}
+        }*/

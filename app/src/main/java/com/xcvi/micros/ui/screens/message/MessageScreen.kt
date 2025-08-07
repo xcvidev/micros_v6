@@ -2,6 +2,7 @@ package com.xcvi.micros.ui.screens.message
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -110,6 +111,7 @@ fun MessageScreen(
     val mainPlaceholder = remember { placeHolders.random() }
     val focusManager = LocalFocusManager.current
     val keyboardController = LocalSoftwareKeyboardController.current
+    val context = LocalContext.current
     var userInput by remember { mutableStateOf("") }
     var showDeleteDialog by remember { mutableStateOf(false) }
     var shakeTrigger by remember { mutableStateOf(false) }
@@ -126,6 +128,11 @@ fun MessageScreen(
         focusManager.clearFocus()
         keyboardController?.hide()
     }
+    val message = when (state.error) {
+        is Failure.Network -> stringResource(R.string.assistant_error_network)
+        else -> stringResource(R.string.assistant_error_other)
+    }
+
 
     OnNavigation {
         onEvent(MessageEvent.GetData)
@@ -326,7 +333,6 @@ fun MessageScreen(
         }
     }
 
-    val context = LocalContext.current
     if (showDeleteDialog) {
         AlertDialog(
             onDismissRequest = { showDeleteDialog = false },

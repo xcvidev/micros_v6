@@ -41,7 +41,7 @@
     <string name="database_error">A database error occurred. Please try again later.</string>
     <string name="authentication_error">Authentication failed. Please log in again.</string>
     <string name="already_exists">An item with the same name already exists.</string>">
-    <string name="unknown_error">An unknown error occurred. Please try again.</string>
+    <string name="unknown_error">Something went wrong. Please try again.</string>
 
     <!--  Weight  -->
     <string name="weight_manager">Weight Manager</string>
