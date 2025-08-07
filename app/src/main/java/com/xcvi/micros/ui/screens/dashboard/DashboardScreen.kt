@@ -24,8 +24,9 @@ import androidx.compose.foundation.lazy.staggeredgrid.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CalendarMonth
-import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.FavoriteBorder
+import androidx.compose.material.icons.filled.PushPin
+import androidx.compose.material.icons.outlined.PushPin
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -320,8 +321,8 @@ fun DashboardScreen(
                         )
                     )
                 },
-                onFavoriteChange = {
-                    UserPreferences.setMealFavorite(it.number, !it.isFavorite)
+                onPin = {
+                    UserPreferences.setMealFavorite(it.number, !it.isPinned)
                     showEditDialog = false
                 }
             )
@@ -378,7 +379,7 @@ fun EditDialog(
     onClear: () -> Unit,
     onPaste: () -> Unit,
     onCopy: () -> Unit,
-    onFavoriteChange: (Meal) -> Unit,
+    onPin: (Meal) -> Unit,
 ) {
     AlertDialog(
         onDismissRequest = onDismiss,
@@ -391,31 +392,35 @@ fun EditDialog(
                 Spacer(Modifier.weight(1f))
                 IconButton(
                     onClick = {
-                        onFavoriteChange(selectedMeal)
+                        onPin(selectedMeal)
                     }
                 ) {
                     Icon(
-                        imageVector = if(selectedMeal.isFavorite){
-                            Icons.Default.Favorite
+                        imageVector = if(selectedMeal.isPinned){
+                            Icons.Outlined.PushPin
                         } else {
-                            Icons.Default.FavoriteBorder
+                            Icons.Default.PushPin
                         },
                         contentDescription = "",
                         modifier = Modifier.size(24.dp),
-                        tint = MaterialTheme.colorScheme.primary
+                        tint = if(selectedMeal.isPinned){
+                            MaterialTheme.colorScheme.primary
+                        } else {
+                            MaterialTheme.colorScheme.onSurface.copy(0.5f)
+                        }
                     )
                 }
             }
         },
         confirmButton = {
             Row(modifier = Modifier.fillMaxWidth()) {
-                val buttonText = if (selectedMeal.isFavorite) {
+                val buttonText = if (selectedMeal.isPinned) {
                     stringResource(R.string.clear)
                 } else {
                     stringResource(R.string.remove)
                 }
 
-                val enabled = if (selectedMeal.isFavorite) {
+                val enabled = if (selectedMeal.isPinned) {
                     selectedMeal.portions.isNotEmpty()
                 } else {
                     true

@@ -110,7 +110,15 @@ data object FoodDestination {
                 GoalsScreen(
                     state = viewModel.state,
                     onEvent = viewModel::onEvent,
-                ) { navController.popBackStack() }
+                    onAsk = {
+                        navController.navigate(MessageDestination.ROUTE){
+                            popUpTo(ROUTE){
+                                inclusive = false
+                            }
+                        }
+                    },
+                    onBack = { navController.popBackStack() }
+                )
             }
         }
     }

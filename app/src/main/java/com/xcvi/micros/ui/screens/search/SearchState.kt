@@ -12,7 +12,7 @@ data class SearchState(
     val selected: Portion? = null,
     val selectedItems: Set<Portion> = emptySet(),
     val isEnhancing: Boolean = false,
-    val isSearching: Boolean = false,
+    val isLoadingSearch: Boolean = false,
     val isAsking: Boolean = false,
     val isLoadingSmartSearch: Boolean = false,
     val smartResult: Message? = null,

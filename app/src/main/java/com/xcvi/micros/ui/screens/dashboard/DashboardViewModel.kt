@@ -170,7 +170,7 @@ class DashboardViewModel(
                     )
                 }
 
-                if (meals.none { it.isVisible || it.isFavorite }){
+                if (meals.none { it.isVisible || it.isPinned }){
                     addMeal()
                 }
             }

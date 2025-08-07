@@ -20,11 +20,12 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -165,12 +166,15 @@ fun SearchScreen(
                             .fillMaxWidth()
                             .background(MaterialTheme.colorScheme.surfaceContainer)
                     ) {
+                        var isTyping by remember { mutableStateOf(false) }
                         AutomaticSearchBar(
                             modifier = modifier
                                 .fillMaxWidth()
                                 .padding(horizontal = 24.dp)
                                 .focusRequester(focusRequester),
                             query = state.query,
+                            onTyping = { isTyping = true },
+                            onTypingEnd = { isTyping = false },
                             onQueryChange = { onEvent(SearchEvent.Input(it)) },
                             label = { Text(text = stringResource(R.string.search_placeholder)) },
                             onAutomaticSearch = {
@@ -180,7 +184,13 @@ fun SearchScreen(
                                     }
                                 )
                             },
-                            trailingIcon = { Icon(Icons.Default.Search, "") },
+                            trailingIcon = {
+                                if(state.query.isNotEmpty()){
+                                    IconButton(onClick = { onEvent(SearchEvent.Input("")) }) {
+                                        Icon(Icons.Default.Clear, "")
+                                    }
+                                }
+                            },
                             keyboardActions = KeyboardActions(onDone = { focusManager.clearFocus() }),
                             keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done)
                         )
@@ -188,7 +198,7 @@ fun SearchScreen(
                             modifier = modifier
                                 .fillMaxWidth()
                                 .padding(horizontal = 24.dp, vertical = 16.dp),
-                            searching = state.isLoadingSmartSearch
+                            searching = state.isLoadingSmartSearch || state.isLoadingSearch || isTyping,
                         ) {
                             focusManager.clearFocus()
                             keyboardController?.hide()

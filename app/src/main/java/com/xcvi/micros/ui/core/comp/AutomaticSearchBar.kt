@@ -35,6 +35,8 @@ fun AutomaticSearchBar(
     query: String,
     onQueryChange: (String) -> Unit,
     onAutomaticSearch: () -> Unit,
+    onTyping: (() -> Unit)? = null, // Optional callback for typing detection
+    onTypingEnd: (() -> Unit)? = null,
     leadingIcon: @Composable (() -> Unit)? = null,
     label: @Composable (() -> Unit)? = null,
     placeholder: @Composable (() -> Unit)? = null,
@@ -44,22 +46,33 @@ fun AutomaticSearchBar(
 ) {
     val coroutineScope = rememberCoroutineScope()
     var debounceJob by remember { mutableStateOf<Job?>(null) }
+    var typingDebounceJob by remember { mutableStateOf<Job?>(null) }
     Card(
         modifier = modifier,
         shape = RoundedCornerShape(36.dp),
     ) {
         TextField(
-            maxLines = 1,
-            singleLine = true,
             value = query,
             onValueChange = { newQuery ->
+                onTyping?.invoke() // Called immediately when typing
+
                 onQueryChange(newQuery)
+
+                // debounce typing end
+                typingDebounceJob?.cancel()
+                typingDebounceJob = coroutineScope.launch {
+                    delay(500) // adjust to your preferred "typing end" timeout
+                    onTypingEnd?.invoke()
+                }
+
                 debounceJob?.cancel()  // cancel previous job if any
                 debounceJob = coroutineScope.launch {
-                    delay(500)
+                    delay(300)
                     onAutomaticSearch()  // always call, no gating here
                 }
             },
+            maxLines = 1,
+            singleLine = true,
             leadingIcon = leadingIcon,
             label = label,
             placeholder = placeholder,

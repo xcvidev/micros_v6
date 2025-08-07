@@ -92,7 +92,7 @@ fun BottomNavigationBar(navController: NavHostController, currentRoute: String?)
                 route = MessageDestination.ROUTE,
                 navController = navController,
                 selected = currentRoute == MessageDestination.ROUTE,
-                icon = R.drawable.ic_search
+                icon = R.drawable.ic_message
             )
             BottomBarItem(
                 route = WeightDestination.ROUTE,

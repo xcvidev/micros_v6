@@ -51,6 +51,7 @@
     <string name="avg">Average</string>
 
     <!--  Assistant  -->
+    <string name="assistant_button">Ask AI Assistant</string>
     <string name="assistant_topbar">Nutrition Assistant</string>
     <string name="assistant_placeholder_main1">How can i help you today?</string>
     <string name="assistant_placeholder_main2">No more guessing, just ask.</string>
@@ -198,10 +199,11 @@
     <string name="goals_info_3">Once set, you will have more data about you nutrition.</string>
 
     <string name="rda_info">These Recommended Daily Amounts (RDAs) are based on the Codex Nutrient Reference Values (NRVs) established by the FAO/WHO for use in international nutrition labeling.</string>
-    <string name="macros_goals">Macronutrient Targets</string>
+    <string name="macros_goals">Macronutrients</string>
     <string name="not_licensed_text">This copy is not licensed.\nPlease purchase on Google Play.</string>
     <string name="play_store">Play Store</string>
     <string name="favorite">Favorite</string>
     <string name="select_meal">Choose a meal</string>
+    <string name="openai_desc">Powered by Open AI</string>
 
 </resources>

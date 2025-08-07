@@ -60,7 +60,7 @@ class PortionRepositoryImplementation(
                             number = i,
                             name = mealNames[i] ?: "",
                             portions = portions,
-                            isFavorite = fav,
+                            isPinned = fav,
                             isVisible = portions.isNotEmpty() || fav,
                             nutrients = portions.sumNutrients(),
                             minerals = portions.sumMinerals(),

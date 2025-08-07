@@ -321,14 +321,27 @@ fun MessageScreen(
                     .padding(16.dp),
                 contentAlignment = Center
             ) {
-                FadingText(
-                    text = mainPlaceholder,
-                    style = MaterialTheme.typography.headlineMedium,
-                    fontSize = MaterialTheme.typography.headlineMedium.fontSize,
-                    fontWeight = MaterialTheme.typography.headlineMedium.fontWeight,
-                    textAlign = TextAlign.Center,
-                    animationDuration = 1000
-                )
+                Column(
+                    horizontalAlignment = CenterHorizontally,
+                    verticalArrangement = Arrangement.spacedBy(4.dp)
+                ) {
+                    StreamingText(
+                        text = mainPlaceholder,
+                        style = MaterialTheme.typography.headlineMedium,
+                        fontSize = MaterialTheme.typography.headlineMedium.fontSize,
+                        fontWeight = MaterialTheme.typography.headlineMedium.fontWeight,
+                        textAlign = TextAlign.Center,
+                        //animationDuration = 1000
+                    )
+                    Text(
+                        text = stringResource(R.string.openai_desc),
+                        style = MaterialTheme.typography.labelSmall,
+                        fontSize = MaterialTheme.typography.labelSmall.fontSize,
+                        fontWeight = MaterialTheme.typography.labelSmall.fontWeight,
+                        textAlign = TextAlign.Center,
+                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f)
+                    )
+                }
             }
         }
     }

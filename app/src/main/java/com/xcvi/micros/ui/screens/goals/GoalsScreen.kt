@@ -66,6 +66,7 @@ fun GoalsScreen(
     modifier: Modifier = Modifier,
     state: GoalsState,
     onEvent: (GoalsEvent) -> Unit,
+    onAsk: () -> Unit,
     onBack: () -> Unit,
 ) {
 
@@ -86,7 +87,7 @@ fun GoalsScreen(
             topBar = {
                 TopAppBar(
                     title = {
-                        if (state is GoalsState.Goals) {
+                        if (state !is GoalsState.Goals) {
                             Text(text = stringResource(R.string.goals_title))
                         }
                     },
@@ -145,6 +146,18 @@ fun GoalsScreen(
                             )
                         ) {
                             Text(text = stringResource(R.string.set_goals))
+                        }
+                        Button(
+                            onClick = onAsk,
+                            modifier = Modifier
+                                .padding(horizontal = 16.dp)
+                                .fillMaxWidth(),
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = MaterialTheme.colorScheme.surfaceContainer,
+                                contentColor = MaterialTheme.colorScheme.onSurface
+                            )
+                        ) {
+                            Text(text = stringResource(R.string.assistant_button))
                         }
                     }
                 }
@@ -272,7 +285,7 @@ fun GoalsScreen(
                                     goal = state.currentGoals.goal
                                 )
                                 ScoreBar(score = macrosScore)
-                                // LabelsList(labels = state.nutrients.macroGoals(context = context))
+                                LabelsList(labels = state.currentGoals.macroGoals(context = context))
 
                             }
                         }

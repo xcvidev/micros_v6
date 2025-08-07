@@ -36,6 +36,7 @@ import kotlinx.coroutines.delay
 @Composable
 fun SmartSearchButton(
     modifier: Modifier = Modifier,
+    enabled: Boolean = true,
     searching: Boolean,
     onClick: () -> Unit
 ) {
@@ -54,6 +55,7 @@ fun SmartSearchButton(
     }
 
     OutlinedButton(
+        enabled = enabled,
         modifier = modifier,
         onClick = {
             onClick()

@@ -80,7 +80,7 @@ class SearchViewModel(
     private fun search(date: Int, meal: Int, onError: () -> Unit) {
         if (state.query.isBlank() || state.query.length < 3 || state.isAsking) return
         viewModelScope.launch {
-            updateData { copy(isSearching = true) }
+            updateData { copy(isLoadingSearch = true) }
             val res = useCases.search(
                 query = state.query,
                 language = language,
@@ -100,7 +100,7 @@ class SearchViewModel(
                     updateData { copy(searchResults = emptyList(), listLabel = "") }
                 }
             }
-            updateData { copy(isSearching = false) }
+            updateData { copy(isLoadingSearch = false) }
         }
     }
 

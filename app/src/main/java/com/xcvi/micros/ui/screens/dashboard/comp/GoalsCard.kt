@@ -40,7 +40,7 @@ fun GoalsCard(
     summary: MacrosSummary,
     onClick: () -> Unit = {},
 ) {
-
+    val headline = stringResource(R.string.goals_title)
     Box(
         modifier = Modifier.padding(4.dp)
     ) {
@@ -53,7 +53,7 @@ fun GoalsCard(
                     .clickable { onClick() },
                 headline = {
 
-                    Text(text = stringResource(R.string.goals_title))
+                    Text(text = headline)
                 },
                 body = {
                     val info1 = stringResource(R.string.goals_info_1)

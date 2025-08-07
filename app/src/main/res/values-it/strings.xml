@@ -50,6 +50,7 @@
     <string name="avg">Media</string>
 
     <!--  Assistant  -->
+    <string name="assistant_button">Chiedi Assistente IA</string>
     <string name="assistant_topbar">Nutrizionista</string>
     <string name="assistant_placeholder_main1">Come posso aiutarti oggi?</string>
     <string name="assistant_placeholder_main2">Curiosità? Chiedi pure.</string>
@@ -202,10 +203,11 @@
     <string name="goals_info_3">Una volta impostati, avrai accesso ad informazioni più dettagliate.</string>
 
     <string name="rda_info">Questi Valori Nutrizionali Giornalieri Raccomandati (RDA) si basano sui Valori Nutrizionali di Riferimento (NRV) del Codex, stabiliti da FAO/OMS per l\'uso nell\'etichettatura nutrizionale internazionale.</string>
-    <string name="macros_goals">Obiettivi Macronutrienti</string>
+    <string name="macros_goals">Macronutrienti</string>
     <string name="not_licensed_text">Questa copia non ha una licenza valida.\nAcquista una versione da Google Play.</string>
     <string name="play_store">Play Store</string>
     <string name="favorite">Preferito</string>
     <string name="select_meal">Scegli il pasto</string>
+    <string name="openai_desc">Powered by Open AI</string>
 
 </resources>
