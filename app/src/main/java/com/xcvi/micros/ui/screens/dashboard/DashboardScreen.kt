@@ -397,9 +397,9 @@ fun EditDialog(
                 ) {
                     Icon(
                         imageVector = if(selectedMeal.isPinned){
-                            Icons.Outlined.PushPin
-                        } else {
                             Icons.Default.PushPin
+                        } else {
+                            Icons.Outlined.PushPin
                         },
                         contentDescription = "",
                         modifier = Modifier.size(24.dp),

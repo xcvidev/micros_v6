@@ -489,7 +489,7 @@ private fun MacrosSummary.macroGoals(context: Context): List<Triple<String, Stri
         Triple(
             context.getString(R.string.fats),
             "${actual.fats.roundDecimals()}",
-            "${goal.carbohydrates} g"
+            "${goal.fats} g"
         ),
     )
 }
