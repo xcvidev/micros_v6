@@ -1,6 +1,9 @@
 package com.xcvi.micros.ui.screens.dashboard.comp
 
 
+import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -16,6 +19,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -166,10 +170,12 @@ fun ScoreBar(
     score: Int,
     modifier: Modifier = Modifier,
     barHeight: Dp = 8.dp,
-    barColor: Color = MaterialTheme.colorScheme.primary,
 ) {
-
     val weight = score / 100f
+    val barColor = when(weight){
+        in 0f..0.5f -> MaterialTheme.colorScheme.onSurface.copy(0.6f)
+        else -> MaterialTheme.colorScheme.primary.copy(weight)
+    }
     Column(
         modifier = modifier,
     ) {
