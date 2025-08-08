@@ -3,13 +3,9 @@ package com.xcvi.micros.ui.screens.search
 import android.annotation.SuppressLint
 import android.widget.Toast
 import androidx.activity.compose.BackHandler
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.VisibilityThreshold
 import androidx.compose.animation.core.spring
-import androidx.compose.animation.core.tween
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectTapGestures
@@ -36,7 +32,6 @@ import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.ListItem
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -48,7 +43,6 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Alignment.Companion.CenterHorizontally
@@ -67,19 +61,16 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import com.xcvi.micros.R
-import com.xcvi.micros.domain.model.food.Food
 import com.xcvi.micros.domain.model.food.Portion
-import com.xcvi.micros.domain.model.message.FoodItem
 import com.xcvi.micros.domain.utils.Failure
 import com.xcvi.micros.ui.core.comp.AutomaticSearchBar
 import com.xcvi.micros.ui.core.comp.BackButton
 import com.xcvi.micros.ui.core.comp.rememberShakeOffset
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 
 sealed class ListItem {
     data class Header(val text: String) : ListItem()
-    data class Item(val id: String, val item: Portion) : ListItem()
+    data class Item(val id: String, val item: Portion, val showDivider: Boolean) : ListItem()
 }
 
 
@@ -100,11 +91,14 @@ fun SearchScreen(
         if (showSheet) {
             showSheet = false
         } else {
-            showDiscardDialog = true
+            if(state.selectedItems.isNotEmpty()){
+                showDiscardDialog = true
+            }else{
+                onBack()
+            }
         }
     }
 
-    val scope = rememberCoroutineScope()
     val focusManager = LocalFocusManager.current
     val keyboardController = LocalSoftwareKeyboardController.current
     val context = LocalContext.current
@@ -238,16 +232,17 @@ fun SearchScreen(
                 }
             }
             val selectedItems = state.selectedItems
-            val searchResults = state.searchResults
+            val searchItems = state.searchResults.filter { result -> selectedItems.none { it.food.barcode == result.food.barcode } }
             val combined: List<ListItem> = buildList {
                 if (selectedItems.isNotEmpty()) {
                     add(ListItem.Header(selectedTitle))
-                    addAll(selectedItems.map { ListItem.Item("selected_${it.food.barcode}", it) })
+                    addAll(
+                        selectedItems.map { ListItem.Item("selected_${it.food.barcode}", it,selectedItems.indexOf(it) > 0) }
+                    )
                 }
                 add(ListItem.Header(state.listLabel))
                 addAll(
-                    searchResults.filter { result -> selectedItems.none { it.food.barcode == result.food.barcode } }
-                        .map { ListItem.Item("search_${it.food.barcode}", it) }
+                    searchItems.map { ListItem.Item("search_${it.food.barcode}", it,searchItems.indexOf(it) > 0) }
                 )
             }
 
@@ -277,14 +272,12 @@ fun SearchScreen(
                             )
                         )
                     ) {
-                        HorizontalDivider(
-                            thickness = 0.3.dp,
-                            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f)
-                        )
-                        HorizontalDivider(
-                            thickness = 0.3.dp,
-                            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f)
-                        )
+                        if(entry.showDivider){
+                            HorizontalDivider(
+                                thickness = 0.3.dp,
+                                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f)
+                            )
+                        }
 
                         FoodItem(
                             selected = entry.item.food.barcode in selectedItems.map { it.food.barcode },

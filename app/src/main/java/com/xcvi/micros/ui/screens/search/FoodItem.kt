@@ -141,9 +141,10 @@ fun FoodItem(
             OutlinedIconButton(
                 modifier = Modifier.size(28.dp),
                 onClick = { onSelect(portion) },
-                border = BorderStroke(2.dp, MaterialTheme.colorScheme.onSurface.copy(alpha = 0.8f))
+                border = BorderStroke(1.dp, MaterialTheme.colorScheme.onSurface.copy(alpha = 0.8f))
             ) {
                 Icon(
+                    modifier = Modifier.size(16.dp),
                     imageVector = Icons.Default.Add,
                     contentDescription = "",
                     tint = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.8f)
@@ -166,14 +167,14 @@ fun FoodItemIcon(modifier: Modifier = Modifier, portion: Portion?) {
     Box(modifier = modifier) {
         if (portion?.food?.isFavorite == true) {
             Icon(
-                imageVector = Icons.Default.Favorite,
+                imageVector = Icons.Default.FavoriteBorder,
                 contentDescription = "",
                 modifier = Modifier.size(16.dp),
                 tint = MaterialTheme.colorScheme.primary
             )
         } else if (portion?.food?.isAI == true) {
             Icon(
-                painter = painterResource(R.drawable.ic_ai_filled),
+                painter = painterResource(R.drawable.ic_ai),
                 contentDescription = "",
                 modifier = Modifier.size(16.dp),
                 tint = MaterialTheme.colorScheme.primary

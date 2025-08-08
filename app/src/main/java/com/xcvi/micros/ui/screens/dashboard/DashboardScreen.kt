@@ -219,9 +219,13 @@ fun DashboardScreen(
                     items = state.meals,
                     key = { it.number }
                 ) { mealCard ->
-                    AnimatedMealCard(visible = mealCard.isVisible) {
+                        //AnimatedMealCard(visible = mealCard.isVisible, modifier =modifier.animateItem()) {
+                    if(mealCard.isVisible){
                         Box(
                             modifier = Modifier
+                                .padding(4.dp)
+                                .clip(RoundedCornerShape(16.dp))
+                                .animateItem()
                                 .combinedClickable(
                                     onClick = { onGotMeal(mealCard) },
                                     onLongClick = {
@@ -234,6 +238,7 @@ fun DashboardScreen(
                             MealCardFull(meal = mealCard)
                         }
                     }
+
                 }
 
                 if (state.meals.filter { it.isVisible }.size < 8) {

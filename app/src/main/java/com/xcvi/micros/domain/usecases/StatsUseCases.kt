@@ -102,7 +102,7 @@ class StatsUseCases(
                     )
                 }
 
-            FilterType.DAY -> summariesOfDate
+            FilterType.DAY -> summariesOfDate.filter { it.date in (start..end) }.sortedBy { it.date }
         }
     }
 

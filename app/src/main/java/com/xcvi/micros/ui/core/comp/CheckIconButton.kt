@@ -44,7 +44,8 @@ fun CheckIconButton(
     ) {
         Icon(
             imageVector = Icons.Default.Check,
-            contentDescription = ""
+            contentDescription = "",
+            modifier = Modifier.size(18.dp)
         )
     }
 }
