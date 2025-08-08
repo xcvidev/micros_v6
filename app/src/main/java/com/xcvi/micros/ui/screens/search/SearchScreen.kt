@@ -3,6 +3,7 @@ package com.xcvi.micros.ui.screens.search
 import android.annotation.SuppressLint
 import android.widget.Toast
 import androidx.activity.compose.BackHandler
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.VisibilityThreshold
 import androidx.compose.animation.core.spring
@@ -91,9 +92,9 @@ fun SearchScreen(
         if (showSheet) {
             showSheet = false
         } else {
-            if(state.selectedItems.isNotEmpty()){
+            if (state.selectedItems.isNotEmpty()) {
                 showDiscardDialog = true
-            }else{
+            } else {
                 onBack()
             }
         }
@@ -232,20 +233,34 @@ fun SearchScreen(
                 }
             }
             val selectedItems = state.selectedItems
-            val searchItems = state.searchResults.filter { result -> selectedItems.none { it.food.barcode == result.food.barcode } }
+            val searchItems =
+                state.searchResults.filter { result -> selectedItems.none { it.food.barcode == result.food.barcode } }
             val combined: List<ListItem> = buildList {
                 if (selectedItems.isNotEmpty()) {
                     add(ListItem.Header(selectedTitle))
                     addAll(
-                        selectedItems.map { ListItem.Item("selected_${it.food.barcode}", it,selectedItems.indexOf(it) > 0) }
+                        selectedItems.map {
+                            ListItem.Item(
+                                "selected_${it.food.barcode}",
+                                it,
+                                selectedItems.indexOf(it) > 0
+                            )
+                        }
                     )
                 }
                 add(ListItem.Header(state.listLabel))
                 addAll(
-                    searchItems.map { ListItem.Item("search_${it.food.barcode}", it,searchItems.indexOf(it) > 0) }
+                    searchItems.map {
+                        ListItem.Item(
+                            "search_${it.food.barcode}",
+                            it,
+                            searchItems.indexOf(it) > 0
+                        )
+                    }
                 )
             }
 
+            /*
             items(
                 combined,
                 key = {
@@ -297,8 +312,9 @@ fun SearchScreen(
                     }
                 }
             }
+            */
 
-            /*
+
             if (state.selectedItems.isNotEmpty()) {
                 item {
                     Text(
@@ -310,9 +326,8 @@ fun SearchScreen(
                     )
                 }
             }
-            items(selectedItems, key = { "selected_${it.food.barcode}" }) { result ->
-                val checked =
-                    state.selectedItems.any { it.food.barcode == result.food.barcode }
+            items(selectedItems.toList(), key = { "selected_${it.food.barcode}" }) { result ->
+                // val checked = state.selectedItems.any { it.food.barcode == result.food.barcode }
                 if (selectedItems.indexOf(result) > 0) {
                     HorizontalDivider(
                         thickness = 0.3.dp,
@@ -320,13 +335,8 @@ fun SearchScreen(
                     )
                 }
                 FoodItem(
-                    modifier = Modifier.animateItem(
-                        fadeInSpec = null, fadeOutSpec = null, placementSpec = spring(
-                            stiffness = Spring.StiffnessMediumLow,
-                            visibilityThreshold = IntOffset.VisibilityThreshold
-                        )
-                    ),
-                    selected = checked,
+                    modifier = Modifier.animateItem(),
+                    selected = true,
                     onSelect = {
                         onEvent(SearchEvent.Select(it))
                         focusManager.clearFocus()
@@ -341,10 +351,6 @@ fun SearchScreen(
                     }
                 )
             }
-
-
-
-
 
 
 
@@ -374,39 +380,32 @@ fun SearchScreen(
                 }
             }
 
-            items(items = state.searchResults, key = { "search_${it.food.barcode}" }) { result ->
-                val checked =
-                    state.selectedItems.any { it.food.barcode == result.food.barcode }
+            items(items = searchItems, key = { "search_${it.food.barcode}" }) { result ->
+                //val checked = state.selectedItems.any { it.food.barcode == result.food.barcode }
                 if (state.searchResults.indexOf(result) > 0) {
                     HorizontalDivider(
                         thickness = 0.3.dp,
                         color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f)
                     )
                 }
-                AnimatedVisibility(
-                    visible = !checked,
-                    enter = fadeIn(tween(300)),
-                    exit = fadeOut(tween(300))
-                ) {
-                    FoodItem(
-                        selected = checked,
-                        onSelect = {
-                            focusManager.clearFocus()
-                            keyboardController?.hide()
-                            onEvent(SearchEvent.Select(it))
-                        },
-                        portion = result,
-                        onClick = {
-                            focusManager.clearFocus()
-                            keyboardController?.hide()
-                            showSheet = true
-                            onEvent(SearchEvent.OpenDetails(result))
-                        }
-                    )
-                }
+                FoodItem(
+                    modifier = Modifier.animateItem(),
+                    selected = false,
+                    onSelect = {
+                        focusManager.clearFocus()
+                        keyboardController?.hide()
+                        onEvent(SearchEvent.Select(it))
+                    },
+                    portion = result,
+                    onClick = {
+                        focusManager.clearFocus()
+                        keyboardController?.hide()
+                        showSheet = true
+                        onEvent(SearchEvent.OpenDetails(result))
+                    }
+                )
             }
 
-             */
 
             item {
                 Spacer(modifier = Modifier.height(48.dp))
