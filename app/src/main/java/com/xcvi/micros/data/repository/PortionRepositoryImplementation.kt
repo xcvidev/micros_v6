@@ -35,7 +35,7 @@ class PortionRepositoryImplementation(
 ) : PortionRepository {
 
     override suspend fun getRecents(): List<Portion> {
-        return try{
+        return try {
             portionDao.getRecents(100)
                 .distinctBy { it.food.barcode }
                 .map { it.toModel() }
@@ -47,27 +47,27 @@ class PortionRepositoryImplementation(
 
     override fun getMeals(date: Int, mealNames: Map<Int, String>): Flow<List<Meal>> {
         return try {
-                combine(
-                    getPortionsOfDate(date),            // Flow<List<Portion>>
-                    UserPreferences.favoritesFlow()         // Flow<Set<Int>>
-                ) { allPortions, favs ->
-                    val byMeal = allPortions.groupBy { it.meal }
-                    (1..8).map { i ->
-                        val portions = byMeal[i].orEmpty()
-                        val fav = i in favs
-                        Meal(
-                            date = date,
-                            number = i,
-                            name = mealNames[i] ?: "",
-                            portions = portions,
-                            isPinned = fav,
-                            isVisible = portions.isNotEmpty() || fav,
-                            nutrients = portions.sumNutrients(),
-                            minerals = portions.sumMinerals(),
-                            vitamins = portions.sumVitamins(),
-                            aminoAcids = portions.sumAminos()
-                        )
-                    }
+            combine(
+                getPortionsOfDate(date),            // Flow<List<Portion>>
+                UserPreferences.favoritesFlow()         // Flow<Set<Int>>
+            ) { allPortions, favs ->
+                val byMeal = allPortions.groupBy { it.meal }
+                (1..8).map { i ->
+                    val portions = byMeal[i].orEmpty()
+                    val fav = i in favs
+                    Meal(
+                        date = date,
+                        number = i,
+                        name = mealNames[i] ?: "",
+                        portions = portions,
+                        isPinned = fav,
+                        isVisible = portions.isNotEmpty() || fav,
+                        nutrients = portions.sumNutrients(),
+                        minerals = portions.sumMinerals(),
+                        vitamins = portions.sumVitamins(),
+                        aminoAcids = portions.sumAminos()
+                    )
+                }
             }
         } catch (e: Exception) {
             Log.e("log", "getMeals: ", e)
@@ -212,10 +212,10 @@ class PortionRepositoryImplementation(
     override fun observeAllSummaries(): Flow<List<MacrosSummary>> {
         try {
             val actualList = portionDao.observeHistory()
-            val goalsList =  portionDao.observeGoals()
+            val goalsList = portionDao.observeGoals()
             return combine(actualList, goalsList) { actual, goals ->
-                    mergeActualWithGoals(actual, goals)
-                }
+                mergeActualWithGoals(actual, goals)
+            }
 
         } catch (e: Exception) {
             Log.e("log", "observeAllSummaries: ", e)
@@ -225,16 +225,15 @@ class PortionRepositoryImplementation(
 
     override fun getSummaryOfDate(date: Int): Flow<MacrosSummary> {
         try {
-            val actual =  portionDao.observeMacrosForDate(date)
-            val goal =  portionDao.getGoal(date)
-            return actual.map { actualMacros ->
-                    MacrosSummary(
-                        date = date,
-                        actual = actualMacros.getMacros(),
-                        goal = goal.firstOrNull()?.getMacros() ?: Macros()
-                    )
-                }
-
+            val actual = portionDao.observeMacrosForDate(date)
+            val goal = portionDao.getGoal(date)
+            return combine(actual, goal) { actual, goal ->
+                MacrosSummary(
+                    date = date,
+                    actual = actual.getMacros(),
+                    goal = goal.getMacros()
+                )
+            }
         } catch (e: Exception) {
             Log.e("log", "getSummaryOfDate: ", e)
             return emptyFlow()

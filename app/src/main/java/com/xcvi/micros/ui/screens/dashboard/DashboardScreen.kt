@@ -81,7 +81,7 @@ fun DashboardScreen(
 ) {
 
     OnNavigation {
-        onEvent(DashboardEvent.ChangeDate(getToday()))
+        //onEvent(DashboardEvent.ChangeDate(getToday()))
     }
 
     val haptics = LocalHapticFeedback.current

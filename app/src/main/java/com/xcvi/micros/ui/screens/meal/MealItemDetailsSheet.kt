@@ -52,6 +52,7 @@ import com.xcvi.micros.R
 import com.xcvi.micros.domain.model.food.Portion
 import com.xcvi.micros.ui.core.DeleteDialog
 import com.xcvi.micros.ui.core.EnhanceDialog
+import com.xcvi.micros.ui.core.RemoveDialog
 import com.xcvi.micros.ui.core.SummaryDetails
 import com.xcvi.micros.ui.core.comp.HorizontalFadedBox
 import com.xcvi.micros.ui.core.comp.LoadingIndicator
@@ -87,7 +88,7 @@ fun MealItemDetailsSheet(
     var amount by remember { mutableIntStateOf(item.amount) }
 
     if (showDeleteDialog) {
-        DeleteDialog(
+        RemoveDialog (
             onDismiss = { showDeleteDialog = false },
             onConfirm = {
                 onDelete()

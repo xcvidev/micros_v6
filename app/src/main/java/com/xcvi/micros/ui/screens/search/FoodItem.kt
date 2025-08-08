@@ -5,6 +5,7 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.widget.Toast
 import androidx.activity.compose.BackHandler
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
@@ -36,7 +37,9 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedIconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -103,7 +106,6 @@ fun FoodItem(
                 horizontalArrangement = Arrangement.Start,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-
                 Text(
                     text = portion.food.name,
                     fontSize = MaterialTheme.typography.bodyLarge.fontSize,
@@ -135,10 +137,25 @@ fun FoodItem(
         }
 
         Spacer(modifier = Modifier.width(16.dp))
-        CheckIconButton(
-            modifier = Modifier.size(28.dp),
-            selected = selected,
-        ) { onSelect(portion) }
+        if(!selected){
+            OutlinedIconButton(
+                modifier = Modifier.size(28.dp),
+                onClick = { onSelect(portion) },
+                border = BorderStroke(2.dp, MaterialTheme.colorScheme.onSurface.copy(alpha = 0.8f))
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Add,
+                    contentDescription = "",
+                    tint = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.8f)
+                )
+            }
+        } else {
+            CheckIconButton(
+                modifier = Modifier.size(28.dp),
+                selected = true,
+            ) { onSelect(portion) }
+
+        }
         Spacer(modifier = Modifier.width(24.dp))
     }
 }
@@ -151,13 +168,15 @@ fun FoodItemIcon(modifier: Modifier = Modifier, portion: Portion?) {
             Icon(
                 imageVector = Icons.Default.Favorite,
                 contentDescription = "",
-                modifier = Modifier.size(16.dp)
+                modifier = Modifier.size(16.dp),
+                tint = MaterialTheme.colorScheme.primary
             )
         } else if (portion?.food?.isAI == true) {
             Icon(
                 painter = painterResource(R.drawable.ic_ai_filled),
                 contentDescription = "",
-                modifier = Modifier.size(16.dp)
+                modifier = Modifier.size(16.dp),
+                tint = MaterialTheme.colorScheme.primary
             )
         } else {
             Box(modifier = Modifier.size(16.dp))

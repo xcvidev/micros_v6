@@ -24,6 +24,8 @@
     <string name="tomorrow">Domani</string>
     <string name="delete">Elimina</string>
     <string name="delete_confirm_text">Sei sicuro? Questa azione non può essere annullata.</string>
+    <string name="remove_confirm_text">"Sei sicuro?"</string>">
+
     <string name="paste">Incolla</string>
     <string name="copy">Copia</string>
     <string name="move">Sposta</string>
@@ -209,5 +211,9 @@
     <string name="favorite">Preferito</string>
     <string name="select_meal">Scegli il pasto</string>
     <string name="openai_desc">Powered by Open AI</string>
+    <string name="discard">Scarta</string>
+    <string name="unsaved_changes_title">Modifiche non salvate</string>
+    <string name="unsaved_changes_text">Salvare le modifiche o scartarle?</string>
+    <string name="selected_foods_section">Selezionati</string>
 
 </resources>

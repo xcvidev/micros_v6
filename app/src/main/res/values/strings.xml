@@ -24,6 +24,7 @@
     <string name="tomorrow">Tomorrow</string>
     <string name="delete">Delete</string>
     <string name="delete_confirm_text">"Are you sure? This action cannot be permanent."</string>">
+    <string name="remove_confirm_text">"Are you sure?"</string>">
     <string name="paste">Paste</string>
     <string name="copy">Copy</string>
     <string name="move">Move</string>
@@ -205,5 +206,9 @@
     <string name="favorite">Favorite</string>
     <string name="select_meal">Choose a meal</string>
     <string name="openai_desc">Powered by Open AI</string>
+    <string name="discard">Discard</string>
+    <string name="unsaved_changes_title">Unsaved Changes</string>
+    <string name="unsaved_changes_text">Save changes or discard?</string>
+    <string name="selected_foods_section">Selected</string>
 
 </resources>

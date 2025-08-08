@@ -32,6 +32,10 @@ import com.xcvi.micros.R
 import com.xcvi.micros.domain.model.food.Macros
 import com.xcvi.micros.domain.model.food.MacrosSummary
 import com.xcvi.micros.domain.model.food.macroScoreAlgorithm
+import com.xcvi.micros.domain.model.food.scoreCalories
+import com.xcvi.micros.domain.model.food.scoreCarbs
+import com.xcvi.micros.domain.model.food.scoreFats
+import com.xcvi.micros.domain.model.food.scoreProtein
 import com.xcvi.micros.domain.utils.roundToInt
 import com.xcvi.micros.ui.core.comp.M3Card
 
@@ -100,27 +104,44 @@ fun GoalsCard(
                     }
                 },
                 body = {
+                    val errorDot = MaterialTheme.colorScheme.error
+                    val underScoreDot = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.3f)
+                    val completedDot = MaterialTheme.colorScheme.primary
+
+                    fun dotColor(current: Double,getScore: (Double) -> Double): Color {
+                        val score = getScore(current)
+                        return if (score == 1.0) {
+                            completedDot
+                        } else if(score < 1.0) {
+                            underScoreDot
+                        } else {
+                            errorDot
+                        }
+                    }
                     Column(Modifier.padding(vertical = 4.dp)) {
                         GoalText(
                             name = stringResource(R.string.protein),
                             goal = summary.goal.protein.roundToInt(),
                             current = summary.actual.protein,
-                            showError = false
+                            dotColor = dotColor(summary.actual.protein, ::scoreProtein)
                         )
                         GoalText(
                             name = stringResource(R.string.carbs),
                             goal = summary.goal.carbohydrates.roundToInt(),
-                            current = summary.actual.carbohydrates
+                            current = summary.actual.carbohydrates,
+                            dotColor = dotColor(summary.actual.carbohydrates, ::scoreCarbs)
                         )
                         GoalText(
                             name = stringResource(R.string.fats),
                             goal = summary.goal.fats.roundToInt(),
-                            current = summary.actual.fats
+                            current = summary.actual.fats,
+                            dotColor = dotColor(summary.actual.fats, ::scoreFats)
                         )
                         GoalText(
                             name = stringResource(R.string.calories),
                             goal = summary.goal.calories,
                             current = summary.actual.calories * 1.0,
+                            dotColor = dotColor(summary.actual.calories*1.0, ::scoreCalories)
                         )
                     }
                 }
@@ -136,7 +157,7 @@ fun macrosScoreCalculator(actual: Macros, goal: Macros): Int {
     val carbProgress = actual.carbohydrates / goal.carbohydrates * 100
     val fatProgress = actual.fats / goal.fats * 100
 
-    return macroScoreAlgorithm(proteinProgress, carbProgress, fatProgress)
+    return macroScoreAlgorithm(protein = proteinProgress, carbs = carbProgress, fats = fatProgress)
 }
 
 
@@ -179,18 +200,10 @@ fun GoalText(
     goal: Int,
     current: Double,
     modifier: Modifier = Modifier,
-    showError: Boolean = true,
+    dotColor: Color,
 ) {
 
-    val dotColor =
-        if (current >= goal * 1.25 && showError) {
-            MaterialTheme.colorScheme.error
 
-        } else if (current < goal) {
-            MaterialTheme.colorScheme.onSurface.copy(alpha = 0.3f)
-        } else {
-            MaterialTheme.colorScheme.primary
-        }
     Column(
         modifier = modifier,
     ) {

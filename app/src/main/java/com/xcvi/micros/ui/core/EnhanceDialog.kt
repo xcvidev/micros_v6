@@ -117,3 +117,24 @@ fun DeleteDialog(
     )
 
 }
+@Composable
+fun RemoveDialog(
+    onDismiss: () -> Unit,
+    onConfirm: () -> Unit,
+) {
+    AlertDialog(
+        onDismissRequest = { onDismiss() },
+        confirmButton = {
+            TextButton(onClick = { onConfirm() }) {
+                Text(text = stringResource(R.string.remove))
+            }
+        },
+        title = {
+            Text(text = stringResource(R.string.remove))
+        },
+        text = {
+            Text(stringResource(R.string.remove_confirm_text))
+        }
+    )
+
+}

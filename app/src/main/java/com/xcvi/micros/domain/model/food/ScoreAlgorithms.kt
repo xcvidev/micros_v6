@@ -11,22 +11,33 @@ fun scoreProtein(proteinPercent: Double): Double {
 
 fun scoreCarbs(carbsPercent: Double): Double {
     return when {
-        carbsPercent in 90.0..125.0 -> 1.0
-        carbsPercent < 90.0 -> (carbsPercent / 90.0).coerceIn(0.0, 1.0)
+        carbsPercent in 95.0..102.5 -> 1.0
+        carbsPercent < 95.0 -> (carbsPercent / 95.0).coerceIn(0.0, 1.0)
         else -> {
-            val overshoot = carbsPercent - 125.0
+            val overshoot = carbsPercent - 102.5
+            val penalty = exp(overshoot / 25.0) - 1.0
+            (1.0 - penalty).coerceIn(0.0, 1.0)
+        }
+    }
+}
+fun scoreFats(fatsPercent: Double): Double {
+    return when {
+        fatsPercent in 90.0..110.0 -> 1.0
+        fatsPercent < 90.0 -> (fatsPercent / 90.0).coerceIn(0.0, 1.0)
+        else -> {
+            val overshoot = fatsPercent - 110.0
             val penalty = exp(overshoot / 25.0) - 1.0
             (1.0 - penalty).coerceIn(0.0, 1.0)
         }
     }
 }
 
-fun scoreFats(fatsPercent: Double): Double {
+fun scoreCalories(kcalPercent: Double): Double {
     return when {
-        fatsPercent in 90.0..125.0 -> 1.0
-        fatsPercent < 90.0 -> (fatsPercent / 90.0).coerceIn(0.0, 1.0)
+        kcalPercent in 95.0..105.0 -> 1.0
+        kcalPercent < 95.0 -> (kcalPercent / 95.0).coerceIn(0.0, 1.0)
         else -> {
-            val overshoot = fatsPercent - 125.0
+            val overshoot = kcalPercent - 105.0
             val penalty = exp(overshoot / 25.0) - 1.0
             (1.0 - penalty).coerceIn(0.0, 1.0)
         }
@@ -35,28 +46,10 @@ fun scoreFats(fatsPercent: Double): Double {
 
 
 fun macroScoreAlgorithm(protein: Double, carbs: Double, fats: Double): Int {
-    fun scoreProtein(value: Double): Double {
-        return when {
-            value >= 90.0 -> 1.0
-            else -> (value / 90.0).coerceIn(0.0, 1.0)
-        }
-    }
-
-    fun scoreCarbOrFat(value: Double): Double {
-        return when {
-            value in 90.0..125.0 -> 1.0
-            value < 90.0 -> (value / 90.0).coerceIn(0.0, 1.0)
-            else -> {
-                val overshoot = value - 125.0
-                val penalty = exp(overshoot / 25.0) - 1.0  // gentle at first, harsh after 150%
-                (1.0 - penalty).coerceIn(0.0, 1.0)
-            }
-        }
-    }
 
     val proteinScore = scoreProtein(protein)
-    val carbScore = scoreCarbOrFat(carbs)
-    val fatScore = scoreCarbOrFat(fats)
+    val carbScore = scoreCarbs(carbs)
+    val fatScore = scoreFats(fats)
 
     val average = (proteinScore + carbScore + fatScore) / 3.0
     return (average * 100).roundToInt()
