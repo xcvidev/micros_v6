@@ -394,16 +394,14 @@ fun WeightSummary(
 
             // Weight entries
             list.forEachIndexed { index, weight ->
-                if (index > 0) {
-                    HorizontalDivider(thickness = 0.3.dp)
-                }
+                HorizontalDivider(
+                    thickness = 0.3.dp,
+                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f)
+                )
                 WeightEntry(
                     weight = weight,
                     onClick = { onClick(weight) }
                 )
-                if (index < list.size - 1) {
-                    HorizontalDivider(thickness = 0.3.dp)
-                }
             }
 
         }
