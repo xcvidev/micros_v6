@@ -55,6 +55,7 @@ import com.xcvi.micros.domain.model.food.Vitamins
 import com.xcvi.micros.domain.utils.roundDecimals
 import com.xcvi.micros.domain.utils.roundToInt
 import com.xcvi.micros.ui.core.comp.LoadingIndicator
+import com.xcvi.micros.ui.core.comp.OnNavigation
 import com.xcvi.micros.ui.screens.dashboard.comp.ScoreBar
 import com.xcvi.micros.ui.screens.dashboard.comp.macrosScoreCalculator
 import kotlinx.coroutines.launch
@@ -63,6 +64,7 @@ import kotlinx.coroutines.launch
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun GoalsScreen(
+    date: Int,
     modifier: Modifier = Modifier,
     state: GoalsState,
     onEvent: (GoalsEvent) -> Unit,
@@ -75,6 +77,9 @@ fun GoalsScreen(
     var showSheet by remember { mutableStateOf(false) }
     val context = LocalContext.current
 
+    OnNavigation {
+        onEvent(GoalsEvent.GetData(date))
+    }
     BackHandler {
         onBack()
     }
@@ -490,6 +495,11 @@ private fun MacrosSummary.macroGoals(context: Context): List<Triple<String, Stri
             context.getString(R.string.fats),
             "${actual.fats.roundDecimals()}",
             "${goal.fats} g"
+        ),
+        Triple(
+            context.getString(R.string.calories),
+            "${actual.calories}",
+            "${goal.calories} g"
         ),
     )
 }

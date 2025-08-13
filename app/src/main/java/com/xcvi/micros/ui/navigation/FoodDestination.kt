@@ -117,7 +117,8 @@ data object FoodDestination {
                             }
                         }
                     },
-                    onBack = { navController.popBackStack() }
+                    onBack = { navController.popBackStack() },
+                    date = dashboardViewModel.state.currentDate
                 )
             }
         }

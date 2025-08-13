@@ -66,7 +66,10 @@ class SearchUseCases(
                     amount = 100
                 )
         }
-        return (portions + foods).sortedByDescending { it.food.isFavorite }
+        return (portions + foods).sortedWith(
+            compareByDescending<Portion> { it.food.isFavorite }
+                .thenBy { it.food.name }
+        )
     }
 
     suspend fun search(

@@ -113,7 +113,6 @@ fun SearchScreen(
         shakeTrigger = false
     }
 
-    val selectedTitle = stringResource(R.string.selected_foods_section)
 
     LaunchedEffect(listState.isScrollInProgress) {
         keyboardController?.hide()
@@ -126,6 +125,10 @@ fun SearchScreen(
         keyboardController?.show()
     }
 
+    val selectedItems = state.selectedItems
+    val searchItems =
+        state.searchResults.filter { result -> selectedItems.none { it.food.barcode == result.food.barcode } }
+    
     Scaffold(
         modifier = modifier.pointerInput(Unit) {
             detectTapGestures(onTap = { focusManager.clearFocus() })
@@ -135,7 +138,13 @@ fun SearchScreen(
                 colors = TopAppBarDefaults.topAppBarColors(MaterialTheme.colorScheme.surfaceContainer),
                 title = {},
                 navigationIcon = {
-                    BackButton(modifier.padding(horizontal = 8.dp)) { showDiscardDialog = true }
+                    BackButton(modifier.padding(horizontal = 8.dp)) {
+                        if (state.selectedItems.isNotEmpty()) {
+                            showDiscardDialog = true
+                        } else {
+                            onBack()
+                        }
+                    }
                 },
                 actions = {
                     if (state.selectedItems.isNotEmpty()) {
@@ -232,87 +241,6 @@ fun SearchScreen(
                     }
                 }
             }
-            val selectedItems = state.selectedItems
-            val searchItems =
-                state.searchResults.filter { result -> selectedItems.none { it.food.barcode == result.food.barcode } }
-            val combined: List<ListItem> = buildList {
-                if (selectedItems.isNotEmpty()) {
-                    add(ListItem.Header(selectedTitle))
-                    addAll(
-                        selectedItems.map {
-                            ListItem.Item(
-                                "selected_${it.food.barcode}",
-                                it,
-                                selectedItems.indexOf(it) > 0
-                            )
-                        }
-                    )
-                }
-                add(ListItem.Header(state.listLabel))
-                addAll(
-                    searchItems.map {
-                        ListItem.Item(
-                            "search_${it.food.barcode}",
-                            it,
-                            searchItems.indexOf(it) > 0
-                        )
-                    }
-                )
-            }
-
-            /*
-            items(
-                combined,
-                key = {
-                    when (it) {
-                        is ListItem.Header -> "header_${it.text}"
-                        is ListItem.Item -> it.id
-                    }
-                }
-            ) { entry ->
-                when (entry) {
-                    is ListItem.Header -> Text(
-                        text = entry.text,
-                        fontSize = MaterialTheme.typography.labelLarge.fontSize,
-                        fontWeight = FontWeight.Bold,
-                        modifier = modifier.padding(start = 24.dp, bottom = 8.dp, top = 24.dp),
-                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.8f)
-                    )
-
-                    is ListItem.Item -> Column(
-                        modifier = Modifier.animateItem(
-                            fadeInSpec = null, fadeOutSpec = null, placementSpec = spring(
-                                stiffness = Spring.StiffnessMediumLow,
-                                visibilityThreshold = IntOffset.VisibilityThreshold
-                            )
-                        )
-                    ) {
-                        if(entry.showDivider){
-                            HorizontalDivider(
-                                thickness = 0.3.dp,
-                                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f)
-                            )
-                        }
-
-                        FoodItem(
-                            selected = entry.item.food.barcode in selectedItems.map { it.food.barcode },
-                            onSelect = {
-                                onEvent(SearchEvent.Select(it))
-                                focusManager.clearFocus()
-                                keyboardController?.hide()
-                            },
-                            portion = entry.item,
-                            onClick = {
-                                focusManager.clearFocus()
-                                keyboardController?.hide()
-                                showSheet = true
-                                onEvent(SearchEvent.OpenDetails(entry.item))
-                            }
-                        )
-                    }
-                }
-            }
-            */
 
 
             if (state.selectedItems.isNotEmpty()) {
@@ -327,7 +255,6 @@ fun SearchScreen(
                 }
             }
             items(selectedItems.toList(), key = { "selected_${it.food.barcode}" }) { result ->
-                // val checked = state.selectedItems.any { it.food.barcode == result.food.barcode }
                 if (selectedItems.indexOf(result) > 0) {
                     HorizontalDivider(
                         thickness = 0.3.dp,
@@ -538,6 +465,86 @@ fun EmptyRecentsContent(modifier: Modifier = Modifier) {
 
 
 
+/*
+
+            val combined: List<ListItem> = buildList {
+                if (selectedItems.isNotEmpty()) {
+                    add(ListItem.Header(selectedTitle))
+                    addAll(
+                        selectedItems.map {
+                            ListItem.Item(
+                                "selected_${it.food.barcode}",
+                                it,
+                                selectedItems.indexOf(it) > 0
+                            )
+                        }
+                    )
+                }
+                add(ListItem.Header(state.listLabel))
+                addAll(
+                    searchItems.map {
+                        ListItem.Item(
+                            "search_${it.food.barcode}",
+                            it,
+                            searchItems.indexOf(it) > 0
+                        )
+                    }
+                )
+            }
+
+
+            items(
+                combined,
+                key = {
+                    when (it) {
+                        is ListItem.Header -> "header_${it.text}"
+                        is ListItem.Item -> it.id
+                    }
+                }
+            ) { entry ->
+                when (entry) {
+                    is ListItem.Header -> Text(
+                        text = entry.text,
+                        fontSize = MaterialTheme.typography.labelLarge.fontSize,
+                        fontWeight = FontWeight.Bold,
+                        modifier = modifier.padding(start = 24.dp, bottom = 8.dp, top = 24.dp),
+                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.8f)
+                    )
+
+                    is ListItem.Item -> Column(
+                        modifier = Modifier.animateItem(
+                            fadeInSpec = null, fadeOutSpec = null, placementSpec = spring(
+                                stiffness = Spring.StiffnessMediumLow,
+                                visibilityThreshold = IntOffset.VisibilityThreshold
+                            )
+                        )
+                    ) {
+                        if(entry.showDivider){
+                            HorizontalDivider(
+                                thickness = 0.3.dp,
+                                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f)
+                            )
+                        }
+
+                        FoodItem(
+                            selected = entry.item.food.barcode in selectedItems.map { it.food.barcode },
+                            onSelect = {
+                                onEvent(SearchEvent.Select(it))
+                                focusManager.clearFocus()
+                                keyboardController?.hide()
+                            },
+                            portion = entry.item,
+                            onClick = {
+                                focusManager.clearFocus()
+                                keyboardController?.hide()
+                                showSheet = true
+                                onEvent(SearchEvent.OpenDetails(entry.item))
+                            }
+                        )
+                    }
+                }
+            }
+            */
 
 
 

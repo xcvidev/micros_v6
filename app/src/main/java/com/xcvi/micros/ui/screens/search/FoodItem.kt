@@ -167,7 +167,7 @@ fun FoodItemIcon(modifier: Modifier = Modifier, portion: Portion?) {
     Box(modifier = modifier) {
         if (portion?.food?.isFavorite == true) {
             Icon(
-                imageVector = Icons.Default.FavoriteBorder,
+                imageVector = Icons.Default.Favorite,
                 contentDescription = "",
                 modifier = Modifier.size(16.dp),
                 tint = MaterialTheme.colorScheme.primary

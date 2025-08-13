@@ -15,7 +15,7 @@ import kotlinx.coroutines.flow.map
 class GoalsUseCases(
     private val portionRepository: PortionRepository
 ){
-    suspend fun getSummary(date: Int): Flow<MacrosSummary> {
+    fun getSummary(date: Int): Flow<MacrosSummary> {
         val summary=  portionRepository.getSummaryOfDate(date)
         val portions = portionRepository.getPortionsOfDate(date)
         return combine(summary, portions) { summary, portions ->

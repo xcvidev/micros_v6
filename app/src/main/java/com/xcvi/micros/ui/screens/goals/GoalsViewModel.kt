@@ -20,16 +20,10 @@ class GoalsViewModel(
     private val useCases: GoalsUseCases,
 ) : BaseViewModel<GoalsState>(GoalsState.Loading) {
 
-    init {
-        viewModelScope.launch {
-            getSummary(getToday())
-        }
-    }
-
-
     fun onEvent(event: GoalsEvent) {
         when (event) {
             is GoalsEvent.SetCurrentGoals -> update(event.protein, event.carbs, event.fats, event.onError)
+            is GoalsEvent.GetData -> getSummary(event.date)
         }
     }
 
@@ -71,4 +65,5 @@ sealed class GoalsState{
 
 sealed interface GoalsEvent {
     data class SetCurrentGoals(val protein: Int, val carbs: Int, val fats: Int, val onError: () -> Unit) : GoalsEvent
+    data class GetData(val date: Int) : GoalsEvent
 }
