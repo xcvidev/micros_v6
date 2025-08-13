@@ -8,9 +8,9 @@
     <string name="meal3">Pranzo</string>
     <string name="meal4">Spuntino pomeridiano</string>
     <string name="meal5">Cena</string>
-    <string name="meal6">Pre Workout</string>
-    <string name="meal7">Post Workout</string>
-    <string name="meal8">Spuntino serale</string>
+    <string name="meal6">Spuntino serale</string>
+    <string name="meal7">Pre Workout</string>
+    <string name="meal8">Post Workout</string>
 
 
     <!--  Core  -->

@@ -63,15 +63,18 @@ fun AnimatedMealCard(
 }
 
 
-
-
-
 @Composable
 fun MealCardFull(
     meal: Meal,
     modifier: Modifier = Modifier
 ) {
     val label = meal.name
+
+    val alpha = if (meal.portions.isEmpty()) {
+        0.6f
+    } else {
+        1f
+    }
 
     Card(
         modifier = modifier,
@@ -88,14 +91,17 @@ fun MealCardFull(
             Text(
                 text = label,
                 style = MaterialTheme.typography.headlineSmall,
-                modifier = Modifier.padding(bottom = 4.dp)              // Default  guideline padding
+                modifier = Modifier.padding(bottom = 4.dp),
+                color = MaterialTheme.colorScheme.onSurface
             )
 
             val calories = "${meal.nutrients.calories} kcal"
             Text(
                 text = calories,
                 style = MaterialTheme.typography.titleSmall,
-                color = MaterialTheme.colorScheme.primary,
+                color = if (meal.portions.isEmpty()) MaterialTheme.colorScheme.onSurfaceVariant.copy(
+                    alpha = 0.6f
+                ) else MaterialTheme.colorScheme.primary,
                 modifier = Modifier.padding(vertical = 4.dp)              // Default  guideline padding
             )
 
@@ -166,7 +172,6 @@ fun MealCardEmpty(
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     modifier = Modifier.padding(vertical = 4.dp)              // Default  guideline padding for supporting text
                 )
-
 
 
             }
