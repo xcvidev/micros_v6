@@ -6,6 +6,7 @@ import com.xcvi.micros.data.repository.FoodRepositoryImplementation
 import com.xcvi.micros.data.repository.MessageRepositoryImplementation
 import com.xcvi.micros.data.repository.PortionRepositoryImplementation
 import com.xcvi.micros.data.repository.WeightRepositoryImplementation
+import com.xcvi.micros.data.source.local.MIGRATION_1_2
 import com.xcvi.micros.data.source.local.MicrosDatabase
 import com.xcvi.micros.data.source.remote.AiApi
 import com.xcvi.micros.data.source.remote.ProductApi
@@ -102,7 +103,7 @@ class Micros: Application() {
                 androidContext(),
                 MicrosDatabase::class.java,
                 "micros_db"
-            ).build()
+            ).addMigrations(MIGRATION_1_2).build()
         }
         single { get<MicrosDatabase>().foodDao() }
         single { get<MicrosDatabase>().portionDao() }

@@ -34,7 +34,7 @@ fun List<FoodDTO>.toEntity(aiMessageTimestamp: Long): List<FoodItemEntity> {
             messageTimestamp = aiMessageTimestamp,
             name = it.name,
             amountInGrams = it.weightInGrams,
-            calories = it.protein*4 + it.carbohydrates*4 + it.fats*9,
+            calories = it.protein * 4 + it.carbohydrates * 4 + it.fats * 9,
             protein = it.protein,
             carbohydrates = it.carbohydrates,
             fats = it.fats,
@@ -43,6 +43,31 @@ fun List<FoodDTO>.toEntity(aiMessageTimestamp: Long): List<FoodItemEntity> {
             potassium = it.potassium,
             sugars = it.sugars,
             fiber = it.fiber,
+            calcium = it.calcium,
+            iron = it.iron,
+            magnesium = it.magnesium,
+            vitaminA = it.vitaminA,
+            vitaminB1 = it.vitaminB1,
+            vitaminB2 = it.vitaminB2,
+            vitaminB3 = it.vitaminB3,
+            vitaminB4 = it.vitaminB4,
+            vitaminB5 = it.vitaminB5,
+            vitaminB6 = it.vitaminB6,
+            vitaminB9 = it.vitaminB9,
+            vitaminB12 = it.vitaminB12,
+            vitaminC = it.vitaminC,
+            vitaminD = it.vitaminD,
+            vitaminE = it.vitaminE,
+            vitaminK = it.vitaminK,
+            histidine = it.histidine,
+            leucine = it.leucine,
+            lysine = it.lysine,
+            methionine = it.methionine,
+            phenylalanine = it.phenylalanine,
+            threonine = it.threonine,
+            tryptophan = it.tryptophan,
+            valine = it.valine,
+            isoleucine = it.isoleucine
         )
     }
 }
@@ -63,7 +88,36 @@ fun FoodItemEntity.toModel(): FoodItem {
         ),
         minerals = Minerals.empty().copy(
             potassium = potassium,
-            sodium = sodium
+            sodium = sodium,
+            calcium = calcium,
+            iron = iron,
+            magnesium = magnesium
+        ),
+        vitamins = Vitamins(
+            vitaminA = vitaminA,
+            vitaminB1 = vitaminB1,
+            vitaminB2 = vitaminB2,
+            vitaminB3 = vitaminB3,
+            vitaminB4 = vitaminB4,
+            vitaminB5 = vitaminB5,
+            vitaminB6 = vitaminB6,
+            vitaminB9 = vitaminB9,
+            vitaminB12 = vitaminB12,
+            vitaminC = vitaminC,
+            vitaminD = vitaminD,
+            vitaminE = vitaminE,
+            vitaminK = vitaminK
+        ),
+        aminoAcids = AminoAcids(
+            histidine = histidine,
+            isoleucine = isoleucine,
+            leucine = leucine,
+            lysine = lysine,
+            methionine = methionine,
+            phenylalanine = phenylalanine,
+            threonine = threonine,
+            tryptophan = tryptophan,
+            valine = valine
         )
     )
 }
@@ -83,10 +137,37 @@ fun FoodItemEntity.toPortion(): Portion {
         ),
         minerals = Minerals.empty().copy(
             potassium = potassium,
-            sodium = sodium
+            sodium = sodium,
+            calcium = calcium,
+            iron = iron,
+            magnesium = magnesium
         ),
-        vitamins = Vitamins.empty(),
-        aminoAcids = AminoAcids.empty(),
+        vitamins = Vitamins(
+            vitaminA = vitaminA,
+            vitaminB1 = vitaminB1,
+            vitaminB2 = vitaminB2,
+            vitaminB3 = vitaminB3,
+            vitaminB4 = vitaminB4,
+            vitaminB5 = vitaminB5,
+            vitaminB6 = vitaminB6,
+            vitaminB9 = vitaminB9,
+            vitaminB12 = vitaminB12,
+            vitaminC = vitaminC,
+            vitaminD = vitaminD,
+            vitaminE = vitaminE,
+            vitaminK = vitaminK
+        ),
+        aminoAcids = AminoAcids(
+            histidine = histidine,
+            isoleucine = isoleucine,
+            leucine = leucine,
+            lysine = lysine,
+            methionine = methionine,
+            phenylalanine = phenylalanine,
+            threonine = threonine,
+            tryptophan = tryptophan,
+            valine = valine
+        ),
         isAI = true,
         isRecent = true,
         isFavorite = false
@@ -120,11 +201,38 @@ fun FoodItemEntity.toFoodEntity(): FoodEntity {
             sugars =sugars / ratio
         ),
         minerals = Minerals.empty().copy(
-            potassium = potassium / ratio,
-            sodium = sodium / ratio
+            potassium = potassium,
+            sodium = sodium,
+            calcium = calcium,
+            iron = iron,
+            magnesium = magnesium
         ),
-        vitamins = Vitamins.empty(),
-        aminoAcids = AminoAcids.empty()
+        vitamins = Vitamins(
+            vitaminA = vitaminA,
+            vitaminB1 = vitaminB1,
+            vitaminB2 = vitaminB2,
+            vitaminB3 = vitaminB3,
+            vitaminB4 = vitaminB4,
+            vitaminB5 = vitaminB5,
+            vitaminB6 = vitaminB6,
+            vitaminB9 = vitaminB9,
+            vitaminB12 = vitaminB12,
+            vitaminC = vitaminC,
+            vitaminD = vitaminD,
+            vitaminE = vitaminE,
+            vitaminK = vitaminK
+        ),
+        aminoAcids = AminoAcids(
+            histidine = histidine,
+            isoleucine = isoleucine,
+            leucine = leucine,
+            lysine = lysine,
+            methionine = methionine,
+            phenylalanine = phenylalanine,
+            threonine = threonine,
+            tryptophan = tryptophan,
+            valine = valine
+        )
     ).toEntity()
 
     return foodEntity

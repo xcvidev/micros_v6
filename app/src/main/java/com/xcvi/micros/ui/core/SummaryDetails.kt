@@ -65,6 +65,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -112,7 +113,7 @@ fun SummaryDetails(
             if (isEmpty) {
                 0.4f
             } else {
-                1f
+                0.8f
             }
         }
         labels.forEach { section ->
@@ -130,6 +131,7 @@ fun SummaryDetails(
                     Text(
                         text = data.first,
                         style = MaterialTheme.typography.bodyLarge,
+                        fontWeight = FontWeight(450),
                         color = MaterialTheme.colorScheme.onSurfaceVariant.copy(
                             alpha(
                                 data.second.startsWith("0.0") || data.second.startsWith("0,0")
@@ -145,6 +147,7 @@ fun SummaryDetails(
                     Text(
                         text = valueText,
                         style = MaterialTheme.typography.bodyLarge,
+                        fontWeight = FontWeight(450),
                         color = MaterialTheme.colorScheme.onSurfaceVariant.copy(
                             alpha(
                                 data.second.startsWith("0.0") || data.second.startsWith("0,0")

@@ -91,7 +91,7 @@ fun SearchSheetContent(
         }
     ) {
         item {
-            Column(modifier = Modifier.disableBottomSheetDragWhenInteracting()) {
+            Column(modifier = Modifier) {
 
                 Row(
                     modifier = Modifier
@@ -112,11 +112,11 @@ fun SearchSheetContent(
                         Column(
                             modifier = Modifier.padding(4.dp),
                             horizontalAlignment = Alignment.CenterHorizontally,
-                            verticalArrangement = Arrangement.Center
+                            verticalArrangement = Arrangement.Center,
                         ) {
-                            Icon(imageVector = icon, contentDescription = "")
+                            Icon(imageVector = icon, contentDescription = "", tint = MaterialTheme.colorScheme.primary)
                             Spacer(modifier = Modifier.height(4.dp))
-                            Text(text = stringResource(R.string.favorite))
+                            Text(text = stringResource(R.string.favorite), color = MaterialTheme.colorScheme.primary)
                         }
                     }
 
@@ -139,10 +139,11 @@ fun SearchSheetContent(
                         ) {
                             Icon(
                                 painter = icon,
-                                contentDescription = ""
+                                contentDescription = "",
+                                tint = MaterialTheme.colorScheme.primary
                             )
                             Spacer(modifier = Modifier.height(4.dp))
-                            Text(text = stringResource(R.string.enhance_confirm))
+                            Text(text = stringResource(R.string.enhance_confirm), color = MaterialTheme.colorScheme.primary)
                         }
                     }
 
@@ -166,9 +167,9 @@ fun SearchSheetContent(
                             horizontalAlignment = CenterHorizontally,
                             verticalArrangement = Arrangement.Center
                         ) {
-                            Icon(imageVector = icon, contentDescription = "")
+                            Icon(imageVector = icon, contentDescription = "", tint = MaterialTheme.colorScheme.primary)
                             Spacer(modifier = Modifier.height(4.dp))
-                            Text(text = text)
+                            Text(text = text, color = MaterialTheme.colorScheme.primary)
                         }
                     }
                 }
@@ -176,7 +177,7 @@ fun SearchSheetContent(
                     modifier = Modifier.padding(start = 16.dp, end = 16.dp, top = 24.dp),
                     text = item.food.name,
                     fontSize = MaterialTheme.typography.headlineSmall.fontSize,
-                    fontWeight = MaterialTheme.typography.headlineSmall.fontWeight
+                    fontWeight = MaterialTheme.typography.headlineSmall.fontWeight,
                 )
                 if (isEnhancing) {
                     Box(

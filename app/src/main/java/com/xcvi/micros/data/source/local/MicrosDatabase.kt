@@ -14,7 +14,7 @@ import com.xcvi.micros.data.source.local.message.MessageDao
 import com.xcvi.micros.data.source.local.weight.WeightDao
 
 @Database(
-    version = 1,
+    version = 2,
     exportSchema = false,
     entities = [
         FoodEntity::class,

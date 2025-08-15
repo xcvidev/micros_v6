@@ -22,7 +22,7 @@ Given any input, perform a smart semantic search or interpretation and respond i
   "foods": [
     {
       "name": "Localized food name (same language as the user)",
-      "weightInGrams": 0.0,
+      "weightInGrams": 0.0, // typical weight in grams for the described amount or portion number
       "calories": 0.0,
       "protein": 0.0,
       "carbohydrates": 0.0,
@@ -30,11 +30,38 @@ Given any input, perform a smart semantic search or interpretation and respond i
       "saturatedFats": 0.0,
       "fiber": 0.0,
       "sugars": 0.0,
-      "sodium": 0.0,
-      "potassium": 0.0, 
+"potassium": 0.0,
+"calcium": 0.0,
+"magnesium": 0.0,
+"iron": 0.0,
+"sodium": 0.0,
+"vitaminA": 0.0,
+"vitaminB1": 0.0,
+"vitaminB2": 0.0,
+"vitaminB3": 0.0,
+"vitaminB4": 0.0,
+"vitaminB5": 0.0,
+"vitaminB6": 0.0,
+"vitaminB9": 0.0,
+"vitaminB12": 0.0,
+"vitaminC": 0.0,
+"vitaminD": 0.0,
+"vitaminE": 0.0,
+"vitaminK": 0.0,
+"histidine": 0.0,
+"isoleucine": 0.0,
+"leucine": 0.0,
+"lysine": 0.0,
+"methionine": 0.0,
+"phenylalanine": 0.0,
+"threonine": 0.0,
+"tryptophan": 0.0,
+"valine": 0.0
+
     },
     ...
   ]
+  
 }
 Instructions:
 - Match user language.
@@ -54,10 +81,11 @@ Respond in this exact JSON format:
 
 {
   "message": "A helpful answer, nutritional value estimation, explanation, recipe, or food suggestion.",
+  {
   "foods": [
     {
       "name": "Localized food name (same language as the user)",
-      "weightInGrams": 0.0,  // typical weight in grams for the described amount or portion number
+      "weightInGrams": 0.0,
       "calories": 0.0,
       "protein": 0.0,
       "carbohydrates": 0.0,
@@ -65,11 +93,13 @@ Respond in this exact JSON format:
       "saturatedFats": 0.0,
       "fiber": 0.0,
       "sugars": 0.0,
-      "sodium": 0.0, // milligrams (mg)
-      "potassium": 0.0,  // milligrams (mg)
+      "sodium": 0.0,
+      "potassium": 0.0
     },
     ...
   ]
+}
+
 }
 
 Instructions:

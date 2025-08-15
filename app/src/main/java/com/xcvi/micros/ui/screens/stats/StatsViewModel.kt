@@ -44,7 +44,7 @@ class StatsViewModel(
             val foodsByWeek = useCases.filterFoods(year, FilterType.WEEK, data.second)
             val foodsByMonth = useCases.filterFoods(year, FilterType.MONTH, data.second)
 
-            val defaultFilter = if(foodsByWeek.size > 1 && weightsByWeek.size > 1){
+            val defaultFilter = if(foodsByWeek.size > 2 && weightsByWeek.size > 2){
                 FilterType.WEEK
             } else {
                 FilterType.DAY

@@ -30,8 +30,14 @@ class AiApi(
         val responseJson = queryOpenAi(
             systemPrompt = systemPrompt,
             userPrompt = query
-        )
-        if (responseJson.isNullOrBlank()) return null
+        )//?.replace("```json", "")?.replace("```", "")?.trim()
+            ?.replace(Regex("```[a-zA-Z0-9]*"), "") // remove ```json, ```java, etc.
+            ?.replace("```", "")                    // remove leftover ```
+            ?.substringAfter("{")                   // drop anything before first {
+            ?.substringBeforeLast("}")              // drop anything after last }
+            .let { "{$it}" }                        // re-add braces
+            .trim()
+        if (responseJson.isBlank() || responseJson=="{}"|| responseJson=="[]") return null
         val dto = jsonParser.decodeFromString<MessageDTO>(responseJson)
         return dto
     }

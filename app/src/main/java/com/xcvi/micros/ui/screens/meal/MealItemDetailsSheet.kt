@@ -150,9 +150,9 @@ fun MealItemDetailsSheet(
                             horizontalAlignment = CenterHorizontally,
                             verticalArrangement = Arrangement.Center
                         ) {
-                            Icon(imageVector = Icons.Default.Clear, contentDescription = "")
+                            Icon(imageVector = Icons.Default.Clear, contentDescription = "", tint = MaterialTheme.colorScheme.error)
                             Spacer(modifier = Modifier.height(4.dp))
-                            Text(text = stringResource(R.string.remove))
+                            Text(text = stringResource(R.string.remove), color = MaterialTheme.colorScheme.error)
                         }
                     }
                     Box(
@@ -172,10 +172,11 @@ fun MealItemDetailsSheet(
                         ) {
                             Icon(
                                 painter = icon,
-                                contentDescription = ""
+                                contentDescription = "",
+                                tint = MaterialTheme.colorScheme.primary
                             )
                             Spacer(modifier = Modifier.height(4.dp))
-                            Text(text = stringResource(R.string.enhance_confirm))
+                            Text(text = stringResource(R.string.enhance_confirm), color = MaterialTheme.colorScheme.primary)
                         }
                     }
                     Box(
@@ -190,9 +191,9 @@ fun MealItemDetailsSheet(
                             horizontalAlignment = CenterHorizontally,
                             verticalArrangement = Arrangement.Center
                         ) {
-                            Icon(imageVector = icon, contentDescription = "")
+                            Icon(imageVector = icon, contentDescription = "", tint = MaterialTheme.colorScheme.primary)
                             Spacer(modifier = Modifier.height(4.dp))
-                            Text(text = stringResource(R.string.favorite))
+                            Text(text = stringResource(R.string.favorite), color = MaterialTheme.colorScheme.primary)
                         }
                     }
                     Box(
@@ -205,9 +206,9 @@ fun MealItemDetailsSheet(
                             horizontalAlignment = CenterHorizontally,
                             verticalArrangement = Arrangement.Center
                         ) {
-                            Icon(imageVector = Icons.Default.Check, contentDescription = "")
+                            Icon(imageVector = Icons.Default.Check, contentDescription = "", tint = MaterialTheme.colorScheme.primary)
                             Spacer(modifier = Modifier.height(4.dp))
-                            Text(text = stringResource(R.string.save))
+                            Text(text = stringResource(R.string.save), color = MaterialTheme.colorScheme.primary)
                         }
                     }
                 }
@@ -236,7 +237,8 @@ fun MealItemDetailsSheet(
                         }
                     }
                 }
-            } else {
+            }
+            else {
                 item {
                     HorizontalFadedBox(
                         height = 150.dp,
