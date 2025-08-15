@@ -16,4 +16,4 @@ data class SearchState(
     val isAsking: Boolean = false,
     val isLoadingSmartSearch: Boolean = false,
     val smartResult: Message? = null,
-    )
+)

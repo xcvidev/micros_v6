@@ -3,6 +3,7 @@ package com.xcvi.micros.ui.screens.search
 import android.content.Context
 import androidx.lifecycle.viewModelScope
 import com.xcvi.micros.R
+import com.xcvi.micros.domain.model.food.Food
 import com.xcvi.micros.domain.model.food.Portion
 import com.xcvi.micros.domain.model.food.scale
 import com.xcvi.micros.domain.model.food.scaleToPortion
@@ -79,7 +80,10 @@ class SearchViewModel(
 
     private fun search(date: Int, meal: Int, onError: () -> Unit) {
         if (state.query.isBlank() || state.query.length < 3 || state.isAsking) return
+
+
         viewModelScope.launch {
+            val recents = state.recents
             updateData { copy(isLoadingSearch = true) }
             val res = useCases.search(
                 query = state.query,
@@ -88,11 +92,30 @@ class SearchViewModel(
                 meal = meal
             )
             when (res) {
-                is Response.Success -> updateData {
-                    copy(
-                        searchResults = res.data,
-                        listLabel = searchLabel
-                    )
+                is Response.Success -> {
+                    val recentMatches  = recents.filter { it.food.name.contains(state.query,true) }
+                    val recentIds = recentMatches.map { it.food.barcode }.toSet()
+
+                    val queryWords = state.query.lowercase().split("\\s+".toRegex()).filter { it.isNotBlank() }
+
+                    val sortedData = res.data.sortedWith(compareByDescending<Portion> {
+                        val nameLower = it.food.name.lowercase()
+
+                        val startsWithScore = queryWords.count { nameLower.startsWith(it) }
+                        val containsScore = queryWords.count { nameLower.contains(it) }
+
+                        containsScore + startsWithScore
+                    }.thenBy { it.food.name })
+                    val otherMatches = sortedData.filter { it.food.barcode !in recentIds }
+
+                    val data = recentMatches + otherMatches
+
+                    updateData {
+                        copy(
+                            searchResults = data,
+                            listLabel = searchLabel
+                        )
+                    }
                 }
 
                 is Response.Error -> {
@@ -247,6 +270,7 @@ class SearchViewModel(
             }
         }
     }
+
 
     private fun updateHelper(updated: Portion) {
         updateData {
