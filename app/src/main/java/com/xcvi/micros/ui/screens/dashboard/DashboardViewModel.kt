@@ -9,7 +9,7 @@ import com.xcvi.micros.domain.model.food.Meal
 import com.xcvi.micros.domain.model.food.Minerals
 import com.xcvi.micros.domain.model.food.Nutrients
 import com.xcvi.micros.domain.model.food.Vitamins
-import com.xcvi.micros.domain.model.food.sumAminos
+import com.xcvi.micros.domain.model.food.sumAminoAcids
 import com.xcvi.micros.domain.model.food.sumMinerals
 import com.xcvi.micros.domain.model.food.sumNutrients
 import com.xcvi.micros.domain.model.food.sumVitamins
@@ -159,7 +159,7 @@ class DashboardViewModel(
                 val nutrients = portions.sumNutrients()
                 val minerals = portions.sumMinerals()
                 val vitamins = portions.sumVitamins()
-                val aminoAcids = portions.sumAminos()
+                val aminoAcids = portions.sumAminoAcids()
                 updateData {
                     copy(
                         meals = meals,

@@ -3,7 +3,6 @@ package com.xcvi.micros.ui.screens.search
 import android.content.Context
 import androidx.lifecycle.viewModelScope
 import com.xcvi.micros.R
-import com.xcvi.micros.domain.model.food.Food
 import com.xcvi.micros.domain.model.food.Portion
 import com.xcvi.micros.domain.model.food.scale
 import com.xcvi.micros.domain.model.food.scaleToPortion

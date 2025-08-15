@@ -213,7 +213,7 @@
     <string name="unsaved_changes_title">Unsaved Changes</string>
     <string name="unsaved_changes_text">Save changes or discard?</string>
     <string name="selected_foods_section">Selected</string>
-    <string name="create_food">Create Custom Food</string>
+    <string name="create_custom_meal">Save as Custom Food</string>
     <string name="amount">Weight in grams</string>
     <string name="name">Name</string>
 

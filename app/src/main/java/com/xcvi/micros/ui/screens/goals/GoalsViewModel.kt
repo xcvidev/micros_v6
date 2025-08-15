@@ -1,19 +1,13 @@
 package com.xcvi.micros.ui.screens.goals
 
 import androidx.lifecycle.viewModelScope
-import com.xcvi.micros.domain.model.food.AminoAcids
 import com.xcvi.micros.domain.model.food.MacrosSummary
-import com.xcvi.micros.domain.model.food.Minerals
-import com.xcvi.micros.domain.model.food.Nutrients
-import com.xcvi.micros.domain.model.food.Vitamins
 import com.xcvi.micros.domain.usecases.GoalsUseCases
 import com.xcvi.micros.domain.utils.Response
 import com.xcvi.micros.domain.utils.getToday
 import com.xcvi.micros.ui.BaseViewModel
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-
 
 
 class GoalsViewModel(

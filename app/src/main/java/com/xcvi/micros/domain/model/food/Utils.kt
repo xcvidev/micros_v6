@@ -20,7 +20,7 @@ fun List<Portion>.sumVitamins(): Vitamins {
         acc + portion.food.vitamins
     }
 }
-fun List<Portion>.sumAminos(): AminoAcids {
+fun List<Portion>.sumAminoAcids(): AminoAcids {
     return this.fold(AminoAcids.empty()) { acc, portion ->
         acc + portion.food.aminoAcids
     }

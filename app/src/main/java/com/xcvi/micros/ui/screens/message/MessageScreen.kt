@@ -2,7 +2,6 @@ package com.xcvi.micros.ui.screens.message
 
 import android.annotation.SuppressLint
 import android.content.Context
-import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -27,7 +26,6 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Send
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material.icons.filled.History
@@ -83,7 +81,6 @@ import com.xcvi.micros.domain.utils.getToday
 import com.xcvi.micros.ui.core.EnhanceDialog
 import com.xcvi.micros.ui.core.SummaryDetails
 import com.xcvi.micros.ui.core.comp.AnimatedDots
-import com.xcvi.micros.ui.core.comp.FadingText
 import com.xcvi.micros.ui.core.comp.HorizontalFadedBox
 import com.xcvi.micros.ui.core.comp.LoadingIndicator
 import com.xcvi.micros.ui.core.comp.NumberPicker

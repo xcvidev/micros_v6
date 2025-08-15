@@ -33,7 +33,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.xcvi.micros.R
-import com.xcvi.micros.domain.model.food.Macros
 import com.xcvi.micros.domain.model.food.MacrosSummary
 import com.xcvi.micros.domain.model.utils.FilterType
 import com.xcvi.micros.domain.model.weight.WeightSummary

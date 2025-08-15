@@ -8,11 +8,12 @@ import com.xcvi.micros.domain.model.food.Portion
 import com.xcvi.micros.domain.model.food.Vitamins
 import com.xcvi.micros.domain.model.food.scale
 import com.xcvi.micros.domain.model.food.scaleToPortion
-import com.xcvi.micros.domain.model.food.sumAminos
+import com.xcvi.micros.domain.model.food.sumAminoAcids
 import com.xcvi.micros.domain.model.food.sumMinerals
 import com.xcvi.micros.domain.model.food.sumNutrients
 import com.xcvi.micros.domain.model.food.sumVitamins
 import com.xcvi.micros.domain.usecases.MealUseCases
+import com.xcvi.micros.domain.utils.Failure
 import com.xcvi.micros.domain.utils.Response
 import com.xcvi.micros.ui.BaseViewModel
 import kotlinx.coroutines.launch
@@ -35,6 +36,15 @@ sealed interface MealEvent {
     data object ToggleFavorite : MealEvent
     data class Scale(val amount: Int) : MealEvent
 
+    data class Create(
+        val date: Int,
+        val meal: Int,
+        val name: String,
+        val portions: List<Portion>,
+        val onError: (Failure) -> Unit
+    ) :
+        MealEvent
+
     data class Clear(val date: Int, val meal: Int) : MealEvent
     data object DeletePortion : MealEvent
     data class OpenDetails(val portion: Portion) : MealEvent
@@ -48,6 +58,14 @@ class MealViewModel(
 
     fun onEvent(event: MealEvent) {
         when (event) {
+            is MealEvent.Create -> createMeal(
+                date = event.date,
+                meal = event.meal,
+                name = event.name,
+                portions = event.portions,
+                onError = event.onError
+            )
+
             is MealEvent.Clear -> clearMeal(date = event.date, meal = event.meal)
             is MealEvent.GetMeal -> observeMeal(date = event.date, event.number)
 
@@ -62,6 +80,25 @@ class MealViewModel(
         }
     }
 
+    private fun createMeal(
+        date: Int,
+        meal: Int,
+        name: String,
+        portions: List<Portion>,
+        onError: (Failure) -> Unit
+    ) {
+        if (name.isBlank() || portions.isEmpty()) {
+            onError(Failure.InvalidInput)
+            return
+        }
+        viewModelScope.launch {
+            when(val res = useCases.createMeal(date = date, meal = meal, name = name, portions = portions)){
+                is Response.Success -> {}
+                is Response.Error -> onError(res.error)
+            }
+        }
+    }
+
     private fun clearMeal(date: Int, meal: Int) {
         viewModelScope.launch {
             useCases.clearMeal(date = date, meal = meal)
@@ -71,12 +108,13 @@ class MealViewModel(
     private fun toggleFavorite() {
         viewModelScope.launch {
             val selected = state.selected ?: return@launch
-            when(useCases.toggleFavorite(selected.food.barcode)){
+            when (useCases.toggleFavorite(selected.food.barcode)) {
                 is Response.Success -> {
                     val updatedFood = selected.food.copy(isFavorite = !selected.food.isFavorite)
                     val updated = selected.copy(food = updatedFood)
                     updateData { copy(selected = updated) }
                 }
+
                 is Response.Error -> {}
             }
         }
@@ -153,7 +191,7 @@ class MealViewModel(
                 val minerals = it.sumMinerals()
                 val vitamins = it.sumVitamins()
                 val nutrients = it.sumNutrients()
-                val aminoAcids = it.sumAminos()
+                val aminoAcids = it.sumAminoAcids()
                 updateData {
                     copy(
                         portions = it,

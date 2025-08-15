@@ -3,10 +3,6 @@ package com.xcvi.micros.ui.screens.search
 import android.annotation.SuppressLint
 import android.widget.Toast
 import androidx.activity.compose.BackHandler
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.core.Spring
-import androidx.compose.animation.core.VisibilityThreshold
-import androidx.compose.animation.core.spring
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectTapGestures
@@ -59,7 +55,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import com.xcvi.micros.R
 import com.xcvi.micros.domain.model.food.Portion
@@ -182,7 +177,6 @@ fun SearchScreen(
         },
     ) { padding ->
         LazyColumn(
-
             modifier = modifier
                 .offset(x = shakeOffset)
                 .padding(padding),
@@ -279,8 +273,6 @@ fun SearchScreen(
                 )
             }
 
-
-
             item {
                 Text(
                     text = state.listLabel,
@@ -290,6 +282,7 @@ fun SearchScreen(
                     color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.8f)
                 )
             }
+
             item {
                 Column {
                     state.smartResult?.text?.let { message ->
@@ -333,9 +326,8 @@ fun SearchScreen(
                 )
             }
 
-
             item {
-                Spacer(modifier = Modifier.height(48.dp))
+                Spacer(modifier = Modifier.height(80.dp))
             }
         }
     }

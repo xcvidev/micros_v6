@@ -39,8 +39,6 @@ import com.xcvi.micros.domain.utils.roundToInt
 import com.xcvi.micros.ui.core.comp.dayOfWeekFormatted
 import com.xcvi.micros.ui.core.comp.rememberShakeOffset
 import kotlinx.coroutines.launch
-import kotlin.collections.mutableMapOf
-import kotlin.collections.set
 import kotlin.math.abs
 import kotlin.math.absoluteValue
 

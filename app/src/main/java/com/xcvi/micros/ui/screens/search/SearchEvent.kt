@@ -1,6 +1,5 @@
 package com.xcvi.micros.ui.screens.search
 
-import androidx.compose.runtime.snapshots.SnapshotApplyResult
 import com.xcvi.micros.domain.model.food.Portion
 import com.xcvi.micros.domain.utils.Failure
 

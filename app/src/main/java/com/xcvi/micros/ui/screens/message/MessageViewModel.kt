@@ -10,12 +10,9 @@ import com.xcvi.micros.domain.utils.getNow
 import com.xcvi.micros.domain.utils.getToday
 import com.xcvi.micros.ui.BaseViewModel
 import com.xcvi.micros.ui.screens.search.ScannerState
-import com.xcvi.micros.ui.screens.search.SearchEvent
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import java.sql.Timestamp
-import kotlin.collections.plus
 
 class MessageViewModel(
     private val useCases: MessageUseCases

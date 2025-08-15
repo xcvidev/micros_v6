@@ -24,7 +24,6 @@ import androidx.compose.foundation.lazy.staggeredgrid.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CalendarMonth
-import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material.icons.filled.PushPin
 import androidx.compose.material.icons.outlined.PushPin
 import androidx.compose.material3.AlertDialog
@@ -61,7 +60,6 @@ import com.xcvi.micros.ui.core.comp.DateSelectorDialog
 import com.xcvi.micros.ui.core.comp.HorizontalFadedBox
 import com.xcvi.micros.ui.core.comp.OnNavigation
 import com.xcvi.micros.ui.core.comp.rememberShakeOffset
-import com.xcvi.micros.ui.screens.dashboard.comp.AnimatedMealCard
 import com.xcvi.micros.ui.screens.dashboard.comp.DashboardDatePicker
 import com.xcvi.micros.ui.screens.dashboard.comp.GoalsCard
 import com.xcvi.micros.ui.screens.dashboard.comp.MealCardEmpty

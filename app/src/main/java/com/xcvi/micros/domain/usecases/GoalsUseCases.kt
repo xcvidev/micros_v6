@@ -1,8 +1,7 @@
 package com.xcvi.micros.domain.usecases
 
 import com.xcvi.micros.domain.model.food.MacrosSummary
-import com.xcvi.micros.domain.model.food.Portion
-import com.xcvi.micros.domain.model.food.sumAminos
+import com.xcvi.micros.domain.model.food.sumAminoAcids
 import com.xcvi.micros.domain.model.food.sumMinerals
 import com.xcvi.micros.domain.model.food.sumNutrients
 import com.xcvi.micros.domain.model.food.sumVitamins
@@ -10,7 +9,6 @@ import com.xcvi.micros.domain.respostory.PortionRepository
 import com.xcvi.micros.domain.utils.Response
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.map
 
 class GoalsUseCases(
     private val portionRepository: PortionRepository
@@ -26,7 +24,7 @@ class GoalsUseCases(
                 actualMinerals = portions.sumMinerals(),
                 actualNutrients = portions.sumNutrients(),
                 actualVitamins = portions.sumVitamins(),
-                actualAminoacids = portions.sumAminos()
+                actualAminoacids = portions.sumAminoAcids()
             )
         }
     }

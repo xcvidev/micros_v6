@@ -215,7 +215,7 @@
     <string name="unsaved_changes_title">Modifiche non salvate</string>
     <string name="unsaved_changes_text">Salvare le modifiche o scartarle?</string>
     <string name="selected_foods_section">Selezionati</string>
-    <string name="create_food">Crea Alimento Personalizzato</string>
+    <string name="create_custom_meal">Salva come Alimento Personale</string>
     <string name="amount">Peso in grammi</string>
     <string name="name">Nome</string>
 

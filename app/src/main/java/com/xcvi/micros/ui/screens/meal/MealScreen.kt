@@ -1,5 +1,6 @@
 package com.xcvi.micros.ui.screens.meal
 
+import android.widget.Toast
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
@@ -13,20 +14,18 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.Clear
-import androidx.compose.material.icons.filled.Create
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Search
-import androidx.compose.material.icons.outlined.Assistant
-import androidx.compose.material.icons.outlined.Create
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Card
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -37,6 +36,8 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.material3.TextField
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -45,12 +46,15 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.xcvi.micros.R
 import com.xcvi.micros.domain.model.food.Portion
+import com.xcvi.micros.domain.utils.Failure
 import com.xcvi.micros.ui.core.comp.OnNavigation
 import com.xcvi.micros.ui.core.comp.rememberShakeOffset
 
@@ -79,22 +83,62 @@ fun DeleteDialog(
             Text(stringResource(R.string.delete_confirm_text))
         }
     )
+}
+
+
+@Composable
+fun InputDialog(
+    onDismiss: () -> Unit,
+    onConfirm: (String) -> Unit,
+) {
+    var userInput by remember { mutableStateOf("") }
+    AlertDialog(
+        onDismissRequest = { onDismiss() },
+        confirmButton = {
+            TextButton(onClick = { onConfirm(userInput) }) {
+                Text(text = "OK")
+            }
+        },
+        title = {
+            Text(text = stringResource(R.string.create_custom_meal))
+        },
+        text = {
+            Card {
+                TextField(
+                    modifier = Modifier.fillMaxWidth(),
+                    value = userInput,
+                    onValueChange = { userInput = it },
+                    label = { Text(text = stringResource(R.string.name)) },
+                    singleLine = true,
+                    maxLines = 1,
+                    keyboardActions = KeyboardActions(onDone = { onConfirm(userInput) }),
+                    keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
+                    colors = TextFieldDefaults.colors(
+                        focusedIndicatorColor = Color.Transparent,
+                        unfocusedIndicatorColor = Color.Transparent,
+                        focusedContainerColor = Color.Transparent,
+                        unfocusedContainerColor = Color.Transparent
+                    )
+                )
+            }
+        }
+    )
 
 }
 
 @Composable
 fun MealOptions(
     expanded: Boolean,
-    clearEnabled: Boolean,
     onExpand: () -> Unit,
     onDismiss: () -> Unit,
     onClear: () -> Unit,
-    onCreate: () -> Unit,
+    onCreate: (String) -> Unit,
 ) {
 
+    var save by remember { mutableStateOf(false) }
     var delete by remember { mutableStateOf(false) }
 
-    if(delete){
+    if (delete) {
         DeleteDialog(
             onDismiss = { delete = false },
             onConfirm = {
@@ -104,8 +148,18 @@ fun MealOptions(
             }
         )
     }
+    if (save) {
+        InputDialog(
+            onDismiss = { save = false },
+            onConfirm = { name ->
+                onCreate(name)
+                save = false
+                onDismiss()
+            }
+        )
+    }
 
-    Box{
+    Box {
         IconButton(onClick = onExpand) {
             Icon(
                 imageVector = Icons.Default.MoreVert,
@@ -125,25 +179,24 @@ fun MealOptions(
         ) {
             DropdownMenuItem(
                 text = {
-                        Text(
-                            modifier = Modifier.fillMaxWidth(),
-                            text = stringResource(R.string.create_food),
-                            textAlign = TextAlign.Left,
-                        )
+                    Text(
+                        modifier = Modifier.fillMaxWidth(),
+                        text = stringResource(R.string.create_custom_meal),
+                        textAlign = TextAlign.Left,
+                    )
                 },
                 onClick = {
-                    onCreate()
+                    save = true
                     onDismiss()
                 },
             )
             DropdownMenuItem(
-                enabled = clearEnabled,
                 text = {
-                        Text(
-                            modifier = Modifier.fillMaxWidth(),
-                            text = stringResource(R.string.clear),
-                            textAlign = TextAlign.Left,
-                        )
+                    Text(
+                        modifier = Modifier.fillMaxWidth(),
+                        text = stringResource(R.string.clear),
+                        textAlign = TextAlign.Left,
+                    )
                 },
                 onClick = {
                     delete = true
@@ -165,7 +218,6 @@ fun MealScreen(
     onEvent: (MealEvent) -> Unit,
     onBack: () -> Unit,
     onGotoAdd: () -> Unit,
-    onGotoCreate: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
 
@@ -193,14 +245,31 @@ fun MealScreen(
                     }
                 },
                 actions = {
-                    MealOptions(
-                        expanded = expanded,
-                        clearEnabled = state.portions.isNotEmpty(),
-                        onExpand = { expanded = true },
-                        onDismiss = { expanded = false },
-                        onClear = { onEvent(MealEvent.Clear(date = date, meal = number)) },
-                        onCreate = onGotoCreate
-                    )
+                    val errorText = stringResource(R.string.already_exists)
+                    if(state.portions.isNotEmpty()){
+                        MealOptions(
+                            expanded = expanded,
+                            onExpand = { expanded = true },
+                            onDismiss = { expanded = false },
+                            onClear = { onEvent(MealEvent.Clear(date = date, meal = number)) },
+                            onCreate = { name ->
+                                onEvent(
+                                    MealEvent.Create(
+                                        date = date,
+                                        meal = number,
+                                        name = name,
+                                        portions = state.portions,
+                                        onError = { error ->
+                                            if (error is Failure.AlreadyExists){
+                                                Toast.makeText(context, errorText, Toast.LENGTH_LONG).show()
+                                            }
+                                            shakeTrigger = true
+                                        }
+                                    )
+                                )
+                            }
+                        )
+                    }
                 }
             )
         }
@@ -218,8 +287,7 @@ fun MealScreen(
                         onGotoAdd()
                     }
                 }
-            }
-            else {
+            } else {
                 item {
                     MealSummaryCard(
                         nutrients = state.nutrients,

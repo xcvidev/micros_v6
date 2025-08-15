@@ -8,11 +8,10 @@ import com.xcvi.micros.data.repository.utils.toModel
 import com.xcvi.micros.data.source.local.entity.food.MacroGoalEntity
 import com.xcvi.micros.data.source.local.entity.food.PortionEntity
 import com.xcvi.micros.data.source.local.food.PortionDao
-import com.xcvi.micros.domain.model.food.Macros
 import com.xcvi.micros.domain.model.food.MacrosSummary
 import com.xcvi.micros.domain.model.food.Meal
 import com.xcvi.micros.domain.model.food.Portion
-import com.xcvi.micros.domain.model.food.sumAminos
+import com.xcvi.micros.domain.model.food.sumAminoAcids
 import com.xcvi.micros.domain.model.food.sumMinerals
 import com.xcvi.micros.domain.model.food.sumNutrients
 import com.xcvi.micros.domain.model.food.sumVitamins
@@ -26,7 +25,6 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.emptyFlow
-import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
 
@@ -65,7 +63,7 @@ class PortionRepositoryImplementation(
                         nutrients = portions.sumNutrients(),
                         minerals = portions.sumMinerals(),
                         vitamins = portions.sumVitamins(),
-                        aminoAcids = portions.sumAminos()
+                        aminoAcids = portions.sumAminoAcids()
                     )
                 }
             }

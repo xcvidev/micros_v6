@@ -48,6 +48,8 @@ interface FoodDao{
      */
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insert(food: FoodEntity)
+    @Insert(onConflict = OnConflictStrategy.ABORT)
+    suspend fun create(food: FoodEntity)
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insert(foods: List<FoodEntity>)

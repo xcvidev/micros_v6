@@ -2,13 +2,10 @@ package com.xcvi.micros.ui.screens.details
 
 import android.content.Context
 import androidx.lifecycle.viewModelScope
-import com.xcvi.micros.domain.model.food.Food
 import com.xcvi.micros.domain.model.food.Portion
 import com.xcvi.micros.domain.model.food.scale
 import com.xcvi.micros.domain.model.food.scaleToPortion
-import com.xcvi.micros.domain.respostory.PortionRepository
 import com.xcvi.micros.domain.usecases.DetailsUseCases
-import com.xcvi.micros.domain.utils.Failure
 import com.xcvi.micros.domain.utils.Response
 import com.xcvi.micros.ui.BaseViewModel
 import kotlinx.coroutines.launch

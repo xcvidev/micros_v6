@@ -29,7 +29,6 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.xcvi.micros.R
 import com.xcvi.micros.domain.model.food.Macros
-import com.xcvi.micros.domain.model.food.MacrosSummary
 import com.xcvi.micros.domain.utils.roundToInt
 import com.xcvi.micros.ui.theme.carbsDark
 import com.xcvi.micros.ui.theme.carbsLight

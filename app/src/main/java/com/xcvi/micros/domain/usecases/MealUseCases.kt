@@ -1,12 +1,13 @@
 package com.xcvi.micros.domain.usecases
 
-import com.xcvi.micros.domain.model.food.AminoAcids
 import com.xcvi.micros.domain.model.food.Food
-import com.xcvi.micros.domain.model.food.Minerals
-import com.xcvi.micros.domain.model.food.Nutrients
 import com.xcvi.micros.domain.model.food.Portion
-import com.xcvi.micros.domain.model.food.Vitamins
+import com.xcvi.micros.domain.model.food.scale
 import com.xcvi.micros.domain.model.food.scaleToPortion
+import com.xcvi.micros.domain.model.food.sumAminoAcids
+import com.xcvi.micros.domain.model.food.sumMinerals
+import com.xcvi.micros.domain.model.food.sumNutrients
+import com.xcvi.micros.domain.model.food.sumVitamins
 import com.xcvi.micros.domain.respostory.FoodRepository
 import com.xcvi.micros.domain.respostory.PortionRepository
 import com.xcvi.micros.domain.utils.Failure
@@ -18,17 +19,18 @@ class MealUseCases(
     private val portionRepository: PortionRepository,
     private val foodRepository: FoodRepository,
 ) {
-    suspend fun create(
+    suspend fun createMeal(
         date: Int,
         meal: Int,
-        amount: Int,
         name: String,
-        minerals: Minerals,
-        nutrients: Nutrients,
-        vitamins: Vitamins,
-        aminoAcids: AminoAcids
+        portions: List<Portion>,
     ): Response<Unit> {
-        val food = Food(
+        val minerals = portions.sumMinerals()
+        val nutrients = portions.sumNutrients()
+        val vitamins = portions.sumVitamins()
+        val aminoAcids = portions.sumAminoAcids()
+        val amount = portions.sumOf { it.amount }
+        val customFood = Food(
             barcode = name,
             name = name,
             minerals = minerals,
@@ -39,17 +41,25 @@ class MealUseCases(
             isFavorite = true,
             isRecent = true
         )
-        val portion = food.scaleToPortion(portionAmount = 100, date = date, meal = meal)
-        when (foodRepository.create(portion.food)) {
-            is Response.Error -> return Response.Error(Failure.Database)
+
+        val customPortion = Portion(
+            date = date,
+            amount = amount,
+            meal = meal,
+            food = customFood
+        )
+        val food100g = customPortion.scale(100).food
+        when (val res = foodRepository.create(food100g)) {
+            is Response.Error -> return res
             is Response.Success -> {
+                clearMeal(date = date, meal = meal)
                 portionRepository.savePortion(
                     amount = amount,
                     date = date,
                     meal = meal,
                     barcode = name
                 )
-                return Response.Success(Unit)
+                return res
             }
         }
     }
