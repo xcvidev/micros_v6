@@ -24,6 +24,7 @@ import com.xcvi.micros.domain.usecases.SearchUseCases
 import com.xcvi.micros.domain.usecases.StatsUseCases
 import com.xcvi.micros.domain.usecases.WeightUseCases
 import com.xcvi.micros.preferences.UserPreferences
+import com.xcvi.micros.ui.screens.create.CreateViewModel
 import com.xcvi.micros.ui.screens.dashboard.DashboardViewModel
 import com.xcvi.micros.ui.screens.details.DetailsViewModel
 import com.xcvi.micros.ui.screens.goals.GoalsViewModel
@@ -74,6 +75,7 @@ class Micros: Application() {
         viewModel { StatsViewModel(get()) }
         viewModel { GoalsViewModel(get()) }
         viewModel { MealViewModel(get()) }
+        viewModel { CreateViewModel(get()) }
         viewModel { SearchViewModel(get(), get()) }
         viewModel { ScanViewModel(get()) }
         viewModel { DetailsViewModel(get(), get()) }

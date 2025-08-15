@@ -26,6 +26,17 @@ class FoodRepositoryImplementation(
     private val aiApi: AiApi
 ) : FoodRepository {
 
+    override suspend fun create(food: Food): Response<Unit> {
+        try {
+            val entity = food.toEntity()
+            foodDao.upsert(entity)
+            return Response.Success(Unit)
+        } catch (e: Exception) {
+            Log.e("FoodRepository", "create: ", e)
+            return Response.Error(Failure.Database)
+        }
+    }
+
     override suspend fun search(
         query: String, language: String,
     ): Response<List<Food>> {

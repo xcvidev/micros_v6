@@ -35,6 +35,7 @@ sealed interface MealEvent {
     data object ToggleFavorite : MealEvent
     data class Scale(val amount: Int) : MealEvent
 
+    data class Clear(val date: Int, val meal: Int) : MealEvent
     data object DeletePortion : MealEvent
     data class OpenDetails(val portion: Portion) : MealEvent
     data object CloseDetails : MealEvent
@@ -47,6 +48,7 @@ class MealViewModel(
 
     fun onEvent(event: MealEvent) {
         when (event) {
+            is MealEvent.Clear -> clearMeal(date = event.date, meal = event.meal)
             is MealEvent.GetMeal -> observeMeal(date = event.date, event.number)
 
             is MealEvent.OpenDetails -> openDetails(event.portion)
@@ -57,6 +59,12 @@ class MealViewModel(
             is MealEvent.ToggleFavorite -> toggleFavorite()
             is MealEvent.Scale -> scale(event.amount)
             is MealEvent.DeletePortion -> deletePortion()
+        }
+    }
+
+    private fun clearMeal(date: Int, meal: Int) {
+        viewModelScope.launch {
+            useCases.clearMeal(date = date, meal = meal)
         }
     }
 

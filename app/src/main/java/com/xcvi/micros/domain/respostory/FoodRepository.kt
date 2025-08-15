@@ -5,6 +5,7 @@ import com.xcvi.micros.domain.utils.Response
 import kotlinx.coroutines.flow.Flow
 
 interface FoodRepository {
+    suspend fun create(food: Food): Response<Unit>
     suspend fun scan(barcode: String): Response<Food>
     suspend fun search(query: String, language: String): Response<List<Food>>
     suspend fun enhance(foodBarcode: String, description: String): Response<Food>

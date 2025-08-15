@@ -13,12 +13,22 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.Clear
+import androidx.compose.material.icons.filled.Create
+import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.outlined.Assistant
+import androidx.compose.material.icons.outlined.Create
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -26,6 +36,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -44,6 +55,106 @@ import com.xcvi.micros.ui.core.comp.OnNavigation
 import com.xcvi.micros.ui.core.comp.rememberShakeOffset
 
 
+@Composable
+fun DeleteDialog(
+    onDismiss: () -> Unit,
+    onConfirm: () -> Unit,
+) {
+    AlertDialog(
+        onDismissRequest = { onDismiss() },
+        confirmButton = {
+            TextButton(onClick = { onConfirm() }) {
+                Text(text = stringResource(R.string.delete))
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = { onDismiss() }) {
+                Text(text = stringResource(R.string.cancel))
+            }
+        },
+        title = {
+            Text(text = stringResource(R.string.delete))
+        },
+        text = {
+            Text(stringResource(R.string.delete_confirm_text))
+        }
+    )
+
+}
+
+@Composable
+fun MealOptions(
+    expanded: Boolean,
+    clearEnabled: Boolean,
+    onExpand: () -> Unit,
+    onDismiss: () -> Unit,
+    onClear: () -> Unit,
+    onCreate: () -> Unit,
+) {
+
+    var delete by remember { mutableStateOf(false) }
+
+    if(delete){
+        DeleteDialog(
+            onDismiss = { delete = false },
+            onConfirm = {
+                onClear()
+                delete = false
+                onDismiss()
+            }
+        )
+    }
+
+    Box{
+        IconButton(onClick = onExpand) {
+            Icon(
+                imageVector = Icons.Default.MoreVert,
+                contentDescription = ""
+            )
+        }
+        DropdownMenu(
+            modifier = Modifier.padding(horizontal = 12.dp),
+            expanded = expanded,
+            onDismissRequest = onDismiss,
+            shape = RoundedCornerShape(
+                topEnd = 12.dp,
+                topStart = 12.dp,
+                bottomEnd = 12.dp,
+                bottomStart = 12.dp
+            )
+        ) {
+            DropdownMenuItem(
+                text = {
+                        Text(
+                            modifier = Modifier.fillMaxWidth(),
+                            text = stringResource(R.string.create_food),
+                            textAlign = TextAlign.Left,
+                        )
+                },
+                onClick = {
+                    onCreate()
+                    onDismiss()
+                },
+            )
+            DropdownMenuItem(
+                enabled = clearEnabled,
+                text = {
+                        Text(
+                            modifier = Modifier.fillMaxWidth(),
+                            text = stringResource(R.string.clear),
+                            textAlign = TextAlign.Left,
+                        )
+                },
+                onClick = {
+                    delete = true
+                    onDismiss()
+                },
+            )
+
+        }
+    }
+}
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MealScreen(
@@ -54,6 +165,7 @@ fun MealScreen(
     onEvent: (MealEvent) -> Unit,
     onBack: () -> Unit,
     onGotoAdd: () -> Unit,
+    onGotoCreate: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
 
@@ -63,6 +175,7 @@ fun MealScreen(
 
 
     var shakeTrigger by remember { mutableStateOf(false) }
+    var expanded by remember { mutableStateOf(false) }
     val shakeOffset = rememberShakeOffset(shakeTrigger) {
         shakeTrigger = false // reset after animation
     }
@@ -79,6 +192,16 @@ fun MealScreen(
                         Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
                     }
                 },
+                actions = {
+                    MealOptions(
+                        expanded = expanded,
+                        clearEnabled = state.portions.isNotEmpty(),
+                        onExpand = { expanded = true },
+                        onDismiss = { expanded = false },
+                        onClear = { onEvent(MealEvent.Clear(date = date, meal = number)) },
+                        onCreate = onGotoCreate
+                    )
+                }
             )
         }
     ) {
@@ -95,7 +218,8 @@ fun MealScreen(
                         onGotoAdd()
                     }
                 }
-            } else {
+            }
+            else {
                 item {
                     MealSummaryCard(
                         nutrients = state.nutrients,

@@ -106,7 +106,11 @@ fun MealSummaryCard(
                 )
             }
         }
-        AnimatedVisibility(expanded, exit = fadeOut() + shrinkVertically()) {
+        AnimatedVisibility(
+            modifier = Modifier.padding(horizontal = 8.dp),
+            visible = expanded,
+            exit = fadeOut() + shrinkVertically()
+        ) {
             SummaryDetails(
                 nutrients = nutrients,
                 minerals = minerals,

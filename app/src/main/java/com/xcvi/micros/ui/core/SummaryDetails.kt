@@ -113,7 +113,7 @@ fun SummaryDetails(
             if (isEmpty) {
                 0.4f
             } else {
-                0.8f
+                1f
             }
         }
         labels.forEach { section ->

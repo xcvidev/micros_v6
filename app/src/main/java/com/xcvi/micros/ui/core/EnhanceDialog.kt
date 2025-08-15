@@ -97,27 +97,6 @@ fun EnhanceDialog(
 }
 
 @Composable
-fun DeleteDialog(
-    onDismiss: () -> Unit,
-    onConfirm: () -> Unit,
-) {
-    AlertDialog(
-        onDismissRequest = { onDismiss() },
-        confirmButton = {
-            TextButton(onClick = { onConfirm() }) {
-                Text(text = stringResource(R.string.delete))
-            }
-        },
-        title = {
-            Text(text = stringResource(R.string.delete))
-        },
-        text = {
-            Text(stringResource(R.string.delete_confirm_text))
-        }
-    )
-
-}
-@Composable
 fun RemoveDialog(
     onDismiss: () -> Unit,
     onConfirm: () -> Unit,

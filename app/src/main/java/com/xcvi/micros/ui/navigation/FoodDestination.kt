@@ -6,10 +6,14 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.navigation
 import androidx.navigation.toRoute
 import com.xcvi.micros.ui.core.comp.slidingComposable
+import com.xcvi.micros.ui.navigation.destinations.CreateDestination
 import com.xcvi.micros.ui.navigation.destinations.GoalsDestination
 import com.xcvi.micros.ui.navigation.destinations.MealDestination
 import com.xcvi.micros.ui.navigation.destinations.SearchDestination
 import com.xcvi.micros.ui.navigation.destinations.StatsDestination
+import com.xcvi.micros.ui.screens.create.CreateScreen
+import com.xcvi.micros.ui.screens.create.CreateViewModel
+import com.xcvi.micros.ui.screens.dashboard.DashboardEvent
 import com.xcvi.micros.ui.screens.dashboard.DashboardScreen
 import com.xcvi.micros.ui.screens.dashboard.DashboardViewModel
 import com.xcvi.micros.ui.screens.goals.GoalsScreen
@@ -80,9 +84,23 @@ data object FoodDestination {
                                 mealLabel = args.label
                             )
                         )
-                    }
+                    },
+                    onGotoCreate = { navController.navigate(CreateDestination(date = args.date, meal = args.number)) }
                 )
             }
+
+            slidingComposable<CreateDestination> {
+                val args = it.toRoute<CreateDestination>()
+                val viewModel = koinViewModel<CreateViewModel>()
+                CreateScreen(
+                    state = viewModel.state,
+                    onEvent = viewModel::onEvent,
+                    onBack = { navController.popBackStack() },
+                    date = args.date,
+                    meal = args.meal
+                )
+            }
+
 
             slidingComposable<SearchDestination> {
                 val args = it.toRoute<SearchDestination>()

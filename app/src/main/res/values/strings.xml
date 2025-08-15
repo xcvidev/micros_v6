@@ -23,7 +23,7 @@
     <string name="yesterday">Yesterday</string>
     <string name="tomorrow">Tomorrow</string>
     <string name="delete">Delete</string>
-    <string name="delete_confirm_text">"Are you sure? This action cannot be permanent."</string>">
+    <string name="delete_confirm_text">"Are you sure? This action cannot be undone."</string>">
     <string name="remove_confirm_text">"Are you sure?"</string>">
     <string name="paste">Paste</string>
     <string name="copy">Copy</string>
@@ -83,6 +83,9 @@
     <string name="stats_no_weight_data">To see weight graph, add more data.</string>
 
     <!--  Food  -->
+    <string name="calories">Calories</string>
+
+
     <string name="histidine">Histidine</string>
     <string name="isoleucine">Isoleucine</string>
     <string name="leucine">Leucine</string>
@@ -93,7 +96,6 @@
     <string name="tryptophan">Tryptophan</string>
     <string name="valine">Valine</string>
     <!--   Macros   -->
-    <string name="calories">Calories</string>
     <string name="protein">Protein</string>
     <string name="carbs">Carbohydrates</string>
     <string name="fats">Fats</string>
@@ -106,12 +108,7 @@
     <string name="magnesium">Magnesium</string>
     <string name="potassium">Potassium</string>
     <string name="sodium">Sodium</string>
-    <string name="zinc">Zinc</string>
-    <string name="fluoride">Fluoride</string>
-    <string name="iodine">Iodine</string>
-    <string name="phosphorus">Phosphorus</string>
-    <string name="manganese">Manganese</string>
-    <string name="selenium">Selenium</string>
+
     <!--   Vitamins   -->
     <string name="vitaminA">Vitamin A</string>
     <string name="vitaminB">Vitamin B</string>
@@ -123,12 +120,18 @@
     <string name="vitaminB6">Pyridoxine (B6)</string>
     <string name="vitaminB9">Folic Acid (B9)</string>
     <string name="vitaminB12">Cobalamin (B12)</string>
-
     <string name="vitaminC">Vitamin C</string>
     <string name="vitaminD">Vitamin D</string>
     <string name="vitaminE">Vitamin E</string>
     <string name="vitaminK">Vitamin K</string>
 
+
+    <string name="zinc">Zinc</string>
+    <string name="fluoride">Fluoride</string>
+    <string name="iodine">Iodine</string>
+    <string name="phosphorus">Phosphorus</string>
+    <string name="manganese">Manganese</string>
+    <string name="selenium">Selenium</string>
     <!--  Dashboard  -->
     <string name="food_dashboard_topbar">Dashboard</string>
     <string name="food_nutrients">Nutrients</string>
@@ -210,5 +213,8 @@
     <string name="unsaved_changes_title">Unsaved Changes</string>
     <string name="unsaved_changes_text">Save changes or discard?</string>
     <string name="selected_foods_section">Selected</string>
+    <string name="create_food">Create Custom Food</string>
+    <string name="amount">Weight in grams</string>
+    <string name="name">Name</string>
 
 </resources>
