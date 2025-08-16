@@ -54,8 +54,7 @@ class SearchUseCases(
 
     suspend fun getRecents(): List<Portion> {
         val portions = portionRepository.getRecents()
-        /*
-        val foods = foodRepository.getRecents()
+        val foods = foodRepository.getFavorites()
             .filter{ f ->
                 portions.none { p -> p.food.barcode == f.barcode }
             }
@@ -69,11 +68,6 @@ class SearchUseCases(
         }
 
         return (portions + foods).sortedWith(
-            compareByDescending<Portion> { it.food.isFavorite }
-                .thenBy { it.food.name }
-        )
-         */
-        return (portions).sortedWith(
             compareByDescending<Portion> { it.food.isFavorite }
                 .thenBy { it.food.name }
         )

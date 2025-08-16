@@ -218,5 +218,6 @@
     <string name="name">Name</string>
     <string name="overwrite">Overwrite</string>
     <string name="clear">Clear</string>
+    <string name="short_name">Choose name with atleast 3 letters</string>
 
 </resources>

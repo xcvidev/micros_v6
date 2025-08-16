@@ -91,7 +91,7 @@ class MealViewModel(
         name: String,
         onError: (Failure) -> Unit
     ) {
-        if (name.isBlank() || state.portions.isEmpty()) {
+        if (name.isBlank() || name.length < 3 || state.portions.isEmpty()) {
             onError(Failure.InvalidInput)
             return
         }

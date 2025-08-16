@@ -54,10 +54,12 @@ class FoodRepositoryImplementation(
             },
             dbCall = { response ->
                 val barcodes = response.map { it.barcode }
-                foodDao.get(barcodes).map { it.toModel() }
+                val remote = foodDao.get(barcodes).map { it.toModel() }
+                val local = foodDao.search(query).map { it.toModel() }
+                (local + remote).distinctBy { it.barcode }
             },
             fallbackRequest = null,
-            fallbackDbCall = { null }
+            fallbackDbCall = { foodDao.search(query).map { it.toModel() } }
         )
     }
 
@@ -115,6 +117,10 @@ class FoodRepositoryImplementation(
 
     override suspend fun getRecents(): List<Food> {
         return foodDao.getRecents().map { list -> list.toModel() }
+    }
+
+    override suspend fun getFavorites(): List<Food>  {
+        return foodDao.getFavorites().map { list -> list.toModel() }
     }
 
     override suspend fun getFood(barcode: String): Response<Food> {

@@ -21,11 +21,17 @@ interface FoodDao{
     @Query("SELECT * FROM FoodEntity WHERE barcode IN (:barcodes) OR name IN (:barcodes)")
     suspend fun get(barcodes: List<String>): List<FoodEntity>
 
-    @Query("SELECT * FROM FoodEntity WHERE isFavorite = 1 OR isRecent = 1 ORDER BY isFavorite, name")
+    @Query("SELECT * FROM FoodEntity WHERE isRecent = 1 ORDER BY isFavorite, name")
     suspend fun getRecents(): List<FoodEntity>
+
+    @Query("SELECT * FROM FoodEntity WHERE isFavorite = 1 ORDER BY  name")
+    suspend fun getFavorites(): List<FoodEntity>
 
     @RawQuery
     suspend fun search(query: SupportSQLiteQuery): List<FoodEntity>
+
+    @Query("SELECT * FROM FoodEntity WHERE name LIKE '%' || :name || '%' ORDER BY name")
+    suspend fun search(name: String): List<FoodEntity>
 
     /**
      * Update

@@ -1,5 +1,6 @@
 package com.xcvi.micros.ui.screens.meal
 
+import android.widget.Toast
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
@@ -255,6 +256,7 @@ fun MealScreen(
                 },
                 actions = {
                     if(state.portions.isNotEmpty()){
+                        val errorText = stringResource(R.string.short_name)
                         MealOptions(
                             expanded = expanded,
                             onExpand = { expanded = true },
@@ -266,10 +268,12 @@ fun MealScreen(
                                         date = date,
                                         meal = number,
                                         onError = { error ->
-                                            if(error is Failure.AlreadyExists){
-                                                showOverwrite = true
-                                            } else {
-                                                shakeTrigger = true
+                                            when(error){
+                                                is Failure.AlreadyExists -> showOverwrite = true
+                                                is Failure.InvalidInput ->{
+                                                    Toast.makeText(context, errorText, Toast.LENGTH_LONG).show()
+                                                }
+                                                else -> shakeTrigger = true
                                             }
                                         },
                                         name = name

@@ -13,5 +13,6 @@ interface FoodRepository {
     suspend fun setRecent(barcode: String, value: Boolean): Response<Unit>
     suspend fun rename(newName: String, barcode: String): Response<Unit>
     suspend fun getRecents(): List<Food>
+    suspend fun getFavorites(): List<Food>
     suspend fun getFood(barcode: String): Response<Food>
 }
