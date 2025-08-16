@@ -1,6 +1,6 @@
 /*
  * This file is auto-generated.  DO NOT MODIFY.
- * Using: C:\sdk\build-tools\35.0.0\aidl.exe -pC:\sdk\platforms\android-34\framework.aidl -oC:\Users\Administrator\AndroidStudioProjects\micros_v6\lvl\build\generated\aidl_source_output_dir\debug\out -IC:\Users\Administrator\AndroidStudioProjects\micros_v6\lvl\src\main\aidl -IC:\Users\Administrator\AndroidStudioProjects\micros_v6\lvl\src\debug\aidl -dC:\Users\ADMINI~1\AppData\Local\Temp\aidl7430656703154982399.d C:\Users\Administrator\AndroidStudioProjects\micros_v6\lvl\src\main\aidl\com\android\vending\licensing\ILicenseResultListener.aidl
+ * Using: C:\sdk\build-tools\35.0.0\aidl.exe -pC:\sdk\platforms\android-34\framework.aidl -oD:\Dev\Android\micros_v6\lvl\build\generated\aidl_source_output_dir\debug\out -ID:\Dev\Android\micros_v6\lvl\src\main\aidl -ID:\Dev\Android\micros_v6\lvl\src\debug\aidl -dC:\Users\Ras\AppData\Local\Temp\aidl6318665664714196413.d D:\Dev\Android\micros_v6\lvl\src\main\aidl\com\android\vending\licensing\ILicenseResultListener.aidl
  */
 package com.android.vending.licensing;
 public interface ILicenseResultListener extends android.os.IInterface

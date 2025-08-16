@@ -19,11 +19,20 @@ class MealUseCases(
     private val portionRepository: PortionRepository,
     private val foodRepository: FoodRepository,
 ) {
+
+    suspend fun isCustomMealNew(name: String): Boolean{
+        return when(foodRepository.getFood(name)){
+            is Response.Error -> true
+            is Response.Success -> false
+        }
+    }
+
     suspend fun createMeal(
         date: Int,
         meal: Int,
         name: String,
         portions: List<Portion>,
+        overwrite: Boolean
     ): Response<Unit> {
         val minerals = portions.sumMinerals()
         val nutrients = portions.sumNutrients()
@@ -49,7 +58,7 @@ class MealUseCases(
             food = customFood
         )
         val food100g = customPortion.scale(100).food
-        when (val res = foodRepository.create(food100g)) {
+        when (val res = foodRepository.create(food100g, overwrite)) {
             is Response.Error -> return res
             is Response.Success -> {
                 clearMeal(date = date, meal = meal)

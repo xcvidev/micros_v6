@@ -1,6 +1,6 @@
 /*
  * This file is auto-generated.  DO NOT MODIFY.
- * Using: C:\sdk\build-tools\35.0.0\aidl.exe -pC:\sdk\platforms\android-34\framework.aidl -oC:\Users\Administrator\AndroidStudioProjects\micros_v6\lvl\build\generated\aidl_source_output_dir\debug\out -IC:\Users\Administrator\AndroidStudioProjects\micros_v6\lvl\src\main\aidl -IC:\Users\Administrator\AndroidStudioProjects\micros_v6\lvl\src\debug\aidl -dC:\Users\ADMINI~1\AppData\Local\Temp\aidl4254870125746817137.d C:\Users\Administrator\AndroidStudioProjects\micros_v6\lvl\src\main\aidl\com\android\vending\licensing\ILicensingService.aidl
+ * Using: C:\sdk\build-tools\35.0.0\aidl.exe -pC:\sdk\platforms\android-34\framework.aidl -oD:\Dev\Android\micros_v6\lvl\build\generated\aidl_source_output_dir\debug\out -ID:\Dev\Android\micros_v6\lvl\src\main\aidl -ID:\Dev\Android\micros_v6\lvl\src\debug\aidl -dC:\Users\Ras\AppData\Local\Temp\aidl6255726560609459688.d D:\Dev\Android\micros_v6\lvl\src\main\aidl\com\android\vending\licensing\ILicensingService.aidl
  */
 package com.android.vending.licensing;
 public interface ILicensingService extends android.os.IInterface

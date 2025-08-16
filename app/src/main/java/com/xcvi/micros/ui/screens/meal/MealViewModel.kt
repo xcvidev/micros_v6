@@ -19,6 +19,9 @@ import com.xcvi.micros.ui.BaseViewModel
 import kotlinx.coroutines.launch
 
 data class MealState(
+    val date: Int = 0,
+    val meal: Int = 0,
+    val customMealName: String = "",
     val isEnhancing: Boolean = false,
     val portions: List<Portion> = emptyList(),
     val selected: Portion? = null,
@@ -36,14 +39,15 @@ sealed interface MealEvent {
     data object ToggleFavorite : MealEvent
     data class Scale(val amount: Int) : MealEvent
 
-    data class Create(
+    data class CreateCustomMeal(
         val date: Int,
         val meal: Int,
         val name: String,
-        val portions: List<Portion>,
         val onError: (Failure) -> Unit
     ) :
         MealEvent
+
+    data object OverwriteCustomMeal : MealEvent
 
     data class Clear(val date: Int, val meal: Int) : MealEvent
     data object DeletePortion : MealEvent
@@ -58,13 +62,14 @@ class MealViewModel(
 
     fun onEvent(event: MealEvent) {
         when (event) {
-            is MealEvent.Create -> createMeal(
+            is MealEvent.CreateCustomMeal -> createMeal(
                 date = event.date,
                 meal = event.meal,
                 name = event.name,
-                portions = event.portions,
                 onError = event.onError
             )
+
+            is MealEvent.OverwriteCustomMeal -> overwriteMeal()
 
             is MealEvent.Clear -> clearMeal(date = event.date, meal = event.meal)
             is MealEvent.GetMeal -> observeMeal(date = event.date, event.number)
@@ -84,18 +89,40 @@ class MealViewModel(
         date: Int,
         meal: Int,
         name: String,
-        portions: List<Portion>,
         onError: (Failure) -> Unit
     ) {
-        if (name.isBlank() || portions.isEmpty()) {
+        if (name.isBlank() || state.portions.isEmpty()) {
             onError(Failure.InvalidInput)
             return
         }
+        updateData { copy(date = date, meal = meal, customMealName = name) }
+
         viewModelScope.launch {
-            when(val res = useCases.createMeal(date = date, meal = meal, name = name, portions = portions)){
+            when (val res = useCases.createMeal(
+                date = date,
+                meal = meal,
+                name = name,
+                portions = state.portions,
+                overwrite = false
+            )
+            ) {
                 is Response.Success -> {}
                 is Response.Error -> onError(res.error)
             }
+        }
+    }
+    private fun overwriteMeal() {
+        if (state.customMealName.isBlank() || state.portions.isEmpty()) {
+            return
+        }
+        viewModelScope.launch {
+            useCases.createMeal(
+                date = state.date,
+                meal = state.meal,
+                name = state.customMealName,
+                portions = state.portions,
+                overwrite = true
+            )
         }
     }
 
@@ -194,6 +221,8 @@ class MealViewModel(
                 val aminoAcids = it.sumAminoAcids()
                 updateData {
                     copy(
+                        date = date,
+                        meal = number,
                         portions = it,
                         minerals = minerals,
                         vitamins = vitamins,

@@ -167,7 +167,7 @@
     <string name="empty_search_screen_text">Puoi cercare un cibo per nome o marca. Puoi anche descriverlo e l\'assistente AI lo genererà per te. Non trovi il tuo cibo? Prova a scansionare il codice a barre.</string>
     <string name="remove">Rimuovi</string>
     <string name="summary">Riepilogo</string>
-    <string name="clear">Cancella</string>
+    <string name="clear_all">Rimuovi tutto</string>
     <string name="edit_meal">Modifica Pasto</string>
     <string name="delete_confirm_short_text">Sei sicuro?</string>
     <string name="ai">IA</string> <string name="add_portion">Aggiungi Porzioni</string>
@@ -218,5 +218,7 @@
     <string name="create_custom_meal">Salva come Alimento Personale</string>
     <string name="amount">Peso in grammi</string>
     <string name="name">Nome</string>
+    <string name="overwrite">Sovrascrivi</string>
+    <string name="clear">Rimuovi</string>
 
 </resources>

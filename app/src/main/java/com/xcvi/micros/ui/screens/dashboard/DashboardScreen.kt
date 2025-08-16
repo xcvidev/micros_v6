@@ -340,7 +340,7 @@ fun DashboardScreen(
                     showEditDialog = false
                 },
                 title = {
-                    Text(text = stringResource(R.string.clear))
+                    Text(text = stringResource(R.string.clear_all))
                 },
                 text = { Text(stringResource(R.string.delete_confirm_short_text)) },
                 confirmButton = {
@@ -418,7 +418,7 @@ fun EditDialog(
         confirmButton = {
             Row(modifier = Modifier.fillMaxWidth()) {
                 val buttonText = if (selectedMeal.isPinned) {
-                    stringResource(R.string.clear)
+                    stringResource(R.string.clear_all)
                 } else {
                     stringResource(R.string.remove)
                 }

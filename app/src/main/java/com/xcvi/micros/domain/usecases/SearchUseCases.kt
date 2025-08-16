@@ -15,7 +15,7 @@ class SearchUseCases(
     private val messageRepository: MessageRepository
 ) {
     suspend fun enhance(barcode: String, description: String): Response<Food> {
-        return foodRepository.enhance(barcode, description)
+        return foodRepository.enhance(foodBarcode = barcode, description)
     }
 
     suspend fun toggleFavorite(barcode: String): Response<Unit> {
@@ -54,6 +54,7 @@ class SearchUseCases(
 
     suspend fun getRecents(): List<Portion> {
         val portions = portionRepository.getRecents()
+        /*
         val foods = foodRepository.getRecents()
             .filter{ f ->
                 portions.none { p -> p.food.barcode == f.barcode }
@@ -66,7 +67,13 @@ class SearchUseCases(
                     amount = 100
                 )
         }
+
         return (portions + foods).sortedWith(
+            compareByDescending<Portion> { it.food.isFavorite }
+                .thenBy { it.food.name }
+        )
+         */
+        return (portions).sortedWith(
             compareByDescending<Portion> { it.food.isFavorite }
                 .thenBy { it.food.name }
         )

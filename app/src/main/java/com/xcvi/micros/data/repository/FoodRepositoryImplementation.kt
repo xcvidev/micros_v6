@@ -26,10 +26,14 @@ class FoodRepositoryImplementation(
     private val aiApi: AiApi
 ) : FoodRepository {
 
-    override suspend fun create(food: Food): Response<Unit> {
+    override suspend fun create(food: Food, overwrite: Boolean): Response<Unit> {
         try {
             val entity = food.toEntity()
-            foodDao.create(entity)
+            if(overwrite){
+                foodDao.upsert(entity)
+            } else {
+                foodDao.create(entity)
+            }
             return Response.Success(Unit)
         } catch (e: Exception) {
             Log.e("FoodRepository", "create: ", e)

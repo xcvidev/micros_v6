@@ -1,6 +1,5 @@
 package com.xcvi.micros.ui.screens.meal
 
-import android.widget.Toast
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
@@ -60,15 +59,17 @@ import com.xcvi.micros.ui.core.comp.rememberShakeOffset
 
 
 @Composable
-fun DeleteDialog(
+fun ConfirmDialog(
     onDismiss: () -> Unit,
     onConfirm: () -> Unit,
+    title: String,
+    confirmText: String,
 ) {
     AlertDialog(
         onDismissRequest = { onDismiss() },
         confirmButton = {
             TextButton(onClick = { onConfirm() }) {
-                Text(text = stringResource(R.string.delete))
+                Text(text = confirmText)
             }
         },
         dismissButton = {
@@ -77,10 +78,10 @@ fun DeleteDialog(
             }
         },
         title = {
-            Text(text = stringResource(R.string.delete))
+            Text(text =title)
         },
         text = {
-            Text(stringResource(R.string.delete_confirm_text))
+            Text(stringResource(R.string.delete_confirm_short_text))
         }
     )
 }
@@ -88,14 +89,15 @@ fun DeleteDialog(
 
 @Composable
 fun InputDialog(
+    userInput: String,
+    onType: (String) -> Unit,
     onDismiss: () -> Unit,
-    onConfirm: (String) -> Unit,
+    onConfirm: () -> Unit,
 ) {
-    var userInput by remember { mutableStateOf("") }
     AlertDialog(
         onDismissRequest = { onDismiss() },
         confirmButton = {
-            TextButton(onClick = { onConfirm(userInput) }) {
+            TextButton(onClick = { onConfirm() }) {
                 Text(text = "OK")
             }
         },
@@ -107,11 +109,11 @@ fun InputDialog(
                 TextField(
                     modifier = Modifier.fillMaxWidth(),
                     value = userInput,
-                    onValueChange = { userInput = it },
+                    onValueChange = onType,
                     label = { Text(text = stringResource(R.string.name)) },
                     singleLine = true,
                     maxLines = 1,
-                    keyboardActions = KeyboardActions(onDone = { onConfirm(userInput) }),
+                    keyboardActions = KeyboardActions(onDone = { onConfirm() }),
                     keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
                     colors = TextFieldDefaults.colors(
                         focusedIndicatorColor = Color.Transparent,
@@ -134,25 +136,30 @@ fun MealOptions(
     onClear: () -> Unit,
     onCreate: (String) -> Unit,
 ) {
+    var userInput by remember { mutableStateOf("") }
 
     var save by remember { mutableStateOf(false) }
     var delete by remember { mutableStateOf(false) }
 
     if (delete) {
-        DeleteDialog(
+        ConfirmDialog(
             onDismiss = { delete = false },
             onConfirm = {
                 onClear()
                 delete = false
                 onDismiss()
-            }
+            },
+            title = stringResource(R.string.clear_all),
+            confirmText = stringResource(R.string.clear)
         )
     }
     if (save) {
         InputDialog(
+            userInput = userInput,
+            onType = {userInput = it},
             onDismiss = { save = false },
-            onConfirm = { name ->
-                onCreate(name)
+            onConfirm = {
+                onCreate(userInput)
                 save = false
                 onDismiss()
             }
@@ -194,7 +201,7 @@ fun MealOptions(
                 text = {
                     Text(
                         modifier = Modifier.fillMaxWidth(),
-                        text = stringResource(R.string.clear),
+                        text = stringResource(R.string.clear_all),
                         textAlign = TextAlign.Left,
                     )
                 },
@@ -221,12 +228,14 @@ fun MealScreen(
     modifier: Modifier = Modifier,
 ) {
 
+
     OnNavigation {
         onEvent(MealEvent.GetMeal(date = date, number = number))
     }
 
 
     var shakeTrigger by remember { mutableStateOf(false) }
+    var showOverwrite by remember { mutableStateOf(false) }
     var expanded by remember { mutableStateOf(false) }
     val shakeOffset = rememberShakeOffset(shakeTrigger) {
         shakeTrigger = false // reset after animation
@@ -245,7 +254,6 @@ fun MealScreen(
                     }
                 },
                 actions = {
-                    val errorText = stringResource(R.string.already_exists)
                     if(state.portions.isNotEmpty()){
                         MealOptions(
                             expanded = expanded,
@@ -254,17 +262,17 @@ fun MealScreen(
                             onClear = { onEvent(MealEvent.Clear(date = date, meal = number)) },
                             onCreate = { name ->
                                 onEvent(
-                                    MealEvent.Create(
+                                    MealEvent.CreateCustomMeal(
                                         date = date,
                                         meal = number,
-                                        name = name,
-                                        portions = state.portions,
                                         onError = { error ->
-                                            if (error is Failure.AlreadyExists){
-                                                Toast.makeText(context, errorText, Toast.LENGTH_LONG).show()
+                                            if(error is Failure.AlreadyExists){
+                                                showOverwrite = true
+                                            } else {
+                                                shakeTrigger = true
                                             }
-                                            shakeTrigger = true
-                                        }
+                                        },
+                                        name = name
                                     )
                                 )
                             }
@@ -356,6 +364,25 @@ fun MealScreen(
         }
     }
 
+    if(showOverwrite){
+        AlertDialog(
+            onDismissRequest = { showOverwrite = false},
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        onEvent(MealEvent.OverwriteCustomMeal)
+                        showOverwrite = false
+                    }
+                ) { Text(stringResource(R.string.overwrite))}
+            },
+            dismissButton = {
+                TextButton(onClick = { showOverwrite = false }) { Text(stringResource(R.string.cancel))}
+            },
+            title = { Text( stringResource(R.string.overwrite))},
+            text = { Text( stringResource(R.string.already_exists))},
+        )
+
+    }
 
     if (state.selected != null) {
         MealItemDetailsSheet(
