@@ -79,7 +79,7 @@ class SearchUseCases(
         meal: Int,
         language: String
     ): Response<List<Portion>> {
-        val res = foodRepository.search(query, language)
+        val res = foodRepository.search(query)
         return when(res){
             is Response.Error -> res
             is Response.Success -> {

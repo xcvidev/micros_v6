@@ -20,18 +20,14 @@ class ProductApi(
         query: String,
         language: String,
         page: Int = 1,
-        pageSize: Int = 100
+        pageSize: Int = 50
     ): List<SearchProductDTO>? {
         val url = "https://search.openfoodfacts.org/search"
-        val langs = when(language){
-            "English" -> "en"
-            "Italiano" -> "it"
-            else -> "en"
-        }
+
         val res: SearchDTO? = client.get {
             url(url)
             parameter("q", query)
-            parameter("langs", langs)
+            parameter("langs", language)
             parameter("page", page)
             parameter("page_size", pageSize)
             parameter("fields", "code,product_name,nutriments,brands")

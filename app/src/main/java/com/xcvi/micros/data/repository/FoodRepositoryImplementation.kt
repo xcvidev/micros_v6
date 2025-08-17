@@ -14,11 +14,17 @@ import com.xcvi.micros.domain.respostory.FoodRepository
 import com.xcvi.micros.domain.utils.Failure
 import com.xcvi.micros.domain.utils.Response
 import com.xcvi.micros.domain.utils.fetchAndCache
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import kotlin.collections.distinctBy
+import kotlin.collections.plus
 
 class FoodRepositoryImplementation(
     private val foodDao: FoodDao,
@@ -29,7 +35,7 @@ class FoodRepositoryImplementation(
     override suspend fun create(food: Food, overwrite: Boolean): Response<Unit> {
         try {
             val entity = food.toEntity()
-            if(overwrite){
+            if (overwrite) {
                 foodDao.upsert(entity)
             } else {
                 foodDao.create(entity)
@@ -41,12 +47,21 @@ class FoodRepositoryImplementation(
         }
     }
 
-    override suspend fun search(
-        query: String, language: String,
-    ): Response<List<Food>> {
+
+
+    override suspend fun search(query: String): Response<List<Food>> {
         return fetchAndCache(
             apiCall = {
-                productApi.search(query, language)
+                coroutineScope {
+                    val en = async { productApi.search(query = query,  "en") }.await()
+                    val it = async { productApi.search(query = query,  "it") }.await()
+                    val fr = async { productApi.search(query = query,  "fr") }.await()
+                    if (en != null && it != null && fr != null) {
+                        (en + fr + it).distinctBy { it.barcode }
+                    } else {
+                        null
+                    }
+                }
             },
             cacheCall = { response ->
                 val entities = response.map { it.toEntity() }
@@ -119,7 +134,7 @@ class FoodRepositoryImplementation(
         return foodDao.getRecents().map { list -> list.toModel() }
     }
 
-    override suspend fun getFavorites(): List<Food>  {
+    override suspend fun getFavorites(): List<Food> {
         return foodDao.getFavorites().map { list -> list.toModel() }
     }
 

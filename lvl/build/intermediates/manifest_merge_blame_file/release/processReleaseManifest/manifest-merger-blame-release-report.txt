@@ -22,7 +22,7 @@
 22    <uses-sdk android:minSdkVersion="4" />
 23    <!-- Required permission to check licensing. -->
 24    <uses-permission android:name="com.android.vending.CHECK_LICENSE" />
-24-->C:\Users\Administrator\AndroidStudioProjects\micros_v6\lvl\src\main\AndroidManifest.xml:20:5-73
-24-->C:\Users\Administrator\AndroidStudioProjects\micros_v6\lvl\src\main\AndroidManifest.xml:20:22-70
+24-->D:\Dev\Android\micros_v6\lvl\src\main\AndroidManifest.xml:20:5-73
+24-->D:\Dev\Android\micros_v6\lvl\src\main\AndroidManifest.xml:20:22-70
 25
 26</manifest>
