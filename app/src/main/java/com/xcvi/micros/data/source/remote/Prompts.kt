@@ -1,9 +1,5 @@
 package com.xcvi.micros.data.source.remote
 
-import com.xcvi.micros.domain.model.message.Message
-import io.ktor.utils.io.core.Input
-import org.intellij.lang.annotations.Language
-
 enum class MessageType {
     MESSAGE_QUERY,
     SMART_SEARCH_QUERY,
@@ -12,7 +8,6 @@ enum class MessageType {
 const val GENERATE_SYSTEM_PROMPT = """
 You are a nutrition assistant. You must output complete JSON-formatted food estimations. Always respond quickly with your best guess, even if the user input is vague or incomplete. It’s okay to estimate based on common foods and portion sizes. Never leave fields blank unless truly unknown.
 """
-
 
 const val SMART_SEARCH_SYSTEM_PROMPT = """
 You are a smart and friendly nutrition assistant that transforms user input into structured nutritional data or helpful insights.
@@ -114,7 +109,6 @@ Instructions:
 - Use the user's language throughout.
 - Respond with **only** a valid JSON object — no extra text.
 """
-
 
 fun getEnhancementPrompt(userDesc: String, name: String, ingredients: String): String {
     return buildString {

@@ -56,8 +56,9 @@ class FoodRepositoryImplementation(
                     val en = async { productApi.search(query = query,  "en") }.await()
                     val it = async { productApi.search(query = query,  "it") }.await()
                     val fr = async { productApi.search(query = query,  "fr") }.await()
-                    if (en != null && it != null && fr != null) {
-                        (en + fr + it).distinctBy { it.barcode }
+                    val es = async { productApi.search(query = query,  "es") }.await()
+                    if (en != null && it != null && fr != null && es != null) {
+                        (en + fr + it + es).distinctBy { it.barcode }
                     } else {
                         null
                     }
