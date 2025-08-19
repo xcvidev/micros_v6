@@ -103,7 +103,7 @@ class Micros: Application() {
                 androidContext(),
                 MicrosDatabase::class.java,
                 "micros_db"
-            ).addMigrations(MIGRATION_1_2).build()
+            )/*.addMigrations(MIGRATION_1_2)*/.build()
         }
         single { get<MicrosDatabase>().foodDao() }
         single { get<MicrosDatabase>().portionDao() }

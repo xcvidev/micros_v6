@@ -14,6 +14,7 @@ import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
 import kotlinx.serialization.json.put
 import kotlinx.serialization.json.putJsonArray
+import kotlinx.serialization.json.putJsonObject
 
 class AiApi(
     private val jsonParser: Json,
@@ -68,6 +69,9 @@ class AiApi(
                     put("role", "user")
                     put("content", userPrompt)
                 }
+            }
+            putJsonObject("response_format") {
+                put("type", "json_object")
             }
             put("temperature", 0.7)
         }
