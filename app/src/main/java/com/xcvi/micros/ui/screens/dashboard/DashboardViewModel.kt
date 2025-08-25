@@ -1,6 +1,7 @@
 package com.xcvi.micros.ui.screens.dashboard
 
 import android.content.Context
+import android.util.Log
 import androidx.lifecycle.viewModelScope
 import com.xcvi.micros.R
 import com.xcvi.micros.domain.model.food.AminoAcids
@@ -31,6 +32,7 @@ sealed interface DashboardEvent {
 data class DashboardState(
     val currentDate: Int = getToday(),
     val meals: List<Meal> = emptyList(),
+    val visibleMeals: Set<Int> = emptySet(),
     val summary: MacrosSummary = MacrosSummary.empty(),
 
     val nutrients: Nutrients = Nutrients.empty(),
@@ -81,7 +83,13 @@ class DashboardViewModel(
         mealObserverJob?.cancel()
         mealObserverJob = viewModelScope.launch {
             useCases.observeMeals(date, mealNames).collect { meals ->
-                val portions = meals.flatMap { it.portions }
+                val updatedMeals = meals.map { meal ->
+                    val hasContent = meal.portions.isNotEmpty()
+                    val isVisible = hasContent || state.visibleMeals.contains(meal.number)
+                    meal.copy(isVisible = isVisible)
+                }
+
+                val portions = updatedMeals.flatMap { it.portions }
                 val nutrients = portions.sumNutrients()
                 val minerals = portions.sumMinerals()
                 val vitamins = portions.sumVitamins()
@@ -96,7 +104,7 @@ class DashboardViewModel(
                     )
                 }
 
-                if (meals.none { it.isVisible || it.isPinned }){
+                if (updatedMeals.none { it.isVisible || it.isPinned }){
                     addMeal()
                 }
             }
@@ -104,10 +112,14 @@ class DashboardViewModel(
     }
     private fun addMeal() {
         val index = state.meals.indexOfFirst { !it.isVisible }
-        if (index == -1 || index >= 10) return
+        if (index == -1 || index >= 8) return
+
+        val mealId = state.meals[index].number
+
 
         updateData {
             copy(
+                visibleMeals = visibleMeals + mealId,
                 meals = meals.toMutableList().also {
                     it[index] = it[index].copy(isVisible = true)
                 }
@@ -116,7 +128,7 @@ class DashboardViewModel(
     }
 
     private fun changeDateDate(date: Int) {
-        updateData { copy(currentDate = date) }
+        updateData { copy(currentDate = date, visibleMeals = emptySet()) }
         observeMeals(date)
         observeGoal(date)
     }
@@ -154,6 +166,7 @@ class DashboardViewModel(
 
             updateData {
                 copy(
+                    visibleMeals = visibleMeals - meal.number,
                     meals = meals.toMutableList().also {
                         it[index] = it[index].copy(isVisible = false)
                     }

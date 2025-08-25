@@ -12,15 +12,15 @@ class DashboardUseCases(
     private val portionRepository: PortionRepository,
 ) {
 
-    suspend fun observeMeals(date: Int, mealNames: Map<Int, String>): Flow<List<Meal>> {
+    fun observeMeals(date: Int, mealNames: Map<Int, String>): Flow<List<Meal>> {
         return portionRepository.getMeals(date, mealNames)
     }
 
-    suspend fun observeGoal(date: Int): Flow<MacrosSummary> {
+    fun observeGoal(date: Int): Flow<MacrosSummary> {
         return portionRepository.getSummaryOfDate(date)
     }
 
-    suspend fun observeGoals(): Flow<List<MacrosSummary>> {
+    fun observeGoals(): Flow<List<MacrosSummary>> {
         return portionRepository.observeAllSummaries()
     }
 

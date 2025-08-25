@@ -217,7 +217,7 @@ fun DashboardScreen(
                     items = state.meals,
                     key = { it.number }
                 ) { mealCard ->
-                    if(mealCard.isVisible){
+                    if(mealCard.isVisible || mealCard.isPinned || state.visibleMeals.contains(mealCard.number)){
                         Box(
                             modifier = Modifier
                                 .padding(4.dp)
