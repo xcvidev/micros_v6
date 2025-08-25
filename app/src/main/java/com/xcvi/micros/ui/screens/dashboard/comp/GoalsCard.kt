@@ -108,8 +108,9 @@ fun GoalsCard(
                     val underScoreDot = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.3f)
                     val completedDot = MaterialTheme.colorScheme.primary
 
-                    fun dotColor(current: Double,getScore: (Double) -> Double): Color {
-                        val score = getScore(current)
+                    fun dotColor(current: Double, goal: Double, getScore: (Double) -> Double): Color {
+                        val percent = current / goal * 100
+                        val score = getScore(percent)
                         return if (score == 1.0) {
                             completedDot
                         } else if(score < 1.0) {
@@ -123,25 +124,25 @@ fun GoalsCard(
                             name = stringResource(R.string.protein),
                             goal = summary.goal.protein.roundToInt(),
                             current = summary.actual.protein,
-                            dotColor = dotColor(summary.actual.protein, ::scoreProtein)
+                            dotColor = dotColor(summary.actual.protein, summary.goal.protein,::scoreProtein)
                         )
                         GoalText(
                             name = stringResource(R.string.carbs),
                             goal = summary.goal.carbohydrates.roundToInt(),
                             current = summary.actual.carbohydrates,
-                            dotColor = dotColor(summary.actual.carbohydrates, ::scoreCarbs)
+                            dotColor = dotColor(summary.actual.carbohydrates, summary.goal.carbohydrates,::scoreCarbs)
                         )
                         GoalText(
                             name = stringResource(R.string.fats),
                             goal = summary.goal.fats.roundToInt(),
                             current = summary.actual.fats,
-                            dotColor = dotColor(summary.actual.fats, ::scoreFats)
+                            dotColor = dotColor(summary.actual.fats, summary.goal.fats, ::scoreFats)
                         )
                         GoalText(
                             name = stringResource(R.string.calories),
                             goal = summary.goal.calories,
                             current = summary.actual.calories * 1.0,
-                            dotColor = dotColor(summary.actual.calories*1.0, ::scoreCalories)
+                            dotColor = dotColor(summary.actual.calories.toDouble(), summary.goal.calories.toDouble(), ::scoreCalories)
                         )
                     }
                 }

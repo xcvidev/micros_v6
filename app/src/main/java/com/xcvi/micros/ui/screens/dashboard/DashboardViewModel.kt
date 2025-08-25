@@ -61,11 +61,6 @@ class DashboardViewModel(
         observeGoal(today)
     }
 
-    fun onGotoMeal(meal: Int): Meal?{
-        val index = state.meals.indexOfFirst { it.number == meal }
-        return state.meals.getOrNull(index)
-    }
-
     fun onEvent(event: DashboardEvent) {
         when (event) {
             is DashboardEvent.ChangeDate -> changeDateDate(event.date)
@@ -81,6 +76,32 @@ class DashboardViewModel(
         }
     }
 
+    private var mealObserverJob: Job? = null
+    private fun observeMeals(date: Int) {
+        mealObserverJob?.cancel()
+        mealObserverJob = viewModelScope.launch {
+            useCases.observeMeals(date, mealNames).collect { meals ->
+                val portions = meals.flatMap { it.portions }
+                val nutrients = portions.sumNutrients()
+                val minerals = portions.sumMinerals()
+                val vitamins = portions.sumVitamins()
+                val aminoAcids = portions.sumAminoAcids()
+                updateData {
+                    copy(
+                        meals = meals,
+                        nutrients = nutrients,
+                        minerals = minerals,
+                        vitamins = vitamins,
+                        aminoAcids = aminoAcids
+                    )
+                }
+
+                if (meals.none { it.isVisible || it.isPinned }){
+                    addMeal()
+                }
+            }
+        }
+    }
     private fun addMeal() {
         val index = state.meals.indexOfFirst { !it.isVisible }
         if (index == -1 || index >= 10) return
@@ -150,32 +171,7 @@ class DashboardViewModel(
     }
 
 
-    private var mealObserverJob: Job? = null
-    private fun observeMeals(date: Int) {
-        mealObserverJob?.cancel()
-        mealObserverJob = viewModelScope.launch {
-            useCases.observeMeals(date, mealNames).collect { meals ->
-                val portions = meals.flatMap { it.portions }
-                val nutrients = portions.sumNutrients()
-                val minerals = portions.sumMinerals()
-                val vitamins = portions.sumVitamins()
-                val aminoAcids = portions.sumAminoAcids()
-                updateData {
-                    copy(
-                        meals = meals,
-                        nutrients = nutrients,
-                        minerals = minerals,
-                        vitamins = vitamins,
-                        aminoAcids = aminoAcids
-                    )
-                }
 
-                if (meals.none { it.isVisible || it.isPinned }){
-                    addMeal()
-                }
-            }
-        }
-    }
 
     private var goalObserverJob: Job? = null
     private fun observeGoal(date: Int) {

@@ -217,7 +217,6 @@ fun DashboardScreen(
                     items = state.meals,
                     key = { it.number }
                 ) { mealCard ->
-                        //AnimatedMealCard(visible = mealCard.isVisible, modifier =modifier.animateItem()) {
                     if(mealCard.isVisible){
                         Box(
                             modifier = Modifier
